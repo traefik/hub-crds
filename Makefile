@@ -1,3 +1,9 @@
-.PHONY: generate-crd
-generate-crd:
+default: build
+
+.PHONY: lint
+lint:
+	golangci-lint run
+
+.PHONY: build
+build: lint
 	@$(CURDIR)/script/code-gen.sh

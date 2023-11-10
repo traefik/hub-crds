@@ -117,6 +117,7 @@ type Period time.Duration
 // NewPeriod creates a new Period.
 func NewPeriod(d time.Duration) *Period {
 	p := Period(d)
+
 	return &p
 }
 
@@ -139,6 +140,7 @@ func (p *Period) MarshalJSON() ([]byte, error) {
 	if p == nil {
 		return []byte("null"), nil
 	}
+
 	return json.Marshal(toStringShortDuration(time.Duration(*p)))
 }
 
@@ -174,9 +176,11 @@ func toStringShortDuration(duration time.Duration) string {
 	if strings.HasSuffix(short, "m0s") {
 		short = short[:len(short)-2]
 	}
+
 	if strings.HasSuffix(short, "h0m") {
 		short = short[:len(short)-2]
 	}
+
 	return short
 }
 

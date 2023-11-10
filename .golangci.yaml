@@ -1,0 +1,77 @@
+run:
+  timeout: 10m
+  skip-files: [ ]
+  skip-dirs:
+    - hub/v1alpha1/generated/
+
+linters:
+  enable-all: true
+  disable:
+    - varcheck # Deprecated.
+    - interfacer # Deprecated.
+    - scopelint # Deprecated.
+    - exhaustivestruct # Deprecated.
+    - deadcode # Deprecated.
+    - ifshort # Deprecated.
+    - nosnakecase # Deprecated.
+    - golint # Deprecated.
+    - maligned # Deprecated.
+    - structcheck # Deprecated.
+    - exhaustruct # Not relevant
+    - gochecknoglobals # Not relevant
+    - goerr113 # Not relevant
+    - wrapcheck # Not relevant
+    - lll # KubeBuilder annotations can be very long.
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+  maligned:
+    suggest-new: true
+  goconst:
+    min-len: 5
+    min-occurrences: 3
+  misspell:
+    locale: US
+  godox:
+    keywords:
+      - FIXME
+  gofumpt:
+    extra-rules: true
+  depguard:
+    rules:
+      main:
+        allow:
+          # This Go code shouldn't have access to the whole std lib (e.g. http).
+          - encoding/json
+          - errors
+          - fmt
+          - strings
+          - time
+          # Kubernetes.
+          - k8s.io/api/core/v1
+          - k8s.io/apimachinery/pkg/apis/meta/v1
+          - k8s.io/apimachinery/pkg/runtime
+  importas:
+    no-unaliased: true
+  goheader:
+    values:
+      const:
+        COMPANY: Traefik Labs
+    template: |-
+      Copyright (C) {{ YEAR-RANGE }} {{ COMPANY }}
+
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as published
+      by the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU Affero General Public License for more details.
+
+      You should have received a copy of the GNU Affero General Public License
+      along with this program. If not, see <https://www.gnu.org/licenses/>.
+

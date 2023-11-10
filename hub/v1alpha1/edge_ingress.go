@@ -18,11 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"crypto/sha1" //nolint:gosec // Used for content diffing, no impact on security
-	"encoding/base64"
-	"encoding/json"
-	"fmt"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -54,19 +49,6 @@ type EdgeIngressSpec struct {
 	ACP     *EdgeIngressACP    `json:"acp,omitempty"`
 	// CustomDomains are the custom domains for accessing the exposed service.
 	CustomDomains []string `json:"customDomains,omitempty"`
-}
-
-// Hash generates the hash of the spec.
-func (in *EdgeIngressSpec) Hash() (string, error) {
-	b, err := json.Marshal(in)
-	if err != nil {
-		return "", fmt.Errorf("encode EdgeIngress: %w", err)
-	}
-
-	hash := sha1.New() //nolint:gosec // Used for content diffing, no impact on security
-	hash.Write(b)
-
-	return base64.StdEncoding.EncodeToString(hash.Sum(nil)), nil
 }
 
 // EdgeIngressService configures the service to exposed on the edge.
