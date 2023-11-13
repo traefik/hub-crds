@@ -22,6 +22,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	v1alpha1crd "github.com/traefik/hub-crds/hub/v1alpha1/crd"
+	"github.com/traefik/hub-crds/pkg/crd"
 	"github.com/traefik/hub-crds/pkg/validation"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -36,10 +38,17 @@ type validationTestCase struct {
 func checkValidationTestCases(t *testing.T, tests []validationTestCase) {
 	t.Helper()
 
-	validator, err := validation.BuildHubValidator()
+	crds, err := crd.GetCRDs(v1alpha1crd.CRDs)
 	require.NoError(t, err)
 
-	decoder, err := validation.NewHubDecoder()
+	validator := validation.NewValidator()
+	for _, crd := range crds {
+		if err = validator.Register(crd); err != nil {
+			require.NoError(t, err)
+		}
+	}
+
+	decoder, err := crd.NewHubDecoder()
 	require.NoError(t, err)
 
 	for _, test := range tests {

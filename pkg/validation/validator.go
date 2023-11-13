@@ -18,16 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package validation
 
 import (
-	"bufio"
 	"context"
-	"errors"
 	"fmt"
-	"io"
-	"io/fs"
-	"path/filepath"
-	"strings"
 
-	"github.com/traefik/hub-crds/hub/v1alpha1/crd"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
 	"k8s.io/apiextensions-apiserver/pkg/apiserver/schema"
 	"k8s.io/apiextensions-apiserver/pkg/apiserver/schema/cel"
@@ -37,7 +30,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	runtimeschema "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/validation/field"
-	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/kube-openapi/pkg/validation/validate"
 )
 
@@ -133,92 +125,4 @@ func (v *Validator) Validate(obj *unstructured.Unstructured) field.ErrorList {
 	}
 
 	return fieldErrs
-}
-
-// BuildHubValidator returns a new Validator.
-func BuildHubValidator() (*Validator, error) {
-	decoder, err := NewCRDDecoder()
-	if err != nil {
-		return nil, fmt.Errorf("creating CRD decoder: %w", err)
-	}
-
-	manifests, err := loadManifests(crd.CRDs)
-	if err != nil {
-		return nil, fmt.Errorf("loading CRD documents: %w", err)
-	}
-
-	validator := NewValidator()
-
-	for _, m := range manifests {
-		customResource, err := decoder.Decode(m.Data)
-		if err != nil {
-			return nil, fmt.Errorf("decoding manifest %s: %w", m.Path, err)
-		}
-
-		if err = validator.Register(customResource); err != nil {
-			return nil, fmt.Errorf("registering CRD %q: %w", customResource.Name, err)
-		}
-	}
-
-	return validator, nil
-}
-
-type manifest struct {
-	Path string
-	Data []byte
-}
-
-func loadManifests(filesystem fs.FS) ([]manifest, error) {
-	var manifests []manifest
-
-	err := fs.WalkDir(filesystem, ".", func(path string, entry fs.DirEntry, fileErr error) error {
-		if fileErr != nil {
-			return fileErr
-		}
-
-		if filepath.Base(path) == ".git" {
-			return filepath.SkipDir
-		}
-
-		if !entry.Type().IsRegular() || !isYAMLOrJSON(path) {
-			return nil
-		}
-
-		reader, err := filesystem.Open(path)
-		if err != nil {
-			return fmt.Errorf("opening file: %w", err)
-		}
-		defer func() { _ = reader.Close() }()
-
-		r := yaml.NewYAMLReader(bufio.NewReader(reader))
-
-		for {
-			data, err := r.Read()
-			if err != nil {
-				if errors.Is(err, io.EOF) {
-					break
-				}
-
-				return fmt.Errorf("reading file content: %w", err)
-			}
-
-			manifests = append(manifests, manifest{
-				Data: data,
-				Path: path,
-			})
-		}
-
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return manifests, nil
-}
-
-func isYAMLOrJSON(path string) bool {
-	ext := strings.ToLower(filepath.Ext(path))
-
-	return ext == ".yaml" || ext == ".yml" || ext == ".json"
 }
