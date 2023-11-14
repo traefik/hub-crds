@@ -27,14 +27,14 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 )
 
-// CRDDecoder decodes CRD objects.
-type CRDDecoder struct {
+// Decoder decodes CRD objects.
+type Decoder struct {
 	decoder runtime.Decoder
 	scheme  *runtime.Scheme
 }
 
-// NewCRDDecoder creates a new CRDDecoder.
-func NewCRDDecoder() (*CRDDecoder, error) {
+// NewDecoder creates a new Decoder.
+func NewDecoder() (*Decoder, error) {
 	scheme := runtime.NewScheme()
 	if err := apiextensionsv1.AddToScheme(scheme); err != nil {
 		return nil, err
@@ -42,14 +42,14 @@ func NewCRDDecoder() (*CRDDecoder, error) {
 
 	decoder := serializer.NewCodecFactory(scheme).UniversalDeserializer()
 
-	return &CRDDecoder{
+	return &Decoder{
 		decoder: decoder,
 		scheme:  scheme,
 	}, nil
 }
 
 // Decode decodes the given YAML/JSON manifest into a CustomResourceDefinition.
-func (d *CRDDecoder) Decode(document []byte) (*apiextensions.CustomResourceDefinition, error) {
+func (d *Decoder) Decode(document []byte) (*apiextensions.CustomResourceDefinition, error) {
 	object, _, err := d.decoder.Decode(document, nil, nil)
 	if err != nil {
 		return nil, fmt.Errorf("decoding object: %w", err)

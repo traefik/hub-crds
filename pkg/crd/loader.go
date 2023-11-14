@@ -1,3 +1,20 @@
+/*
+Copyright (C) 2022-2023 Traefik Labs
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package crd
 
 import (
@@ -15,7 +32,7 @@ import (
 
 // GetCRDs returns CRDs.
 func GetCRDs(filesystem fs.FS) ([]*apiextensions.CustomResourceDefinition, error) {
-	decoder, err := NewCRDDecoder()
+	decoder, err := NewDecoder()
 	if err != nil {
 		return nil, fmt.Errorf("creating CRD decoder: %w", err)
 	}
@@ -25,12 +42,14 @@ func GetCRDs(filesystem fs.FS) ([]*apiextensions.CustomResourceDefinition, error
 		return nil, fmt.Errorf("loading CRD documents: %w", err)
 	}
 
-	var crds []*apiextensions.CustomResourceDefinition
+	crds := make([]*apiextensions.CustomResourceDefinition, 0, len(manifests))
+
 	for _, m := range manifests {
 		crd, decodeErr := decoder.Decode(m.Data)
 		if decodeErr != nil {
 			return nil, fmt.Errorf("decoding manifest %s: %w", m.Path, decodeErr)
 		}
+
 		crds = append(crds, crd)
 	}
 
