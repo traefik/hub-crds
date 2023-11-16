@@ -365,7 +365,7 @@ func (in *APIGatewaySpec) DeepCopyInto(out *APIGatewaySpec) {
 	}
 	if in.CustomDomains != nil {
 		in, out := &in.CustomDomains, &out.CustomDomains
-		*out = make([]string, len(*in))
+		*out = make([]Domain, len(*in))
 		copy(*out, *in)
 	}
 	return
@@ -502,7 +502,7 @@ func (in *APIPortalSpec) DeepCopyInto(out *APIPortalSpec) {
 	*out = *in
 	if in.CustomDomains != nil {
 		in, out := &in.CustomDomains, &out.CustomDomains
-		*out = make([]string, len(*in))
+		*out = make([]Domain, len(*in))
 		copy(*out, *in)
 	}
 	if in.UI != nil {

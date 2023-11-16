@@ -131,6 +131,7 @@ spec:
               release:
                 description: 'Release is the version number of the API. This value
                   must follow the SemVer format: https://semver.org/'
+                maxLength: 100
                 type: string
                 x-kubernetes-validations:
                 - message: must be a valid semver version
@@ -150,6 +151,7 @@ spec:
                       description: PathPrefix defines the path prefix to be routed
                         to this APIVersion. This PathPrefix is appended to the PathPrefix
                         of the APICollection and API.
+                      maxLength: 255
                       type: string
                       x-kubernetes-validations:
                       - message: must start with a '/'
@@ -163,6 +165,7 @@ spec:
                         must be present in the request to be routed on this APIVersion.
                       type: object
                   type: object
+                maxItems: 10
                 type: array
               service:
                 description: Service defines the backend handling the incoming traffic.
@@ -179,6 +182,7 @@ spec:
                         description: Path is the path on the Kubernetes Service for
                           obtaining the specification. This Path must be queryable
                           with a GET method and serve a YAML or JSON document.
+                        maxLength: 255
                         type: string
                         x-kubernetes-validations:
                         - message: must start with a '/'

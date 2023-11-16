@@ -62,6 +62,7 @@ type APIAccessSpec struct {
 	// Multiple APIAccesses can select the same APIs.
 	// When combined with APISelector, this set of APIs is appended to the matching APIs.
 	// +optional
+	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated apis",rule="self.all(x, self.exists_one(y, x.name == y.name && (has(x.__namespace__) && x.__namespace__ != '' ? x.__namespace__ : 'default') == (has(y.__namespace__) && y.__namespace__ != '' ? y.__namespace__ : 'default')))"
 	APIs []APIReference `json:"apis,omitempty"`
 
@@ -76,6 +77,7 @@ type APIAccessSpec struct {
 	// Multiple APIAccesses can select the same APICollections.
 	// When combined with APICollectionSelector, this set of APICollections is appended to the matching APICollections.
 	// +optional
+	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated collections",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	APICollections []APICollectionReference `json:"apiCollections,omitempty"`
 }
@@ -83,16 +85,19 @@ type APIAccessSpec struct {
 // APIReference contains information to identify an API to add to an APIAccess, an APICollection or an APIRateLimit.
 type APIReference struct {
 	// Name of the API.
+	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
 
 	// Namespace of the API.
 	// +optional
+	// +kubebuilder:validation:MaxLength=63
 	Namespace string `json:"namespace,omitempty"`
 }
 
 // APICollectionReference contains information to identify an APICollection to add to APIAccess.
 type APICollectionReference struct {
 	// Name of the APICollection.
+	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
 }
 

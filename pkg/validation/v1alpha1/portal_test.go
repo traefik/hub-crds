@@ -103,7 +103,7 @@ spec:
   apiGateway: my-gateway
   customDomains:
     - ""`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains", BadValue: "array", Detail: "custom domain must be a valid domain name"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains[0]", BadValue: "string", Detail: "custom domain must be a valid domain name"}},
 		},
 		{
 			desc: "invalid custom domain",
@@ -116,7 +116,7 @@ spec:
   apiGateway: my-gateway
   customDomains:
     - example..com`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains", BadValue: "array", Detail: "custom domain must be a valid domain name"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains[0]", BadValue: "string", Detail: "custom domain must be a valid domain name"}},
 		},
 		{
 			desc: "duplicated custom domain",

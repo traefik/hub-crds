@@ -56,33 +56,13 @@ type APIPortalSpec struct {
 
 	// CustomDomains are the custom domains under which the portal will be exposed.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="custom domain must be a valid domain name",rule="self.all(x, x.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\"))"
+	// +kubebuilder:validation:MaxItems=20
 	// +kubebuilder:validation:XValidation:message="duplicate domains",rule="self.all(x, self.exists_one(y, y == x))"
-	CustomDomains []string `json:"customDomains,omitempty"`
+	CustomDomains []Domain `json:"customDomains,omitempty"`
 
 	// UI holds the UI customization options.
 	// +optional
 	UI *UISpec `json:"ui,omitempty"`
-}
-
-// APIPortalStatus is the status of an APIPortal.
-type APIPortalStatus struct {
-	Version  string      `json:"version,omitempty"`
-	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
-
-	// URLs are the URLs for accessing the APIPortal WebUI.
-	URLs string `json:"urls"`
-
-	// HubDomain is the hub generated domain of the APIPortal WebUI.
-	// +optional
-	HubDomain string `json:"hubDomain"`
-
-	// CustomDomains are the custom domains for accessing the exposed APIPortal WebUI.
-	// +optional
-	CustomDomains []string `json:"customDomains,omitempty"`
-
-	// Hash is a hash representing the APIPortal.
-	Hash string `json:"hash,omitempty"`
 }
 
 // UISpec configures the UI customization.
@@ -122,6 +102,26 @@ type UIServiceBackendPort struct {
 	// This is a mutually exclusive setting with "Path".
 	// +optional
 	Number int32 `json:"number"`
+}
+
+// APIPortalStatus is the status of an APIPortal.
+type APIPortalStatus struct {
+	Version  string      `json:"version,omitempty"`
+	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
+
+	// URLs are the URLs for accessing the APIPortal WebUI.
+	URLs string `json:"urls"`
+
+	// HubDomain is the hub generated domain of the APIPortal WebUI.
+	// +optional
+	HubDomain string `json:"hubDomain"`
+
+	// CustomDomains are the custom domains for accessing the exposed APIPortal WebUI.
+	// +optional
+	CustomDomains []string `json:"customDomains,omitempty"`
+
+	// Hash is a hash representing the APIPortal.
+	Hash string `json:"hash,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

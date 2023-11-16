@@ -45,6 +45,7 @@ type APICollection struct {
 type APICollectionSpec struct {
 	// PathPrefix is the path prefix under which all selected APIs will be exposed.
 	// +optional
+	// +kubebuilder:validation:MaxLength=255
 	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
 	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
 	PathPrefix string `json:"pathPrefix,omitempty"`
@@ -60,6 +61,7 @@ type APICollectionSpec struct {
 	// Multiple APICollections can select the same APIs.
 	// When combined with APISelector, this set of APIs is appended to the matching APIs.
 	// +optional
+	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated apis",rule="self.all(x, self.exists_one(y, x.name == y.name && (has(x.__namespace__) && x.__namespace__ != '' ? x.__namespace__ : 'default') == (has(y.__namespace__) && y.__namespace__ != '' ? y.__namespace__ : 'default')))"
 	APIs []APIReference `json:"apis,omitempty"`
 }

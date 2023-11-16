@@ -55,6 +55,7 @@ type APIVersionSpec struct {
 	// Release is the version number of the API.
 	// This value must follow the SemVer format: https://semver.org/
 	// +optional
+	// +kubebuilder:validation:MaxLength=100
 	// +kubebuilder:validation:XValidation:message="must be a valid semver version",rule="self.matches(r\"\"\"^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\"\"\")"
 	Release string `json:"release,omitempty"`
 
@@ -64,6 +65,7 @@ type APIVersionSpec struct {
 
 	// Routes defines the different ways of accessing this APIVersion.
 	// +optional
+	// +kubebuilder:validation:MaxItems=10
 	Routes []Route `json:"routes,omitempty"`
 
 	// Service defines the backend handling the incoming traffic.
@@ -91,6 +93,7 @@ type Route struct {
 	// PathPrefix defines the path prefix to be routed to this APIVersion.
 	// This PathPrefix is appended to the PathPrefix of the APICollection and API.
 	// +optional
+	// +kubebuilder:validation:MaxLength=255
 	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
 	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
 	PathPrefix string `json:"pathPrefix,omitempty"`

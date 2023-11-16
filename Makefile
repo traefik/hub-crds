@@ -1,4 +1,4 @@
-default: build
+default: build lint test
 
 .PHONY: lint
 lint:
@@ -9,5 +9,5 @@ test:
 	go test -v -cover ./...
 
 .PHONY: build
-build: lint test
+build:
 	@$(CURDIR)/script/code-gen.sh

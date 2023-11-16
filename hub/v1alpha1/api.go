@@ -49,6 +49,7 @@ type API struct {
 // APISpec configures an API.
 type APISpec struct {
 	// PathPrefix is the path prefix under which the service will be exposed.
+	// +kubebuilder:validation:MaxLength=255
 	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
 	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
 	PathPrefix string `json:"pathPrefix"`
@@ -110,6 +111,7 @@ type OpenAPISpec struct {
 	// Path is the path on the Kubernetes Service for obtaining the specification.
 	// This Path must be queryable with a GET method and serve a YAML or JSON document.
 	// +optional
+	// +kubebuilder:validation:MaxLength=255
 	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
 	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
 	Path string `json:"path,omitempty"`
