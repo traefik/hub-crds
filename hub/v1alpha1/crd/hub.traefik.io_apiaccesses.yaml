@@ -99,10 +99,12 @@ spec:
                   properties:
                     name:
                       description: Name of the APICollection.
+                      maxLength: 253
                       type: string
                   required:
                   - name
                   type: object
+                maxItems: 100
                 type: array
                 x-kubernetes-validations:
                 - message: duplicated collections
@@ -166,13 +168,16 @@ spec:
                   properties:
                     name:
                       description: Name of the API.
+                      maxLength: 253
                       type: string
                     namespace:
                       description: Namespace of the API.
+                      maxLength: 63
                       type: string
                   required:
                   - name
                   type: object
+                maxItems: 100
                 type: array
                 x-kubernetes-validations:
                 - message: duplicated apis

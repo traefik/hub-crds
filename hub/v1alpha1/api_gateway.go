@@ -50,10 +50,15 @@ type APIGatewaySpec struct {
 
 	// CustomDomains are the custom domains under which the gateway will be exposed.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="custom domain must be a valid domain name",rule="self.all(x, x.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\"))"
+	// +kubebuilder:validation:MaxItems=20
 	// +kubebuilder:validation:XValidation:message="duplicate domains",rule="self.all(x, self.exists_one(y, y == x))"
-	CustomDomains []string `json:"customDomains,omitempty"`
+	CustomDomains []Domain `json:"customDomains,omitempty"`
 }
+
+// Domain is the domain name.
+// +kubebuilder:validation:MaxLength=253
+// +kubebuilder:validation:XValidation:message="custom domain must be a valid domain name",rule="self.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\")"
+type Domain string
 
 // APIGatewayStatus is the status of an APIGateway.
 type APIGatewayStatus struct {
