@@ -82,8 +82,9 @@ type APIService struct {
 	Port APIServiceBackendPort `json:"port"`
 
 	// OpenAPISpec defines where to obtain the OpenAPI specification of the Service.
+	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
-	OpenAPISpec OpenAPISpec `json:"openApiSpec"`
+	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
 }
 
 // APIServiceBackendPort references a port on a Kubernetes Service.
