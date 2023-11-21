@@ -205,7 +205,6 @@ spec:
                     type: object
                 required:
                 - name
-                - openApiSpec
                 - port
                 type: object
             required:

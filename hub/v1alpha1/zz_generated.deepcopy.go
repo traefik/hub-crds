@@ -679,7 +679,11 @@ func (in *APIReference) DeepCopy() *APIReference {
 func (in *APIService) DeepCopyInto(out *APIService) {
 	*out = *in
 	out.Port = in.Port
-	in.OpenAPISpec.DeepCopyInto(&out.OpenAPISpec)
+	if in.OpenAPISpec != nil {
+		in, out := &in.OpenAPISpec, &out.OpenAPISpec
+		*out = new(OpenAPISpec)
+		(*in).DeepCopyInto(*out)
+	}
 	return
 }
 

@@ -241,7 +241,7 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "currentVersion or service must be defined"}},
 		},
 		{
-			desc: "service name, port and openApiSpec are required",
+			desc: "service name and port are required",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: API
@@ -253,7 +253,6 @@ spec:
   service: {}`),
 			wantErrs: field.ErrorList{
 				{Type: field.ErrorTypeRequired, Field: "spec.service.name", BadValue: ""},
-				{Type: field.ErrorTypeRequired, Field: "spec.service.openApiSpec", BadValue: ""},
 				{Type: field.ErrorTypeRequired, Field: "spec.service.port", BadValue: ""},
 			},
 		},
