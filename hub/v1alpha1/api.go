@@ -122,6 +122,52 @@ type OpenAPISpec struct {
 
 	// +optional
 	Protocol string `json:"protocol,omitempty"`
+
+	// OperationSets defines the sets of operations that can be used for advanced filtering in APIAccesses.
+	// +optional
+	// +kubebuilder:validation:MaxItems=100
+	OperationSets []OperationSet `json:"operationSets,omitempty"`
+}
+
+// OperationSet is a set of spec operations used for advanced filtering in APIAccesses.
+type OperationSet struct {
+	// Name is the name of the OperationSet.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+
+	// Matchers defines a set of OperationMatchers that selects spec operations.
+	// +kubebuilder:validation:MaxItems=100
+	// +kubebuilder:validation:MinItems=1
+	Matchers []OperationMatcher `json:"matchers"`
+}
+
+// OperationMatcher selects the operations that will be part of the OperationSet.
+// +kubebuilder:validation:MinProperties=1
+// +kubebuilder:validation:XValidation:message="path, pathPrefix and pathRegex are mutually exclusive",rule="[has(self.path), has(self.pathPrefix), has(self.pathRegex)].map(x, x ? 1 : 0).sum() <= 1"
+type OperationMatcher struct {
+	// Path defines the exact path of the spec operations to select.
+	// +optional
+	// +kubebuilder:validation:MaxLength=255
+	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
+	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
+	Path string `json:"path,omitempty"`
+
+	// PathPrefix defines the path prefix of the spec operations to select.
+	// +optional
+	// +kubebuilder:validation:MaxLength=255
+	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
+	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
+	PathPrefix string `json:"pathPrefix,omitempty"`
+
+	// PathRegex defines the path regex of the matching spec operations to select.
+	// +optional
+	PathRegex string `json:"pathRegex,omitempty"`
+
+	// Methods defines a set of methods of the specs operation to select.
+	// +optional
+	// +kubebuilder:validation:MaxItems=10
+	// +kubebuilder:validation:XValidation:message="duplicated methods",rule="self.all(x, self.exists_one(y, x == y))"
+	Methods *[]string `json:"methods,omitempty"`
 }
 
 // Headers configures the requests and responses headers manipulations.

@@ -99,7 +99,7 @@ type UIServiceBackendPort struct {
 	Name string `json:"name"`
 
 	// Number is the numerical port number (e.g. 80) on the Service.
-	// This is a mutually exclusive setting with "Path".
+	// This is a mutually exclusive setting with "Name".
 	// +optional
 	Number int32 `json:"number"`
 }

@@ -80,6 +80,12 @@ type APIAccessSpec struct {
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated collections",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	APICollections []APICollectionReference `json:"apiCollections,omitempty"`
+
+	// OperationFilter selects the OperationSets defined on an API or an APIVersion that will be accessible to the configured user groups.
+	// If not set, all spec operations will be accessible.
+	// An empty OperationFilter matches no OperationSet.
+	// +optional
+	OperationFilter *OperationFilter `json:"operationFilter,omitempty"`
 }
 
 // APIReference contains information to identify an API to add to an APIAccess, an APICollection or an APIRateLimit.
@@ -99,6 +105,14 @@ type APICollectionReference struct {
 	// Name of the APICollection.
 	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
+}
+
+// OperationFilter contains information to select OperationSets defined on an API or an APIVersion.
+type OperationFilter struct {
+	// Include defines the names of OperationSets that will be accessible.
+	// +optional
+	// +kubebuilder:validation:MaxItems=100
+	Include []string `json:"include,omitempty"`
 }
 
 // APIAccessStatus is the status of an APIAccess.

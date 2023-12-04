@@ -90,7 +90,7 @@ spec:
                           number:
                             description: Number is the numerical port number (e.g.
                               80) on the Service. This is a mutually exclusive setting
-                              with "Path".
+                              with "Name".
                             format: int32
                             type: integer
                         type: object
