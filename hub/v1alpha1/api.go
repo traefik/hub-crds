@@ -166,7 +166,6 @@ type OperationMatcher struct {
 	// Methods defines a set of methods of the specs operation to select.
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
-	// +kubebuilder:validation:XValidation:message="duplicated methods",rule="self.all(x, self.exists_one(y, x == y))"
 	Methods *[]string `json:"methods,omitempty"`
 }
 

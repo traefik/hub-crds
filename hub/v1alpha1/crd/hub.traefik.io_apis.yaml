@@ -157,6 +157,8 @@ spec:
                               description: Matchers defines a set of OperationMatchers
                                 that selects spec operations.
                               items:
+                                description: OperationMatcher selects the operations
+                                  that will be part of the OperationSet.
                                 minProperties: 1
                                 properties:
                                   methods:
@@ -166,9 +168,6 @@ spec:
                                       type: string
                                     maxItems: 10
                                     type: array
-                                    x-kubernetes-validations:
-                                    - message: duplicated methods
-                                      rule: self.all(x, self.exists_one(y, x == y))
                                   path:
                                     description: Path defines the exact path of the
                                       spec operations to select.

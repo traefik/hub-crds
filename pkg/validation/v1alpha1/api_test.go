@@ -721,30 +721,6 @@ spec:
             - pathPrefix: /foo/..bar`),
 		},
 		{
-			desc: "duplicated operationSet matcher methods",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: API
-metadata:
-  name: my-api
-  namespace: my-ns
-spec:
-  pathPrefix: /api
-  service:
-    name: my-svc
-    port:
-      number: 8080
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set 
-          matchers: 
-            - methods:
-              - GET
-              - GET`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.service.openApiSpec.operationSets[0].matchers[0].methods", BadValue: "array", Detail: "duplicated methods"}},
-		},
-		{
 			desc: "valid: operationSet matcher with methods only",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
