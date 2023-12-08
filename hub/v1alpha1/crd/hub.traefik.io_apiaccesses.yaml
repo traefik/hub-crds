@@ -191,6 +191,20 @@ spec:
                 items:
                   type: string
                 type: array
+              operationFilter:
+                description: OperationFilter selects the OperationSets defined on
+                  an API or an APIVersion that will be accessible to the configured
+                  user groups. If not set, all spec operations will be accessible.
+                  An empty OperationFilter matches no OperationSet.
+                properties:
+                  include:
+                    description: Include defines the names of OperationSets that will
+                      be accessible.
+                    items:
+                      type: string
+                    maxItems: 100
+                    type: array
+                type: object
             type: object
             x-kubernetes-validations:
             - message: groups and anyGroups are mutually exclusive

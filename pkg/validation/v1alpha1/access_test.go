@@ -55,7 +55,10 @@ spec:
     - name: my-api-collection
   apiCollectionSelector:
     labelSelector:
-      key: value`),
+      key: value
+  operationFilter:
+    include:
+      - my-filter`),
 		},
 		{
 			desc: "invalid resource name",
