@@ -84,8 +84,7 @@ spec:
                         properties:
                           name:
                             description: Name is the name of the port on the Service.
-                              This must be an IANA_SVC_NAME (following RFC6335). This
-                              is a mutually exclusive setting with "Number".
+                              This is a mutually exclusive setting with "Number".
                             type: string
                           number:
                             description: Number is the numerical port number (e.g.
@@ -94,6 +93,9 @@ spec:
                             format: int32
                             type: integer
                         type: object
+                        x-kubernetes-validations:
+                        - message: name or number must be defined
+                          rule: has(self.name) || has(self.number)
                     required:
                     - name
                     - port
