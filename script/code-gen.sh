@@ -1,31 +1,20 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2046
 
 set -euo pipefail
 
-PROJECT_MODULE="github.com/traefik/hub-crds"
-IMAGE_NAME="kubernetes-codegen:latest"
-CURRENT_DIR="$(pwd)"
+source /go/src/k8s.io/code-generator/kube_codegen.sh
 
-echo "Building codegen Docker image..."
-docker build --build-arg KUBE_VERSION=v0.20.15 -f "./script/codegen.Dockerfile" \
-  --build-arg USER="${USER}" \
-  --build-arg UID="$(id -u)" \
-  --build-arg GID="$(id -g)" \
-  -t "${IMAGE_NAME}" \
-  "."
+git config --global --add safe.directory /go/src/${PROJECT_MODULE}
 
-cmd="/go/src/k8s.io/code-generator/generate-groups.sh all $PROJECT_MODULE/hub/v1alpha1/generated $PROJECT_MODULE hub:v1alpha1"
+kube::codegen::gen_helpers \
+    --input-pkg-root "${PROJECT_MODULE}/hub" \
+    --output-base "$(dirname "${BASH_SOURCE[0]}")/" \
+    --boilerplate "/go/src/${PROJECT_MODULE}/script/boilerplate.go.tmpl"
 
-echo "Generating Hub clientset, listers and informers code ..."
-docker run --rm \
-  -v "${CURRENT_DIR}:/go/src/${PROJECT_MODULE}" \
-  -w "/go/src/${PROJECT_MODULE}" \
-  "${IMAGE_NAME}" $cmd
-
-cmd="controller-gen crd:crdVersions=v1 paths=./hub/v1alpha1/... output:crd:dir=./hub/v1alpha1/crd"
-
-echo "Generating the CRD definitions ..."
-docker run --rm \
-  -v "${CURRENT_DIR}:/go/src/${PROJECT_MODULE}" \
-  -w "/go/src/${PROJECT_MODULE}" \
-  "${IMAGE_NAME}" $cmd
+kube::codegen::gen_client \
+    --with-watch \
+    --input-pkg-root "${PROJECT_MODULE}/hub" \
+    --output-pkg-root "${PROJECT_MODULE}/hub" \
+    --output-base "$(dirname "${BASH_SOURCE[0]}")/" \
+    --boilerplate "/go/src/${PROJECT_MODULE}/script/boilerplate.go.tmpl"

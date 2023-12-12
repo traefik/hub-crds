@@ -10,4 +10,4 @@ test:
 
 .PHONY: build
 build:
-	@$(CURDIR)/script/code-gen.sh
+	@$(CURDIR)/script/code-gen-docker.sh
