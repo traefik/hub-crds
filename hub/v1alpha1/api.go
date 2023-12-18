@@ -129,7 +129,7 @@ type OpenAPISpec struct {
 	OperationSets []OperationSet `json:"operationSets,omitempty"`
 }
 
-// OperationSet is a set of spec operations used for advanced filtering in APIAccesses.
+// OperationSet selects a set of OpenAPI operations that can be referenced for advanced filtering on APIAccesses.
 type OperationSet struct {
 	// Name is the name of the OperationSet.
 	// +kubebuilder:validation:MaxLength=253
