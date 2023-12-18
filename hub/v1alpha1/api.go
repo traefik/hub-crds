@@ -143,7 +143,7 @@ type OperationSet struct {
 
 // OperationMatcher selects the operations that will be part of the OperationSet.
 // +kubebuilder:validation:MinProperties=1
-// +kubebuilder:validation:XValidation:message="path, pathPrefix and pathRegex are mutually exclusive",rule="[has(self.path), has(self.pathPrefix), has(self.pathRegex)].map(x, x ? 1 : 0).sum() <= 1"
+// +kubebuilder:validation:XValidation:message="path, pathPrefix and pathRegex are mutually exclusive",rule="(!has(self.path) && !has(self.pathPrefix) && !has(self.pathRegex)) || (has(self.path) && !has(self.pathPrefix) && !has(self.pathRegex)) || (!has(self.path) && has(self.pathPrefix) && !has(self.pathRegex)) || (!has(self.path) && !has(self.pathPrefix) && has(self.pathRegex))"
 type OperationMatcher struct {
 	// Path defines the exact path of the spec operations to select.
 	// +optional

@@ -228,8 +228,12 @@ spec:
                                 x-kubernetes-validations:
                                 - message: path, pathPrefix and pathRegex are mutually
                                     exclusive
-                                  rule: '[has(self.path), has(self.pathPrefix), has(self.pathRegex)].map(x,
-                                    x ? 1 : 0).sum() <= 1'
+                                  rule: (!has(self.path) && !has(self.pathPrefix)
+                                    && !has(self.pathRegex)) || (has(self.path) &&
+                                    !has(self.pathPrefix) && !has(self.pathRegex))
+                                    || (!has(self.path) && has(self.pathPrefix) &&
+                                    !has(self.pathRegex)) || (!has(self.path) && !has(self.pathPrefix)
+                                    && has(self.pathRegex))
                               maxItems: 100
                               minItems: 1
                               type: array
