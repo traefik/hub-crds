@@ -171,6 +171,21 @@ spec:
       name: my-service`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.ui.service.port", BadValue: ""}},
 		},
+		{
+			desc: "custom ui service port must have a name or number",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+spec:
+  apiGateway: my-gateway
+  ui:
+    service:
+      name: my-service
+      port: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ui.service.port", BadValue: "object", Detail: "name or number must be defined"}},
+		},
 	}
 
 	checkValidationTestCases(t, tests)

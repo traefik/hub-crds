@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
+	netv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -77,28 +78,15 @@ type APIService struct {
 	// The Service must be in the same namespace as the API.
 	Name string `json:"name"`
 
-	// Port of the referenced service. A port name or port number
-	// is required for an APIServiceBackendPort.
-	Port APIServiceBackendPort `json:"port"`
+	// Port of the referenced service.
+	// A port name or port number is required.
+	// +kubebuilder:validation:XValidation:message="name or number must be defined",rule="has(self.name) || has(self.number)"
+	Port netv1.ServiceBackendPort `json:"port"`
 
 	// OpenAPISpec defines where to obtain the OpenAPI specification of the Service.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
 	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
-}
-
-// APIServiceBackendPort references a port on a Kubernetes Service.
-type APIServiceBackendPort struct {
-	// Name is the name of the port on the Kubernetes Service.
-	// This must be an IANA_SVC_NAME (following RFC6335).
-	// This is a mutually exclusive setting with "Number".
-	// +optional
-	Name string `json:"name"`
-
-	// Number is the numerical port number (e.g. 80) on the Kubernetes Service.
-	// This is a mutually exclusive setting with "Path".
-	// +optional
-	Number int32 `json:"number"`
 }
 
 // OpenAPISpec defines the OpenAPI spec of an API.
@@ -116,12 +104,6 @@ type OpenAPISpec struct {
 	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
 	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
 	Path string `json:"path,omitempty"`
-
-	// +optional
-	Port *APIServiceBackendPort `json:"port,omitempty"`
-
-	// +optional
-	Protocol string `json:"protocol,omitempty"`
 
 	// OperationSets defines the sets of operations that can be used for advanced filtering in APIAccesses.
 	// +optional

@@ -264,6 +264,24 @@ spec:
 			},
 		},
 		{
+			desc: "service port must have a name or number",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: API
+metadata:
+  name: my-api
+  namespace: my-ns
+spec:
+  pathPrefix: /api
+  service:
+    name: my-svc
+    port: {}
+    openApiSpec:
+      path: /spec.json
+`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.service.port", BadValue: "object", Detail: "name or number must be defined"}},
+		},
+		{
 			desc: "openApiSpec must have a path or an url",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1

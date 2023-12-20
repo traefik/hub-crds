@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
+	netv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -87,21 +88,8 @@ type UIService struct {
 
 	// Port of the referenced service.
 	// A port name or port number is required.
-	Port UIServiceBackendPort `json:"port"`
-}
-
-// UIServiceBackendPort is the service port being referenced.
-type UIServiceBackendPort struct {
-	// Name is the name of the port on the Service.
-	// This must be an IANA_SVC_NAME (following RFC6335).
-	// This is a mutually exclusive setting with "Number".
-	// +optional
-	Name string `json:"name"`
-
-	// Number is the numerical port number (e.g. 80) on the Service.
-	// This is a mutually exclusive setting with "Name".
-	// +optional
-	Number int32 `json:"number"`
+	// +kubebuilder:validation:XValidation:message="name or number must be defined",rule="has(self.name) || has(self.number)"
+	Port netv1.ServiceBackendPort `json:"port"`
 }
 
 // APIPortalStatus is the status of an APIPortal.
