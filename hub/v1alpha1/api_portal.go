@@ -92,6 +92,21 @@ type UIService struct {
 	Port netv1.ServiceBackendPort `json:"port"`
 }
 
+// OIDCConfigStatus is the OIDC configuration status.
+type OIDCConfigStatus struct {
+	// Issuer is the OIDC issuer for accessing the exposed APIPortal WebUI.
+	// +optional
+	Issuer string `json:"issuer,omitempty"`
+
+	// ClientID is the OIDC ClientID for accessing the exposed APIPortal WebUI.
+	// +optional
+	ClientID string `json:"clientId,omitempty"`
+
+	// SecretName is the name of the secret containing the OIDC ClientSecret for accessing the exposed APIPortal WebUI.
+	// +optional
+	SecretName string `json:"secretName,omitempty"`
+}
+
 // APIPortalStatus is the status of an APIPortal.
 type APIPortalStatus struct {
 	Version  string      `json:"version,omitempty"`
@@ -107,6 +122,10 @@ type APIPortalStatus struct {
 	// CustomDomains are the custom domains for accessing the exposed APIPortal WebUI.
 	// +optional
 	CustomDomains []string `json:"customDomains,omitempty"`
+
+	// OIDC is the OIDC configuration for accessing the exposed APIPortal WebUI.
+	// +optional
+	OIDC *OIDCConfigStatus `json:"oidc,omitempty"`
 
 	// Hash is a hash representing the APIPortal.
 	Hash string `json:"hash,omitempty"`
