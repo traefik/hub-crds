@@ -16,7 +16,7 @@ docker build --build-arg KUBE_VERSION=v0.28.4 \
              -t "${IMAGE_NAME}" \
              "."
 
-echo "Generating Traefik clientSet code and DeepCopy code ..."
+echo "Generating Hub clientset, listers and informers code ..."
 docker run --rm \
            -v "${CURRENT_DIR}:/go/src/${PROJECT_MODULE}" \
            -w "/go/src/${PROJECT_MODULE}" \
@@ -24,7 +24,7 @@ docker run --rm \
            "${IMAGE_NAME}" \
            bash ./script/code-gen.sh
 
-echo "Generating the CRD definitions for the documentation ..."
+echo "Generating the CRD definitions ..."
 docker run --rm \
            -v "${CURRENT_DIR}:/go/src/${PROJECT_MODULE}" \
            -w "/go/src/${PROJECT_MODULE}" \
