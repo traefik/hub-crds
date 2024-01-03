@@ -15,6 +15,6 @@ kube::codegen::gen_helpers \
 kube::codegen::gen_client \
     --with-watch \
     --input-pkg-root "${PROJECT_MODULE}/pkg/apis" \
-    --output-pkg-root "${PROJECT_MODULE}/pkg/generated" \
+    --output-pkg-root "${PROJECT_MODULE}/pkg/client" \
     --output-base "$(dirname "${BASH_SOURCE[0]}")/../../../.." \
     --boilerplate "/go/src/${PROJECT_MODULE}/script/boilerplate.go.tmpl"
