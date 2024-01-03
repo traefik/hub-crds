@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2023 Traefik Labs
+Copyright (C) 2022-2024 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -22,7 +22,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	v1alpha1crd "github.com/traefik/hub-crds/hub/v1alpha1/crd"
+	v1alpha1crd "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1/crd"
 	"github.com/traefik/hub-crds/pkg/crd"
 	"github.com/traefik/hub-crds/pkg/validation"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

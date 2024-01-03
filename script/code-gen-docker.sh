@@ -30,5 +30,5 @@ docker run --rm \
            -w "/go/src/${PROJECT_MODULE}" \
            "${IMAGE_NAME}" \
            controller-gen crd:crdVersions=v1 \
-           paths=./hub/v1alpha1/... \
-           output:dir=./hub/v1alpha1/crd
+           paths=./pkg/apis/hub/v1alpha1/... \
+           output:dir=./pkg/apis/hub/v1alpha1/crd
