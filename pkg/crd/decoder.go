@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2023 Traefik Labs
+Copyright (C) 2022-2024 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -20,7 +20,7 @@ package crd
 import (
 	"fmt"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/runtime"
