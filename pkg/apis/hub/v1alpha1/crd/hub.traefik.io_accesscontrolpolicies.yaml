@@ -192,9 +192,9 @@ spec:
                         description: TLS configures TLS communication with the Authorization
                           Server.
                         properties:
-                          caBundle:
-                            description: CABundle sets the CA bundle used to sign
-                              the Authorization Server certificate.
+                          ca:
+                            description: CA sets the CA bundle used to sign the Authorization
+                              Server certificate.
                             type: string
                           insecureSkipVerify:
                             description: InsecureSkipVerify skips the Authorization

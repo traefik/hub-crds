@@ -203,8 +203,8 @@ type HTTPClientConfig struct {
 
 // HTTPClientConfigTLS configures TLS for HTTP clients.
 type HTTPClientConfigTLS struct {
-	// CABundle sets the CA bundle used to sign the Authorization Server certificate.
-	CABundle string `json:"caBundle,omitempty"`
+	// CA sets the CA bundle used to sign the Authorization Server certificate.
+	CA string `json:"ca,omitempty"`
 	// InsecureSkipVerify skips the Authorization Server certificate validation.
 	// For testing purposes only, do not use in production.
 	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
