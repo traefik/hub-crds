@@ -140,38 +140,6 @@ spec:
                     description: AccessControlOAuthIntroClientConfig configures the
                       OAuth 2.0 client for issuing token introspection requests.
                     properties:
-                      auth:
-                        description: Auth configures the required authentication to
-                          the Authorization Server.
-                        properties:
-                          kind:
-                            description: Kind sets the kind of authentication that
-                              can be used to authenticate requests. The content of
-                              the referenced depends on this kind.
-                            enum:
-                            - Basic
-                            - Bearer
-                            - Header
-                            - Query
-                            type: string
-                          secret:
-                            description: Secret is the reference to the Kubernetes
-                              secrets containing sensitive authentication data.
-                            properties:
-                              name:
-                                description: name is unique within a namespace to
-                                  reference a secret resource.
-                                type: string
-                              namespace:
-                                description: namespace defines the space within which
-                                  the secret name must be unique.
-                                type: string
-                            type: object
-                            x-kubernetes-map-type: atomic
-                        required:
-                        - kind
-                        - secret
-                        type: object
                       headers:
                         additionalProperties:
                           type: string
@@ -211,7 +179,6 @@ spec:
                         description: URL of the Authorization Server.
                         type: string
                     required:
-                    - auth
                     - url
                     type: object
                   forwardHeaders:

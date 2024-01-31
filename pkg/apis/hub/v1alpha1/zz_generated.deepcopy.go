@@ -899,7 +899,6 @@ func (in *AccessControlOAuthIntro) DeepCopy() *AccessControlOAuthIntro {
 func (in *AccessControlOAuthIntroClientConfig) DeepCopyInto(out *AccessControlOAuthIntroClientConfig) {
 	*out = *in
 	in.HTTPClientConfig.DeepCopyInto(&out.HTTPClientConfig)
-	out.Auth = in.Auth
 	if in.Headers != nil {
 		in, out := &in.Headers, &out.Headers
 		*out = make(map[string]string, len(*in))
