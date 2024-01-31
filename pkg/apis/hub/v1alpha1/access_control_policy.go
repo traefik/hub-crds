@@ -167,9 +167,6 @@ type AccessControlOAuthIntroClientConfig struct {
 	// URL of the Authorization Server.
 	// +kubebuilder:validation:Required
 	URL string `json:"url"`
-	// Auth configures the required authentication to the Authorization Server.
-	// +kubebuilder:validation:Required
-	Auth AccessControlOAuthIntroClientConfigAuth `json:"auth"`
 	// Headers to set when sending requests to the Authorization Server.
 	Headers map[string]string `json:"headers,omitempty"`
 	// TokenTypeHint is a hint to pass to the Authorization Server.
