@@ -57,7 +57,7 @@ type AccessControlPolicyJWT struct {
 	PublicKey                  string            `json:"publicKey,omitempty"`
 	JWKsFile                   string            `json:"jwksFile,omitempty"`
 	JWKsURL                    string            `json:"jwksUrl,omitempty"`
-	StripAuthorizationHeader   bool              `json:"stripAuthorizationHeader,omitempty"`
+	StripAuthorizationHeader   *bool             `json:"stripAuthorizationHeader,omitempty"`
 	ForwardHeaders             map[string]string `json:"forwardHeaders,omitempty"`
 	TokenQueryKey              string            `json:"tokenQueryKey,omitempty"`
 	Claims                     string            `json:"claims,omitempty"`
