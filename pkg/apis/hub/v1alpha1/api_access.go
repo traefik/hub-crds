@@ -22,18 +22,16 @@ import (
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIAccess defines which group of consumers can access APIs and APICollections.
-// +kubebuilder:resource:scope=Cluster
 type APIAccess struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// The desired behavior of this APIAccess.
-	// +kubebuilder:validation:XValidation:message="groups and anyGroups are mutually exclusive",rule="(has(self.anyGroups) && has(self.groups)) ? !(self.anyGroups && self.groups.size() > 0) : true"
+	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
 	Spec APIAccessSpec `json:"spec,omitempty"`
 
 	// The current status of this APIAccess.
@@ -47,9 +45,9 @@ type APIAccessSpec struct {
 	// +optional
 	Groups []string `json:"groups"`
 
-	// AnyGroups states that everyone will gain access to the selected APIs.
+	// Everyone states that everyone will gain access to the selected APIs.
 	// +optional
-	AnyGroups bool `json:"anyGroups"`
+	Everyone bool `json:"everyone"`
 
 	// APISelector selects the APIs that will be accessible to the configured user groups.
 	// Multiple APIAccesses can select the same set of APIs.

@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	netv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -29,17 +28,12 @@ import (
 // +kubebuilder:printcolumn:name="PathPrefix",type=string,JSONPath=`.spec.pathPrefix`
 // +kubebuilder:printcolumn:name="ServiceName",type=string,JSONPath=`.spec.service.name`
 // +kubebuilder:printcolumn:name="ServicePort",type=string,JSONPath=`.spec.service.port.number`
-// +kubebuilder:printcolumn:name="CurrentVersion",type=string,JSONPath=`.spec.currentVersion`
+// +kubebuilder:printcolumn:name="Versions",type=string,JSONPath=`.spec.currentVersion`
 type API struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// The desired behavior of this API.
-	// +kubebuilder:validation:XValidation:message="currentVersion or service must be defined",rule="has(self.currentVersion) || has(self.service)"
-	// +kubebuilder:validation:XValidation:message="currentVersion and service are mutually exclusive",rule="!has(self.currentVersion) || !has(self.service)"
-	// +kubebuilder:validation:XValidation:message="currentVersion and cors are mutually exclusive",rule="!has(self.currentVersion) || !has(self.cors)"
-	// +kubebuilder:validation:XValidation:message="currentVersion and headers are mutually exclusive",rule="!has(self.currentVersion) || !has(self.headers)"
 	Spec APISpec `json:"spec,omitempty"`
 
 	// The current status of this API.
@@ -49,44 +43,21 @@ type API struct {
 
 // APISpec configures an API.
 type APISpec struct {
-	// PathPrefix is the path prefix under which the service will be exposed.
-	// +kubebuilder:validation:MaxLength=255
-	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
-	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
-	PathPrefix string `json:"pathPrefix"`
-
-	// Service defines the backend handling the incoming traffic.
-	// +optional
-	Service *APIService `json:"service,omitempty"`
-
-	// Headers manipulates HTTP request and response headers.
-	// +optional
-	Headers *Headers `json:"headers,omitempty"`
-
-	// CORS configures Cross-origin resource sharing headers.
-	// +optional
-	CORS *CORS `json:"cors,omitempty"`
-
-	// CurrentVersion defines the current APIVersion.
-	// +optional
-	CurrentVersion string `json:"currentVersion,omitempty"`
-}
-
-// APIService defines the backend handling the incoming traffic.
-type APIService struct {
-	// Name is the name of the Kubernetes Service.
-	// The Service must be in the same namespace as the API.
-	Name string `json:"name"`
-
-	// Port of the referenced service.
-	// A port name or port number is required.
-	// +kubebuilder:validation:XValidation:message="name or number must be defined",rule="has(self.name) || has(self.number)"
-	Port netv1.ServiceBackendPort `json:"port"`
-
 	// OpenAPISpec defines where to obtain the OpenAPI specification of the Service.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
 	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
+
+	// Versions defines the current APIVersion.
+	// +optional
+	// +kubebuilder:validation:MaxItems=100
+	// +kubebuilder:validation:MinItems=1
+	Versions []APIVersionRef `json:"versions,omitempty"`
+}
+
+// APIVersionRef holds an APIVersion name.
+type APIVersionRef struct {
+	Name string `json:"name"`
 }
 
 // OpenAPISpec defines the OpenAPI spec of an API.

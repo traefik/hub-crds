@@ -34,9 +34,8 @@ type APIPortalLister interface {
 	// List lists all APIPortals in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.APIPortal, err error)
-	// Get retrieves the APIPortal from the index for a given name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APIPortal, error)
+	// APIPortals returns an object that can list and get APIPortals.
+	APIPortals(namespace string) APIPortalNamespaceLister
 	APIPortalListerExpansion
 }
 
@@ -58,9 +57,41 @@ func (s *aPIPortalLister) List(selector labels.Selector) (ret []*v1alpha1.APIPor
 	return ret, err
 }
 
-// Get retrieves the APIPortal from the index for a given name.
-func (s *aPIPortalLister) Get(name string) (*v1alpha1.APIPortal, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// APIPortals returns an object that can list and get APIPortals.
+func (s *aPIPortalLister) APIPortals(namespace string) APIPortalNamespaceLister {
+	return aPIPortalNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// APIPortalNamespaceLister helps list and get APIPortals.
+// All objects returned here must be treated as read-only.
+type APIPortalNamespaceLister interface {
+	// List lists all APIPortals in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
+	List(selector labels.Selector) (ret []*v1alpha1.APIPortal, err error)
+	// Get retrieves the APIPortal from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*v1alpha1.APIPortal, error)
+	APIPortalNamespaceListerExpansion
+}
+
+// aPIPortalNamespaceLister implements the APIPortalNamespaceLister
+// interface.
+type aPIPortalNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all APIPortals in the indexer for a given namespace.
+func (s aPIPortalNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APIPortal, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.APIPortal))
+	})
+	return ret, err
+}
+
+// Get retrieves the APIPortal from the indexer for a given namespace and name.
+func (s aPIPortalNamespaceLister) Get(name string) (*v1alpha1.APIPortal, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

@@ -36,7 +36,7 @@ import (
 // APIPortalsGetter has a method to return a APIPortalInterface.
 // A group's client should implement this interface.
 type APIPortalsGetter interface {
-	APIPortals() APIPortalInterface
+	APIPortals(namespace string) APIPortalInterface
 }
 
 // APIPortalInterface has methods to work with APIPortal resources.
@@ -56,12 +56,14 @@ type APIPortalInterface interface {
 // aPIPortals implements APIPortalInterface
 type aPIPortals struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAPIPortals returns a APIPortals
-func newAPIPortals(c *HubV1alpha1Client) *aPIPortals {
+func newAPIPortals(c *HubV1alpha1Client, namespace string) *aPIPortals {
 	return &aPIPortals{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -69,6 +71,7 @@ func newAPIPortals(c *HubV1alpha1Client) *aPIPortals {
 func (c *aPIPortals) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIPortal, err error) {
 	result = &v1alpha1.APIPortal{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apiportals").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -85,6 +88,7 @@ func (c *aPIPortals) List(ctx context.Context, opts v1.ListOptions) (result *v1a
 	}
 	result = &v1alpha1.APIPortalList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apiportals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -101,6 +105,7 @@ func (c *aPIPortals) Watch(ctx context.Context, opts v1.ListOptions) (watch.Inte
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apiportals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -111,6 +116,7 @@ func (c *aPIPortals) Watch(ctx context.Context, opts v1.ListOptions) (watch.Inte
 func (c *aPIPortals) Create(ctx context.Context, aPIPortal *v1alpha1.APIPortal, opts v1.CreateOptions) (result *v1alpha1.APIPortal, err error) {
 	result = &v1alpha1.APIPortal{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apiportals").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(aPIPortal).
@@ -123,6 +129,7 @@ func (c *aPIPortals) Create(ctx context.Context, aPIPortal *v1alpha1.APIPortal, 
 func (c *aPIPortals) Update(ctx context.Context, aPIPortal *v1alpha1.APIPortal, opts v1.UpdateOptions) (result *v1alpha1.APIPortal, err error) {
 	result = &v1alpha1.APIPortal{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apiportals").
 		Name(aPIPortal.Name).
 		VersionedParams(&opts, scheme.ParameterCodec).
@@ -137,6 +144,7 @@ func (c *aPIPortals) Update(ctx context.Context, aPIPortal *v1alpha1.APIPortal, 
 func (c *aPIPortals) UpdateStatus(ctx context.Context, aPIPortal *v1alpha1.APIPortal, opts v1.UpdateOptions) (result *v1alpha1.APIPortal, err error) {
 	result = &v1alpha1.APIPortal{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apiportals").
 		Name(aPIPortal.Name).
 		SubResource("status").
@@ -150,6 +158,7 @@ func (c *aPIPortals) UpdateStatus(ctx context.Context, aPIPortal *v1alpha1.APIPo
 // Delete takes name of the aPIPortal and deletes it. Returns an error if one occurs.
 func (c *aPIPortals) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apiportals").
 		Name(name).
 		Body(&opts).
@@ -164,6 +173,7 @@ func (c *aPIPortals) DeleteCollection(ctx context.Context, opts v1.DeleteOptions
 		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apiportals").
 		VersionedParams(&listOpts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -176,6 +186,7 @@ func (c *aPIPortals) DeleteCollection(ctx context.Context, opts v1.DeleteOptions
 func (c *aPIPortals) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIPortal, err error) {
 	result = &v1alpha1.APIPortal{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apiportals").
 		Name(name).
 		SubResource(subresources...).

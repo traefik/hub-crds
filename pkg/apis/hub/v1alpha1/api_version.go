@@ -45,9 +45,6 @@ type APIVersion struct {
 
 // APIVersionSpec configures an APIVersion.
 type APIVersionSpec struct {
-	// APIName is the name of the API this version belongs to.
-	APIName string `json:"apiName"`
-
 	// Title is the public facing name of the APIVersion.
 	// +optional
 	Title string `json:"title,omitempty"`
@@ -59,25 +56,10 @@ type APIVersionSpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a valid semver version",rule="self.matches(r\"\"\"^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\"\"\")"
 	Release string `json:"release,omitempty"`
 
-	// StripPathPrefix strips the PathPrefix defined in the Routes when forwarding requests to the backend service.
+	// OpenAPISpec defines where to obtain the OpenAPI specification of the Service.
 	// +optional
-	StripPathPrefix bool `json:"stripPathPrefix"`
-
-	// Routes defines the different ways of accessing this APIVersion.
-	// +optional
-	// +kubebuilder:validation:MaxItems=10
-	Routes []Route `json:"routes,omitempty"`
-
-	// Service defines the backend handling the incoming traffic.
-	Service APIService `json:"service"`
-
-	// Headers manipulates HTTP request and response headers.
-	// +optional
-	Headers *Headers `json:"headers,omitempty"`
-
-	// CORS configures Cross-origin resource sharing headers.
-	// +optional
-	CORS *CORS `json:"cors,omitempty"`
+	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
+	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
 }
 
 // Route determines how to match the version.

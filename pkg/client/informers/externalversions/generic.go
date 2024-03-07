@@ -60,10 +60,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIs().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("apiaccesses"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIAccesses().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("apicollections"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APICollections().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("apigateways"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIGateways().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("apiportals"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIPortals().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("apiratelimits"):
@@ -72,8 +68,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIVersions().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("accesscontrolpolicies"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().AccessControlPolicies().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("edgeingresses"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().EdgeIngresses().Informer()}, nil
 
 	}
 

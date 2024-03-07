@@ -33,21 +33,25 @@ type APINamespaceListerExpansion interface{}
 // APIAccessLister.
 type APIAccessListerExpansion interface{}
 
-// APICollectionListerExpansion allows custom methods to be added to
-// APICollectionLister.
-type APICollectionListerExpansion interface{}
-
-// APIGatewayListerExpansion allows custom methods to be added to
-// APIGatewayLister.
-type APIGatewayListerExpansion interface{}
+// APIAccessNamespaceListerExpansion allows custom methods to be added to
+// APIAccessNamespaceLister.
+type APIAccessNamespaceListerExpansion interface{}
 
 // APIPortalListerExpansion allows custom methods to be added to
 // APIPortalLister.
 type APIPortalListerExpansion interface{}
 
+// APIPortalNamespaceListerExpansion allows custom methods to be added to
+// APIPortalNamespaceLister.
+type APIPortalNamespaceListerExpansion interface{}
+
 // APIRateLimitListerExpansion allows custom methods to be added to
 // APIRateLimitLister.
 type APIRateLimitListerExpansion interface{}
+
+// APIRateLimitNamespaceListerExpansion allows custom methods to be added to
+// APIRateLimitNamespaceLister.
+type APIRateLimitNamespaceListerExpansion interface{}
 
 // APIVersionListerExpansion allows custom methods to be added to
 // APIVersionLister.
@@ -60,11 +64,3 @@ type APIVersionNamespaceListerExpansion interface{}
 // AccessControlPolicyListerExpansion allows custom methods to be added to
 // AccessControlPolicyLister.
 type AccessControlPolicyListerExpansion interface{}
-
-// EdgeIngressListerExpansion allows custom methods to be added to
-// EdgeIngressLister.
-type EdgeIngressListerExpansion interface{}
-
-// EdgeIngressNamespaceListerExpansion allows custom methods to be added to
-// EdgeIngressNamespaceLister.
-type EdgeIngressNamespaceListerExpansion interface{}

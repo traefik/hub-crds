@@ -36,7 +36,7 @@ import (
 // APIRateLimitsGetter has a method to return a APIRateLimitInterface.
 // A group's client should implement this interface.
 type APIRateLimitsGetter interface {
-	APIRateLimits() APIRateLimitInterface
+	APIRateLimits(namespace string) APIRateLimitInterface
 }
 
 // APIRateLimitInterface has methods to work with APIRateLimit resources.
@@ -56,12 +56,14 @@ type APIRateLimitInterface interface {
 // aPIRateLimits implements APIRateLimitInterface
 type aPIRateLimits struct {
 	client rest.Interface
+	ns     string
 }
 
 // newAPIRateLimits returns a APIRateLimits
-func newAPIRateLimits(c *HubV1alpha1Client) *aPIRateLimits {
+func newAPIRateLimits(c *HubV1alpha1Client, namespace string) *aPIRateLimits {
 	return &aPIRateLimits{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -69,6 +71,7 @@ func newAPIRateLimits(c *HubV1alpha1Client) *aPIRateLimits {
 func (c *aPIRateLimits) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIRateLimit, err error) {
 	result = &v1alpha1.APIRateLimit{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -85,6 +88,7 @@ func (c *aPIRateLimits) List(ctx context.Context, opts v1.ListOptions) (result *
 	}
 	result = &v1alpha1.APIRateLimitList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -101,6 +105,7 @@ func (c *aPIRateLimits) Watch(ctx context.Context, opts v1.ListOptions) (watch.I
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -111,6 +116,7 @@ func (c *aPIRateLimits) Watch(ctx context.Context, opts v1.ListOptions) (watch.I
 func (c *aPIRateLimits) Create(ctx context.Context, aPIRateLimit *v1alpha1.APIRateLimit, opts v1.CreateOptions) (result *v1alpha1.APIRateLimit, err error) {
 	result = &v1alpha1.APIRateLimit{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(aPIRateLimit).
@@ -123,6 +129,7 @@ func (c *aPIRateLimits) Create(ctx context.Context, aPIRateLimit *v1alpha1.APIRa
 func (c *aPIRateLimits) Update(ctx context.Context, aPIRateLimit *v1alpha1.APIRateLimit, opts v1.UpdateOptions) (result *v1alpha1.APIRateLimit, err error) {
 	result = &v1alpha1.APIRateLimit{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		Name(aPIRateLimit.Name).
 		VersionedParams(&opts, scheme.ParameterCodec).
@@ -137,6 +144,7 @@ func (c *aPIRateLimits) Update(ctx context.Context, aPIRateLimit *v1alpha1.APIRa
 func (c *aPIRateLimits) UpdateStatus(ctx context.Context, aPIRateLimit *v1alpha1.APIRateLimit, opts v1.UpdateOptions) (result *v1alpha1.APIRateLimit, err error) {
 	result = &v1alpha1.APIRateLimit{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		Name(aPIRateLimit.Name).
 		SubResource("status").
@@ -150,6 +158,7 @@ func (c *aPIRateLimits) UpdateStatus(ctx context.Context, aPIRateLimit *v1alpha1
 // Delete takes name of the aPIRateLimit and deletes it. Returns an error if one occurs.
 func (c *aPIRateLimits) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		Name(name).
 		Body(&opts).
@@ -164,6 +173,7 @@ func (c *aPIRateLimits) DeleteCollection(ctx context.Context, opts v1.DeleteOpti
 		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		VersionedParams(&listOpts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -176,6 +186,7 @@ func (c *aPIRateLimits) DeleteCollection(ctx context.Context, opts v1.DeleteOpti
 func (c *aPIRateLimits) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIRateLimit, err error) {
 	result = &v1alpha1.APIRateLimit{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("apiratelimits").
 		Name(name).
 		SubResource(subresources...).

@@ -28,18 +28,16 @@ import (
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIRateLimit defines how group of consumers are rate limited on a set of APIs.
-// +kubebuilder:resource:scope=Cluster
 type APIRateLimit struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// The desired behavior of this APIRateLimit.
-	// +kubebuilder:validation:XValidation:message="groups and anyGroups are mutually exclusive",rule="(has(self.anyGroups) && has(self.groups)) ? !(self.anyGroups && self.groups.size() > 0) : true"
+	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
 	Spec APIRateLimitSpec `json:"spec,omitempty"`
 
 	// The current status of this APIRateLimit.
@@ -72,10 +70,10 @@ type APIRateLimitSpec struct {
 	// +optional
 	Groups []string `json:"groups"`
 
-	// AnyGroups states that all user groups will by default be rate limited with this configuration.
+	// Everyone states that all user groups will by default be rate limited with this configuration.
 	// If an APIRateLimit explicitly target a group, the default rate limit will be ignored.
 	// +optional
-	AnyGroups bool `json:"anyGroups"`
+	Everyone bool `json:"everyone"`
 
 	// APISelector selects the APIs that will be rate limited.
 	// Multiple APIRateLimits can select the same set of APIs.

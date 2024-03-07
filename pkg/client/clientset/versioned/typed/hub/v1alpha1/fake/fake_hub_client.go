@@ -35,24 +35,16 @@ func (c *FakeHubV1alpha1) APIs(namespace string) v1alpha1.APIInterface {
 	return &FakeAPIs{c, namespace}
 }
 
-func (c *FakeHubV1alpha1) APIAccesses() v1alpha1.APIAccessInterface {
-	return &FakeAPIAccesses{c}
+func (c *FakeHubV1alpha1) APIAccesses(namespace string) v1alpha1.APIAccessInterface {
+	return &FakeAPIAccesses{c, namespace}
 }
 
-func (c *FakeHubV1alpha1) APICollections() v1alpha1.APICollectionInterface {
-	return &FakeAPICollections{c}
+func (c *FakeHubV1alpha1) APIPortals(namespace string) v1alpha1.APIPortalInterface {
+	return &FakeAPIPortals{c, namespace}
 }
 
-func (c *FakeHubV1alpha1) APIGateways() v1alpha1.APIGatewayInterface {
-	return &FakeAPIGateways{c}
-}
-
-func (c *FakeHubV1alpha1) APIPortals() v1alpha1.APIPortalInterface {
-	return &FakeAPIPortals{c}
-}
-
-func (c *FakeHubV1alpha1) APIRateLimits() v1alpha1.APIRateLimitInterface {
-	return &FakeAPIRateLimits{c}
+func (c *FakeHubV1alpha1) APIRateLimits(namespace string) v1alpha1.APIRateLimitInterface {
+	return &FakeAPIRateLimits{c, namespace}
 }
 
 func (c *FakeHubV1alpha1) APIVersions(namespace string) v1alpha1.APIVersionInterface {
@@ -61,10 +53,6 @@ func (c *FakeHubV1alpha1) APIVersions(namespace string) v1alpha1.APIVersionInter
 
 func (c *FakeHubV1alpha1) AccessControlPolicies() v1alpha1.AccessControlPolicyInterface {
 	return &FakeAccessControlPolicies{c}
-}
-
-func (c *FakeHubV1alpha1) EdgeIngresses(namespace string) v1alpha1.EdgeIngressInterface {
-	return &FakeEdgeIngresses{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

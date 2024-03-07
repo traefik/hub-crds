@@ -31,10 +31,6 @@ type Interface interface {
 	APIs() APIInformer
 	// APIAccesses returns a APIAccessInformer.
 	APIAccesses() APIAccessInformer
-	// APICollections returns a APICollectionInformer.
-	APICollections() APICollectionInformer
-	// APIGateways returns a APIGatewayInformer.
-	APIGateways() APIGatewayInformer
 	// APIPortals returns a APIPortalInformer.
 	APIPortals() APIPortalInformer
 	// APIRateLimits returns a APIRateLimitInformer.
@@ -43,8 +39,6 @@ type Interface interface {
 	APIVersions() APIVersionInformer
 	// AccessControlPolicies returns a AccessControlPolicyInformer.
 	AccessControlPolicies() AccessControlPolicyInformer
-	// EdgeIngresses returns a EdgeIngressInformer.
-	EdgeIngresses() EdgeIngressInformer
 }
 
 type version struct {
@@ -65,27 +59,17 @@ func (v *version) APIs() APIInformer {
 
 // APIAccesses returns a APIAccessInformer.
 func (v *version) APIAccesses() APIAccessInformer {
-	return &aPIAccessInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// APICollections returns a APICollectionInformer.
-func (v *version) APICollections() APICollectionInformer {
-	return &aPICollectionInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// APIGateways returns a APIGatewayInformer.
-func (v *version) APIGateways() APIGatewayInformer {
-	return &aPIGatewayInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &aPIAccessInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIPortals returns a APIPortalInformer.
 func (v *version) APIPortals() APIPortalInformer {
-	return &aPIPortalInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &aPIPortalInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIRateLimits returns a APIRateLimitInformer.
 func (v *version) APIRateLimits() APIRateLimitInformer {
-	return &aPIRateLimitInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &aPIRateLimitInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIVersions returns a APIVersionInformer.
@@ -96,9 +80,4 @@ func (v *version) APIVersions() APIVersionInformer {
 // AccessControlPolicies returns a AccessControlPolicyInformer.
 func (v *version) AccessControlPolicies() AccessControlPolicyInformer {
 	return &accessControlPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
-}
-
-// EdgeIngresses returns a EdgeIngressInformer.
-func (v *version) EdgeIngresses() EdgeIngressInformer {
-	return &edgeIngressInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

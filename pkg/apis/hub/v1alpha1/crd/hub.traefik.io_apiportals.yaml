@@ -12,7 +12,7 @@ spec:
     listKind: APIPortalList
     plural: apiportals
     singular: apiportal
-  scope: Cluster
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .status.urls
@@ -38,13 +38,12 @@ spec:
           spec:
             description: The desired behavior of this APIPortal.
             properties:
-              apiGateway:
-                description: APIGateway is the APIGateway resource the APIPortal will
-                  render documentation for.
+              description:
+                description: Description of the APIPortal.
                 type: string
-              customDomains:
-                description: CustomDomains are the custom domains under which the
-                  portal will be exposed.
+              domains:
+                description: Domains are the custom domains under which the portal
+                  will be exposed.
                 items:
                   description: Domain is the domain name.
                   maxLength: 253
@@ -57,9 +56,6 @@ spec:
                 x-kubernetes-validations:
                 - message: duplicate domains
                   rule: self.all(x, self.exists_one(y, y == x))
-              description:
-                description: Description of the APIPortal.
-                type: string
               title:
                 description: Title is the public facing name of the APIPortal.
                 type: string
@@ -101,8 +97,6 @@ spec:
                     - port
                     type: object
                 type: object
-            required:
-            - apiGateway
             type: object
           status:
             description: The current status of this APIPortal.

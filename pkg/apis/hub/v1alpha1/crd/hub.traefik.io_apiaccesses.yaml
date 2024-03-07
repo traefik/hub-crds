@@ -12,7 +12,7 @@ spec:
     listKind: APIAccessList
     plural: apiaccesses
     singular: apiaccess
-  scope: Cluster
+  scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
@@ -35,10 +35,6 @@ spec:
           spec:
             description: The desired behavior of this APIAccess.
             properties:
-              anyGroups:
-                description: AnyGroups states that everyone will gain access to the
-                  selected APIs.
-                type: boolean
               apiCollectionSelector:
                 description: APICollectionSelector selects the APICollections that
                   will be accessible to the configured user groups. Multiple APIAccesses
@@ -185,6 +181,10 @@ spec:
                     && x.__namespace__ != '''' ? x.__namespace__ : ''default'') ==
                     (has(y.__namespace__) && y.__namespace__ != '''' ? y.__namespace__
                     : ''default'')))'
+              everyone:
+                description: Everyone states that everyone will gain access to the
+                  selected APIs.
+                type: boolean
               groups:
                 description: Groups are the user groups that will gain access to the
                   selected APIs.
@@ -207,9 +207,9 @@ spec:
                 type: object
             type: object
             x-kubernetes-validations:
-            - message: groups and anyGroups are mutually exclusive
-              rule: '(has(self.anyGroups) && has(self.groups)) ? !(self.anyGroups
-                && self.groups.size() > 0) : true'
+            - message: groups and everyone are mutually exclusive
+              rule: '(has(self.everyone) && has(self.groups)) ? !(self.everyone &&
+                self.groups.size() > 0) : true'
           status:
             description: The current status of this APIAccess.
             properties:
