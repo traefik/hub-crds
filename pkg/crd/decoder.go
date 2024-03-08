@@ -23,6 +23,7 @@ import (
 	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 )
@@ -75,24 +76,27 @@ func NewHubDecoder() (*HubDecoder, error) {
 		return nil, fmt.Errorf("adding hub.traefik.io/v1alpha1 resources: %w", err)
 	}
 
-	decoder := serializer.NewCodecFactory(scheme).UniversalDeserializer()
+	decoder := serializer.NewCodecFactory(scheme, serializer.EnableStrict).UniversalDeserializer()
 
 	return &HubDecoder{decoder: decoder}, nil
 }
 
-// Decode decodes the given YAML/JSON manifest into a runtime object.
-// If `into` is nil, a new runtime.Object will be created.
-// A nil runtime.Object will be returned if it doesn't match a known resource type of is not a Kubernetes manifest.
-func (d *HubDecoder) Decode(document []byte, into runtime.Object) (runtime.Object, error) {
-	object, _, err := d.decoder.Decode(document, nil, into)
-	if err != nil {
+// Decode decodes the given YAML/JSON.
+func (d *HubDecoder) Decode(document []byte, into *unstructured.Unstructured) error {
+	// Decoding in an Unstructured object doesn't check for unknown fields. Therefore, we must
+	// decode twice, the first time only for checking this type of error.
+	if _, _, err := d.decoder.Decode(document, nil, nil); err != nil {
+		return err
+	}
+
+	if _, _, err := d.decoder.Decode(document, nil, into); err != nil {
 		switch {
 		case runtime.IsMissingKind(err), runtime.IsNotRegisteredError(err):
-			return nil, nil
+			return nil
 		default:
-			return nil, fmt.Errorf("decoding: %w", err)
+			return fmt.Errorf("decoding: %w", err)
 		}
 	}
 
-	return object, nil
+	return nil
 }

@@ -60,7 +60,7 @@ spec:
     - name: my-api
       namespace: my-ns
   apiSelector:
-    labelSelector:
+    matchLabels:
       key: value
   operationFilter:
     include:
