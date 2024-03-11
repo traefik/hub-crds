@@ -86,7 +86,11 @@ func (d *HubDecoder) Decode(document []byte, into *unstructured.Unstructured) er
 	// Decoding in an Unstructured object doesn't check for unknown fields. Therefore, we must
 	// decode twice, the first time only for checking this type of error.
 	if _, _, err := d.decoder.Decode(document, nil, nil); err != nil {
-		return err
+		switch {
+		case runtime.IsMissingKind(err), runtime.IsNotRegisteredError(err):
+		default:
+			return fmt.Errorf("decoding: %w", err)
+		}
 	}
 
 	if _, _, err := d.decoder.Decode(document, nil, into); err != nil {

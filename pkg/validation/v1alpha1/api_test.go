@@ -45,15 +45,15 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /openapi.json
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo
-              methods:
-                - GET
-                - OPTION`),
+  openApiSpec:
+    path: /openapi.json
+    operationSets:
+    - name: my-operation-set
+      matchers:
+        - path: /foo
+          methods:
+            - GET
+            - OPTION`),
 		},
 		{
 			desc: "missing resource namespace",
@@ -185,11 +185,11 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - matchers:
-          - path: /foo`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - matchers:
+        - path: /foo`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.openApiSpec.operationSets[0].name", BadValue: "", Detail: ""}},
 		},
 		{
@@ -232,12 +232,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - {}`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: int64(0), Detail: "spec.openApiSpec.operationSets[0].matchers[0] in body should have at least 1 properties"}},
 		},
 		{
@@ -249,13 +249,13 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo
-              pathPrefix: /foo`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: /foo
+            pathPrefix: /foo`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
@@ -267,13 +267,13 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo
-              pathRegex: /.*/foo`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: /foo
+            pathRegex: /.*/foo`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
@@ -285,13 +285,13 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - pathPrefix: /foo
-              pathRegex: /.*/foo`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - pathPrefix: /foo
+            pathRegex: /.*/foo`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
@@ -303,14 +303,14 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo
-              pathPrefix: /foo
-              pathRegex: /.*/foo`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: /foo
+            pathPrefix: /foo
+            pathRegex: /.*/foo`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
@@ -322,12 +322,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: something`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: something`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "string", Detail: "must start with a '/'"}},
 		},
 		{
@@ -339,12 +339,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo/../bar`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: /foo/../bar`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
@@ -356,12 +356,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo/..`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: /foo/..`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
@@ -373,12 +373,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - path: /foo/..bar`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - path: /foo/..bar`),
 		},
 		{
 			desc: "operationSet matcher pathPrefix must start with a /",
@@ -389,12 +389,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - pathPrefix: something`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - pathPrefix: something`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "string", Detail: "must start with a '/'"}},
 		},
 		{
@@ -406,12 +406,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - pathPrefix: /foo/../bar`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - pathPrefix: /foo/../bar`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
@@ -423,12 +423,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - pathPrefix: /foo/..`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - pathPrefix: /foo/..`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
@@ -440,12 +440,12 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - pathPrefix: /foo/..bar`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - pathPrefix: /foo/..bar`),
 		},
 		{
 			desc: "valid: operationSet matcher with methods only",
@@ -456,13 +456,13 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo
-      operationSets:
-        - name: my-operation-set
-          matchers:
-            - methods:
-              - GET`),
+  openApiSpec:
+    path: /foo
+    operationSets:
+      - name: my-operation-set
+        matchers:
+          - methods:
+            - GET`),
 		},
 		{
 			desc: "valid: empty version ..",
