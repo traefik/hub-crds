@@ -89,7 +89,7 @@ spec:
                   APISelector, this set of APIs is appended to the matching APIs.
                 items:
                   description: APIReference contains information to identify an API
-                    to add to an APIAccess, an APICollection or an APIRateLimit.
+                    to add to an APIAccess or an APIRateLimit.
                   properties:
                     name:
                       description: Name of the API.
@@ -111,9 +111,9 @@ spec:
                     (has(y.__namespace__) && y.__namespace__ != '''' ? y.__namespace__
                     : ''default'')))'
               everyone:
-                description: Everyone states that all user groups will by default
-                  be rate limited with this configuration. If an APIRateLimit explicitly
-                  target a group, the default rate limit will be ignored.
+                description: Everyone states that everyone will, by default, be rate
+                  limited with this configuration. If an APIRateLimit explicitly target
+                  a group, the default rate limit will be ignored.
                 type: boolean
               groups:
                 description: Groups are the user groups that will be rate limited.

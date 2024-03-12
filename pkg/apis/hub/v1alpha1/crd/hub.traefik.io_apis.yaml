@@ -14,20 +14,7 @@ spec:
     singular: api
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - jsonPath: .spec.pathPrefix
-      name: PathPrefix
-      type: string
-    - jsonPath: .spec.service.name
-      name: ServiceName
-      type: string
-    - jsonPath: .spec.service.port.number
-      name: ServicePort
-      type: string
-    - jsonPath: .spec.currentVersion
-      name: Versions
-      type: string
-    name: v1alpha1
+  - name: v1alpha1
     schema:
       openAPIV3Schema:
         description: API defines an API exposed within a portal.
@@ -140,7 +127,7 @@ spec:
                 - message: path or url must be defined
                   rule: has(self.path) || has(self.url)
               versions:
-                description: Versions defines the current APIVersion.
+                description: Versions are the different APIVersions available.
                 items:
                   description: APIVersionRef holds an APIVersion name.
                   properties:
@@ -168,4 +155,3 @@ spec:
         type: object
     served: true
     storage: true
-    subresources: {}

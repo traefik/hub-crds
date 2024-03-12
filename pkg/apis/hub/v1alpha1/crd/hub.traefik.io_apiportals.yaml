@@ -21,7 +21,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: APIPortal defines a portal that exposes APIs.
+        description: APIPortal defines a developer portal for accessing the documentation
+          of APIs.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -42,14 +43,15 @@ spec:
                 description: Description of the APIPortal.
                 type: string
               domains:
-                description: Domains are the custom domains under which the portal
-                  will be exposed.
+                description: Domains are the domains under which the portal will be
+                  exposed.
                 items:
-                  description: Domain is the domain name.
+                  description: Domain is the domain name under which an APIPortal
+                    will be exposed.
                   maxLength: 253
                   type: string
                   x-kubernetes-validations:
-                  - message: custom domain must be a valid domain name
+                  - message: domain must be a valid domain name
                     rule: self.matches(r"""([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]""")
                 maxItems: 20
                 type: array

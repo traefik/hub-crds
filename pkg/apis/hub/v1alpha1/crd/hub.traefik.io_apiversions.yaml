@@ -24,12 +24,6 @@ spec:
     - jsonPath: .spec.release
       name: Release
       type: string
-    - jsonPath: .spec.service.name
-      name: ServiceName
-      type: string
-    - jsonPath: .spec.service.port.number
-      name: ServicePort
-      type: string
     name: v1alpha1
     schema:
       openAPIV3Schema:
