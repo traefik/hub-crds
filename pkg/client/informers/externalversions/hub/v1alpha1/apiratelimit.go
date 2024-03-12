@@ -45,32 +45,33 @@ type APIRateLimitInformer interface {
 type aPIRateLimitInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewAPIRateLimitInformer constructs a new informer for APIRateLimit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAPIRateLimitInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIRateLimitInformer(client, resyncPeriod, indexers, nil)
+func NewAPIRateLimitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAPIRateLimitInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
 // NewFilteredAPIRateLimitInformer constructs a new informer for APIRateLimit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAPIRateLimitInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAPIRateLimitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().APIRateLimits().List(context.TODO(), options)
+				return client.HubV1alpha1().APIRateLimits(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().APIRateLimits().Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIRateLimits(namespace).Watch(context.TODO(), options)
 			},
 		},
 		&hubv1alpha1.APIRateLimit{},
@@ -80,7 +81,7 @@ func NewFilteredAPIRateLimitInformer(client versioned.Interface, resyncPeriod ti
 }
 
 func (f *aPIRateLimitInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIRateLimitInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewFilteredAPIRateLimitInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *aPIRateLimitInformer) Informer() cache.SharedIndexInformer {

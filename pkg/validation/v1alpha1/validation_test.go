@@ -35,7 +35,7 @@ type validationTestCase struct {
 	wantErrs field.ErrorList
 }
 
-func checkValidationTestCases(t *testing.T, tests []validationTestCase) {
+func checkValidation(t *testing.T, test validationTestCase) {
 	t.Helper()
 
 	crds, err := crd.GetCRDs(v1alpha1crd.CRDs)
@@ -51,18 +51,10 @@ func checkValidationTestCases(t *testing.T, tests []validationTestCase) {
 	decoder, err := crd.NewHubDecoder()
 	require.NoError(t, err)
 
-	for _, test := range tests {
-		test := test
+	var object unstructured.Unstructured
+	_, decoderErr := decoder.Decode(test.manifest, &object)
+	require.NoError(t, decoderErr)
 
-		t.Run(test.desc, func(t *testing.T) {
-			t.Parallel()
-
-			var object unstructured.Unstructured
-			_, decoderErr := decoder.Decode(test.manifest, &object)
-			require.NoError(t, decoderErr)
-
-			gotErrs := validator.Validate(&object)
-			assert.Equal(t, test.wantErrs, gotErrs)
-		})
-	}
+	gotErrs := validator.Validate(&object)
+	assert.Equal(t, test.wantErrs, gotErrs)
 }

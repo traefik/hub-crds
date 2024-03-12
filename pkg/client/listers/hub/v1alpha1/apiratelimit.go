@@ -34,9 +34,8 @@ type APIRateLimitLister interface {
 	// List lists all APIRateLimits in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error)
-	// Get retrieves the APIRateLimit from the index for a given name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APIRateLimit, error)
+	// APIRateLimits returns an object that can list and get APIRateLimits.
+	APIRateLimits(namespace string) APIRateLimitNamespaceLister
 	APIRateLimitListerExpansion
 }
 
@@ -58,9 +57,41 @@ func (s *aPIRateLimitLister) List(selector labels.Selector) (ret []*v1alpha1.API
 	return ret, err
 }
 
-// Get retrieves the APIRateLimit from the index for a given name.
-func (s *aPIRateLimitLister) Get(name string) (*v1alpha1.APIRateLimit, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
+// APIRateLimits returns an object that can list and get APIRateLimits.
+func (s *aPIRateLimitLister) APIRateLimits(namespace string) APIRateLimitNamespaceLister {
+	return aPIRateLimitNamespaceLister{indexer: s.indexer, namespace: namespace}
+}
+
+// APIRateLimitNamespaceLister helps list and get APIRateLimits.
+// All objects returned here must be treated as read-only.
+type APIRateLimitNamespaceLister interface {
+	// List lists all APIRateLimits in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
+	List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error)
+	// Get retrieves the APIRateLimit from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*v1alpha1.APIRateLimit, error)
+	APIRateLimitNamespaceListerExpansion
+}
+
+// aPIRateLimitNamespaceLister implements the APIRateLimitNamespaceLister
+// interface.
+type aPIRateLimitNamespaceLister struct {
+	indexer   cache.Indexer
+	namespace string
+}
+
+// List lists all APIRateLimits in the indexer for a given namespace.
+func (s aPIRateLimitNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error) {
+	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
+		ret = append(ret, m.(*v1alpha1.APIRateLimit))
+	})
+	return ret, err
+}
+
+// Get retrieves the APIRateLimit from the indexer for a given namespace and name.
+func (s aPIRateLimitNamespaceLister) Get(name string) (*v1alpha1.APIRateLimit, error) {
+	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
 	if err != nil {
 		return nil, err
 	}

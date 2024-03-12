@@ -28,18 +28,16 @@ import (
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIRateLimit defines how group of consumers are rate limited on a set of APIs.
-// +kubebuilder:resource:scope=Cluster
 type APIRateLimit struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// The desired behavior of this APIRateLimit.
-	// +kubebuilder:validation:XValidation:message="groups and anyGroups are mutually exclusive",rule="(has(self.anyGroups) && has(self.groups)) ? !(self.anyGroups && self.groups.size() > 0) : true"
+	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
 	Spec APIRateLimitSpec `json:"spec,omitempty"`
 
 	// The current status of this APIRateLimit.
@@ -55,27 +53,27 @@ type APIRateLimitSpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Limit int `json:"limit"`
 
-	// Period is frequency of bucket full refill.
+	// Period is the unit of time for the Limit.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 1h",rule="self >= duration('1s') && self <= duration('1h')"
 	Period *Period `json:"period,omitempty"`
 
-	// Strategy defines how the bucket state will be synchronized between the different Traefik Hub agent instances.
+	// Strategy defines how the bucket state will be synchronized between the different Traefik Hub instances.
 	// It can be, either "local" or "distributed".
 	// +optional
 	// +kubebuilder:validation:Enum=local;distributed
 	Strategy Strategy `json:"strategy,omitempty"`
 
-	// Groups are the user groups that will be rate limited.
-	// Multiple APIRateLimits can target the same set of user groups, the most restrictive one applies.
-	// When a user belongs to multiple groups, the least restrictive APIRateLimit applies.
+	// Groups are the consumer groups that will be rate limited.
+	// Multiple APIRateLimits can target the same set of consumer groups, the most restrictive one applies.
+	// When a consumer belongs to multiple groups, the least restrictive APIRateLimit applies.
 	// +optional
 	Groups []string `json:"groups"`
 
-	// AnyGroups states that all user groups will by default be rate limited with this configuration.
+	// Everyone indicates that all users will, by default, be rate limited with this configuration.
 	// If an APIRateLimit explicitly target a group, the default rate limit will be ignored.
 	// +optional
-	AnyGroups bool `json:"anyGroups"`
+	Everyone bool `json:"everyone,omitempty"`
 
 	// APISelector selects the APIs that will be rate limited.
 	// Multiple APIRateLimits can select the same set of APIs.

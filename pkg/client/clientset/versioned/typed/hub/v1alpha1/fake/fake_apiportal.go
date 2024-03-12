@@ -35,6 +35,7 @@ import (
 // FakeAPIPortals implements APIPortalInterface
 type FakeAPIPortals struct {
 	Fake *FakeHubV1alpha1
+	ns   string
 }
 
 var apiportalsResource = v1alpha1.SchemeGroupVersion.WithResource("apiportals")
@@ -44,7 +45,8 @@ var apiportalsKind = v1alpha1.SchemeGroupVersion.WithKind("APIPortal")
 // Get takes name of the aPIPortal, and returns the corresponding aPIPortal object, and an error if there is any.
 func (c *FakeAPIPortals) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIPortal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apiportalsResource, name), &v1alpha1.APIPortal{})
+		Invokes(testing.NewGetAction(apiportalsResource, c.ns, name), &v1alpha1.APIPortal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -54,7 +56,8 @@ func (c *FakeAPIPortals) Get(ctx context.Context, name string, options v1.GetOpt
 // List takes label and field selectors, and returns the list of APIPortals that match those selectors.
 func (c *FakeAPIPortals) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.APIPortalList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apiportalsResource, apiportalsKind, opts), &v1alpha1.APIPortalList{})
+		Invokes(testing.NewListAction(apiportalsResource, apiportalsKind, c.ns, opts), &v1alpha1.APIPortalList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -75,13 +78,15 @@ func (c *FakeAPIPortals) List(ctx context.Context, opts v1.ListOptions) (result 
 // Watch returns a watch.Interface that watches the requested aPIPortals.
 func (c *FakeAPIPortals) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apiportalsResource, opts))
+		InvokesWatch(testing.NewWatchAction(apiportalsResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a aPIPortal and creates it.  Returns the server's representation of the aPIPortal, and an error, if there is any.
 func (c *FakeAPIPortals) Create(ctx context.Context, aPIPortal *v1alpha1.APIPortal, opts v1.CreateOptions) (result *v1alpha1.APIPortal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apiportalsResource, aPIPortal), &v1alpha1.APIPortal{})
+		Invokes(testing.NewCreateAction(apiportalsResource, c.ns, aPIPortal), &v1alpha1.APIPortal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -91,7 +96,8 @@ func (c *FakeAPIPortals) Create(ctx context.Context, aPIPortal *v1alpha1.APIPort
 // Update takes the representation of a aPIPortal and updates it. Returns the server's representation of the aPIPortal, and an error, if there is any.
 func (c *FakeAPIPortals) Update(ctx context.Context, aPIPortal *v1alpha1.APIPortal, opts v1.UpdateOptions) (result *v1alpha1.APIPortal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apiportalsResource, aPIPortal), &v1alpha1.APIPortal{})
+		Invokes(testing.NewUpdateAction(apiportalsResource, c.ns, aPIPortal), &v1alpha1.APIPortal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -102,7 +108,8 @@ func (c *FakeAPIPortals) Update(ctx context.Context, aPIPortal *v1alpha1.APIPort
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAPIPortals) UpdateStatus(ctx context.Context, aPIPortal *v1alpha1.APIPortal, opts v1.UpdateOptions) (*v1alpha1.APIPortal, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apiportalsResource, "status", aPIPortal), &v1alpha1.APIPortal{})
+		Invokes(testing.NewUpdateSubresourceAction(apiportalsResource, "status", c.ns, aPIPortal), &v1alpha1.APIPortal{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -112,13 +119,14 @@ func (c *FakeAPIPortals) UpdateStatus(ctx context.Context, aPIPortal *v1alpha1.A
 // Delete takes name of the aPIPortal and deletes it. Returns an error if one occurs.
 func (c *FakeAPIPortals) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteActionWithOptions(apiportalsResource, name, opts), &v1alpha1.APIPortal{})
+		Invokes(testing.NewDeleteActionWithOptions(apiportalsResource, c.ns, name, opts), &v1alpha1.APIPortal{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAPIPortals) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apiportalsResource, listOpts)
+	action := testing.NewDeleteCollectionAction(apiportalsResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.APIPortalList{})
 	return err
@@ -127,7 +135,8 @@ func (c *FakeAPIPortals) DeleteCollection(ctx context.Context, opts v1.DeleteOpt
 // Patch applies the patch and returns the patched aPIPortal.
 func (c *FakeAPIPortals) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIPortal, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apiportalsResource, name, pt, data, subresources...), &v1alpha1.APIPortal{})
+		Invokes(testing.NewPatchSubresourceAction(apiportalsResource, c.ns, name, pt, data, subresources...), &v1alpha1.APIPortal{})
+
 	if obj == nil {
 		return nil, err
 	}

@@ -25,10 +25,6 @@ type APIExpansion interface{}
 
 type APIAccessExpansion interface{}
 
-type APICollectionExpansion interface{}
-
-type APIGatewayExpansion interface{}
-
 type APIPortalExpansion interface{}
 
 type APIRateLimitExpansion interface{}
@@ -36,5 +32,3 @@ type APIRateLimitExpansion interface{}
 type APIVersionExpansion interface{}
 
 type AccessControlPolicyExpansion interface{}
-
-type EdgeIngressExpansion interface{}

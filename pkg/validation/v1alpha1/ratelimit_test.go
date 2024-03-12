@@ -34,8 +34,18 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1`),
+		},
+		{
+			desc: "missing resource namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIRateLimit
+metadata:
+  name: my-ratelimit`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "valid: full",
@@ -44,6 +54,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   period: 2s
@@ -61,6 +72,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: .non-dns-compliant-ratelimit
+  namespace: default
 spec:
   limit: 10`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-ratelimit", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
@@ -72,6 +84,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: ""
+  namespace: default
 spec:
   limit: 10`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
@@ -83,23 +96,25 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: ratelimit-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
+  namespace: default
 spec:
   limit: 10`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "ratelimit-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
-			desc: "anyGroups and groups both set",
+			desc: "everyone and groups both set",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 10
-  anyGroups: true
+  everyone: true
   groups:
     - my-group`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and anyGroups are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
 		},
 		{
 			desc: "limit must be a positive integer",
@@ -108,6 +123,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: -10
 `),
@@ -120,6 +136,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   period: 2h
@@ -133,6 +150,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   period: 0s
@@ -146,6 +164,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   strategy: yolo
@@ -159,6 +178,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   apis:
@@ -175,6 +195,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   apis:
@@ -190,6 +211,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   apis:
@@ -205,6 +227,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   apis:
@@ -219,6 +242,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIRateLimit
 metadata:
   name: my-ratelimit
+  namespace: default
 spec:
   limit: 1
   apiSelector:
@@ -228,5 +252,13 @@ spec:
 		},
 	}
 
-	checkValidationTestCases(t, tests)
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
+			checkValidation(t, test)
+		})
+	}
 }

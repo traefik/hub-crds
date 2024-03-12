@@ -35,6 +35,7 @@ import (
 // FakeAPIAccesses implements APIAccessInterface
 type FakeAPIAccesses struct {
 	Fake *FakeHubV1alpha1
+	ns   string
 }
 
 var apiaccessesResource = v1alpha1.SchemeGroupVersion.WithResource("apiaccesses")
@@ -44,7 +45,8 @@ var apiaccessesKind = v1alpha1.SchemeGroupVersion.WithKind("APIAccess")
 // Get takes name of the aPIAccess, and returns the corresponding aPIAccess object, and an error if there is any.
 func (c *FakeAPIAccesses) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIAccess, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(apiaccessesResource, name), &v1alpha1.APIAccess{})
+		Invokes(testing.NewGetAction(apiaccessesResource, c.ns, name), &v1alpha1.APIAccess{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -54,7 +56,8 @@ func (c *FakeAPIAccesses) Get(ctx context.Context, name string, options v1.GetOp
 // List takes label and field selectors, and returns the list of APIAccesses that match those selectors.
 func (c *FakeAPIAccesses) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.APIAccessList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(apiaccessesResource, apiaccessesKind, opts), &v1alpha1.APIAccessList{})
+		Invokes(testing.NewListAction(apiaccessesResource, apiaccessesKind, c.ns, opts), &v1alpha1.APIAccessList{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -75,13 +78,15 @@ func (c *FakeAPIAccesses) List(ctx context.Context, opts v1.ListOptions) (result
 // Watch returns a watch.Interface that watches the requested aPIAccesses.
 func (c *FakeAPIAccesses) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(apiaccessesResource, opts))
+		InvokesWatch(testing.NewWatchAction(apiaccessesResource, c.ns, opts))
+
 }
 
 // Create takes the representation of a aPIAccess and creates it.  Returns the server's representation of the aPIAccess, and an error, if there is any.
 func (c *FakeAPIAccesses) Create(ctx context.Context, aPIAccess *v1alpha1.APIAccess, opts v1.CreateOptions) (result *v1alpha1.APIAccess, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(apiaccessesResource, aPIAccess), &v1alpha1.APIAccess{})
+		Invokes(testing.NewCreateAction(apiaccessesResource, c.ns, aPIAccess), &v1alpha1.APIAccess{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -91,7 +96,8 @@ func (c *FakeAPIAccesses) Create(ctx context.Context, aPIAccess *v1alpha1.APIAcc
 // Update takes the representation of a aPIAccess and updates it. Returns the server's representation of the aPIAccess, and an error, if there is any.
 func (c *FakeAPIAccesses) Update(ctx context.Context, aPIAccess *v1alpha1.APIAccess, opts v1.UpdateOptions) (result *v1alpha1.APIAccess, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(apiaccessesResource, aPIAccess), &v1alpha1.APIAccess{})
+		Invokes(testing.NewUpdateAction(apiaccessesResource, c.ns, aPIAccess), &v1alpha1.APIAccess{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -102,7 +108,8 @@ func (c *FakeAPIAccesses) Update(ctx context.Context, aPIAccess *v1alpha1.APIAcc
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
 func (c *FakeAPIAccesses) UpdateStatus(ctx context.Context, aPIAccess *v1alpha1.APIAccess, opts v1.UpdateOptions) (*v1alpha1.APIAccess, error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(apiaccessesResource, "status", aPIAccess), &v1alpha1.APIAccess{})
+		Invokes(testing.NewUpdateSubresourceAction(apiaccessesResource, "status", c.ns, aPIAccess), &v1alpha1.APIAccess{})
+
 	if obj == nil {
 		return nil, err
 	}
@@ -112,13 +119,14 @@ func (c *FakeAPIAccesses) UpdateStatus(ctx context.Context, aPIAccess *v1alpha1.
 // Delete takes name of the aPIAccess and deletes it. Returns an error if one occurs.
 func (c *FakeAPIAccesses) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteActionWithOptions(apiaccessesResource, name, opts), &v1alpha1.APIAccess{})
+		Invokes(testing.NewDeleteActionWithOptions(apiaccessesResource, c.ns, name, opts), &v1alpha1.APIAccess{})
+
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeAPIAccesses) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(apiaccessesResource, listOpts)
+	action := testing.NewDeleteCollectionAction(apiaccessesResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.APIAccessList{})
 	return err
@@ -127,7 +135,8 @@ func (c *FakeAPIAccesses) DeleteCollection(ctx context.Context, opts v1.DeleteOp
 // Patch applies the patch and returns the patched aPIAccess.
 func (c *FakeAPIAccesses) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIAccess, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(apiaccessesResource, name, pt, data, subresources...), &v1alpha1.APIAccess{})
+		Invokes(testing.NewPatchSubresourceAction(apiaccessesResource, c.ns, name, pt, data, subresources...), &v1alpha1.APIAccess{})
+
 	if obj == nil {
 		return nil, err
 	}

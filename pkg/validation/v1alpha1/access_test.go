@@ -28,12 +28,22 @@ func TestAPIAccess_Validation(t *testing.T) {
 
 	tests := []validationTestCase{
 		{
+			desc: "missing resource namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAccess
+metadata:
+  name: "my-access"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
+		},
+		{
 			desc: "valid: minimal",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
-  name: my-access`),
+  name: my-access
+  namespace: default`),
 		},
 		{
 			desc: "valid: full",
@@ -42,6 +52,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
   groups:
     - my-group
@@ -49,11 +60,6 @@ spec:
     - name: my-api
       namespace: my-ns
   apiSelector:
-    labelSelector:
-      key: value
-  apiCollections:
-    - name: my-api-collection
-  apiCollectionSelector:
     labelSelector:
       key: value
   operationFilter:
@@ -66,7 +72,8 @@ spec:
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
-  name: .non-dns-compliant-access`),
+  name: .non-dns-compliant-access
+  namespace: default`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-access", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
 		},
 		{
@@ -75,7 +82,8 @@ metadata:
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
-  name: ""`),
+  name: ""
+  namespace: default`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
 		},
 		{
@@ -84,7 +92,8 @@ metadata:
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
-  name: access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name`),
+  name: access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
+  namespace: default`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
@@ -94,6 +103,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
   apis:
     - name: my-api
@@ -109,6 +119,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
   apis:
     - name: my-api
@@ -123,6 +134,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
   apis:
     - name: my-api
@@ -137,36 +149,12 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
   apis:
     - name: my-api
       namespace: my-ns
     - name: my-api`),
-		},
-		{
-			desc: "duplicated collections",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-spec:
-  apiCollections:
-    - name: my-collection
-    - name: my-collection`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiCollections", BadValue: "array", Detail: "duplicated collections"}},
-		},
-		{
-			desc: "valid: different collections",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-spec:
-  apiCollections:
-    - name: my-collection-1
-    - name: my-collection-2`),
 		},
 		{
 			desc: "invalid API selector",
@@ -175,6 +163,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
   apiSelector:
     matchExpressions:
@@ -182,32 +171,28 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiSelector.matchExpressions[0].operator", BadValue: ""}},
 		},
 		{
-			desc: "invalid collection selector",
+			desc: "everyone and groups both set",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
+  namespace: default
 spec:
-  apiCollectionSelector:
-    matchExpressions:
-      - key: value`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiCollectionSelector.matchExpressions[0].operator", BadValue: ""}},
-		},
-		{
-			desc: "anyGroups and groups both set",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-spec:
-  anyGroups: true
+  everyone: true
   groups:
     - my-group`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and anyGroups are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
 		},
 	}
 
-	checkValidationTestCases(t, tests)
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
+			checkValidation(t, test)
+		})
+	}
 }

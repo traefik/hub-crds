@@ -34,8 +34,17 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
-spec:
-  apiGateway: my-gateway`),
+  namespace: default
+spec: {}`),
+		},
+		{
+			desc: "missing resource namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "valid: full",
@@ -44,11 +53,11 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
   title: title
   description: description
-  apiGateway: my-gateway
-  customDomains:
+  domains:
     - example.com
   ui:
     logoUrl: https://example.com/logo.png
@@ -66,8 +75,8 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: .non-dns-compliant-portal
-spec:
-  apiGateway: my-gateway`),
+  namespace: default
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-portal", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
 		},
 		{
@@ -77,8 +86,8 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: ""
-spec:
-  apiGateway: my-gateway`),
+  namespace: default
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
 		},
 		{
@@ -88,8 +97,8 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
-spec:
-  apiGateway: my-gateway`),
+  namespace: default
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
@@ -99,11 +108,11 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
-  apiGateway: my-gateway
-  customDomains:
+  domains:
     - ""`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains[0]", BadValue: "string", Detail: "custom domain must be a valid domain name"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains[0]", BadValue: "string", Detail: "domain must be a valid domain name"}},
 		},
 		{
 			desc: "invalid custom domain",
@@ -112,11 +121,11 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
-  apiGateway: my-gateway
-  customDomains:
+  domains:
     - example..com`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains[0]", BadValue: "string", Detail: "custom domain must be a valid domain name"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains[0]", BadValue: "string", Detail: "domain must be a valid domain name"}},
 		},
 		{
 			desc: "duplicated custom domain",
@@ -125,22 +134,12 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
-  apiGateway: my-gateway
-  customDomains:
+  domains:
     - example.com
     - example.com`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.customDomains", BadValue: "array", Detail: "duplicate domains"}},
-		},
-		{
-			desc: "missing apiGateway",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIPortal
-metadata:
-  name: my-portal
-spec: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiGateway", BadValue: ""}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains", BadValue: "array", Detail: "duplicate domains"}},
 		},
 		{
 			desc: "missing custom ui service name",
@@ -149,8 +148,8 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
-  apiGateway: my-gateway
   ui:
     service:
       port:
@@ -164,8 +163,8 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
-  apiGateway: my-gateway
   ui:
     service:
       name: my-service`),
@@ -178,8 +177,8 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
+  namespace: default
 spec:
-  apiGateway: my-gateway
   ui:
     service:
       name: my-service
@@ -188,5 +187,13 @@ spec:
 		},
 	}
 
-	checkValidationTestCases(t, tests)
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
+			checkValidation(t, test)
+		})
+	}
 }

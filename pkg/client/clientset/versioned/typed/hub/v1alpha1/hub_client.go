@@ -33,13 +33,10 @@ type HubV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	APIsGetter
 	APIAccessesGetter
-	APICollectionsGetter
-	APIGatewaysGetter
 	APIPortalsGetter
 	APIRateLimitsGetter
 	APIVersionsGetter
 	AccessControlPoliciesGetter
-	EdgeIngressesGetter
 }
 
 // HubV1alpha1Client is used to interact with features provided by the hub.traefik.io group.
@@ -51,24 +48,16 @@ func (c *HubV1alpha1Client) APIs(namespace string) APIInterface {
 	return newAPIs(c, namespace)
 }
 
-func (c *HubV1alpha1Client) APIAccesses() APIAccessInterface {
-	return newAPIAccesses(c)
+func (c *HubV1alpha1Client) APIAccesses(namespace string) APIAccessInterface {
+	return newAPIAccesses(c, namespace)
 }
 
-func (c *HubV1alpha1Client) APICollections() APICollectionInterface {
-	return newAPICollections(c)
+func (c *HubV1alpha1Client) APIPortals(namespace string) APIPortalInterface {
+	return newAPIPortals(c, namespace)
 }
 
-func (c *HubV1alpha1Client) APIGateways() APIGatewayInterface {
-	return newAPIGateways(c)
-}
-
-func (c *HubV1alpha1Client) APIPortals() APIPortalInterface {
-	return newAPIPortals(c)
-}
-
-func (c *HubV1alpha1Client) APIRateLimits() APIRateLimitInterface {
-	return newAPIRateLimits(c)
+func (c *HubV1alpha1Client) APIRateLimits(namespace string) APIRateLimitInterface {
+	return newAPIRateLimits(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIVersions(namespace string) APIVersionInterface {
@@ -77,10 +66,6 @@ func (c *HubV1alpha1Client) APIVersions(namespace string) APIVersionInterface {
 
 func (c *HubV1alpha1Client) AccessControlPolicies() AccessControlPolicyInterface {
 	return newAccessControlPolicies(c)
-}
-
-func (c *HubV1alpha1Client) EdgeIngresses(namespace string) EdgeIngressInterface {
-	return newEdgeIngresses(c, namespace)
 }
 
 // NewForConfig creates a new HubV1alpha1Client for the given config.

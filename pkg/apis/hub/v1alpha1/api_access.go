@@ -22,18 +22,16 @@ import (
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIAccess defines which group of consumers can access APIs and APICollections.
-// +kubebuilder:resource:scope=Cluster
+// APIAccess defines who can access to a set of APIs.
 type APIAccess struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// The desired behavior of this APIAccess.
-	// +kubebuilder:validation:XValidation:message="groups and anyGroups are mutually exclusive",rule="(has(self.anyGroups) && has(self.groups)) ? !(self.anyGroups && self.groups.size() > 0) : true"
+	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
 	Spec APIAccessSpec `json:"spec,omitempty"`
 
 	// The current status of this APIAccess.
@@ -43,22 +41,22 @@ type APIAccess struct {
 
 // APIAccessSpec configures an APIAccess.
 type APIAccessSpec struct {
-	// Groups are the user groups that will gain access to the selected APIs.
+	// Groups are the consumer groups that will gain access to the selected APIs.
 	// +optional
 	Groups []string `json:"groups"`
 
-	// AnyGroups states that everyone will gain access to the selected APIs.
+	// Everyone indicates that all users will have access to the selected APIs.
 	// +optional
-	AnyGroups bool `json:"anyGroups"`
+	Everyone bool `json:"everyone,omitempty"`
 
-	// APISelector selects the APIs that will be accessible to the configured user groups.
+	// APISelector selects the APIs that will be accessible to the configured audience.
 	// Multiple APIAccesses can select the same set of APIs.
 	// This field is optional and follows standard label selector semantics.
 	// An empty APISelector matches any API.
 	// +optional
 	APISelector *metav1.LabelSelector `json:"apiSelector,omitempty"`
 
-	// APIs defines a set of APIs that will be accessible to the configured user groups.
+	// APIs defines a set of APIs that will be accessible to the configured audience.
 	// Multiple APIAccesses can select the same APIs.
 	// When combined with APISelector, this set of APIs is appended to the matching APIs.
 	// +optional
@@ -66,29 +64,14 @@ type APIAccessSpec struct {
 	// +kubebuilder:validation:XValidation:message="duplicated apis",rule="self.all(x, self.exists_one(y, x.name == y.name && (has(x.__namespace__) && x.__namespace__ != '' ? x.__namespace__ : 'default') == (has(y.__namespace__) && y.__namespace__ != '' ? y.__namespace__ : 'default')))"
 	APIs []APIReference `json:"apis,omitempty"`
 
-	// APICollectionSelector selects the APICollections that will be accessible to the configured user groups.
-	// Multiple APIAccesses can select the same set of APICollections.
-	// This field is optional and follows standard label selector semantics.
-	// An empty APICollectionSelector matches any APICollection.
-	// +optional
-	APICollectionSelector *metav1.LabelSelector `json:"apiCollectionSelector,omitempty"`
-
-	// APICollections defines a set of APICollections that will be accessible to the configured user groups.
-	// Multiple APIAccesses can select the same APICollections.
-	// When combined with APICollectionSelector, this set of APICollections is appended to the matching APICollections.
-	// +optional
-	// +kubebuilder:validation:MaxItems=100
-	// +kubebuilder:validation:XValidation:message="duplicated collections",rule="self.all(x, self.exists_one(y, x.name == y.name))"
-	APICollections []APICollectionReference `json:"apiCollections,omitempty"`
-
-	// OperationFilter selects the OperationSets defined on an API or an APIVersion that will be accessible to the configured user groups.
-	// If not set, all spec operations will be accessible.
-	// An empty OperationFilter matches no OperationSet.
+	// OperationFilter specifies the allowed operations on APIs and APIVersions.
+	// If not set, all operations are available.
+	// An empty OperationFilter prohibits all operations.
 	// +optional
 	OperationFilter *OperationFilter `json:"operationFilter,omitempty"`
 }
 
-// APIReference contains information to identify an API to add to an APIAccess, an APICollection or an APIRateLimit.
+// APIReference references an API.
 type APIReference struct {
 	// Name of the API.
 	// +kubebuilder:validation:MaxLength=253
@@ -100,14 +83,7 @@ type APIReference struct {
 	Namespace string `json:"namespace,omitempty"`
 }
 
-// APICollectionReference contains information to identify an APICollection to add to APIAccess.
-type APICollectionReference struct {
-	// Name of the APICollection.
-	// +kubebuilder:validation:MaxLength=253
-	Name string `json:"name"`
-}
-
-// OperationFilter contains information to select OperationSets defined on an API or an APIVersion.
+// OperationFilter specifies the allowed operations on APIs and APIVersions.
 type OperationFilter struct {
 	// Include defines the names of OperationSets that will be accessible.
 	// +optional

@@ -24,12 +24,10 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIVersion defines an APIVersion.
+// APIVersion defines a version of an API.
 // +kubebuilder:printcolumn:name="APIName",type=string,JSONPath=`.spec.apiName`
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`
 // +kubebuilder:printcolumn:name="Release",type=string,JSONPath=`.spec.release`
-// +kubebuilder:printcolumn:name="ServiceName",type=string,JSONPath=`.spec.service.name`
-// +kubebuilder:printcolumn:name="ServicePort",type=string,JSONPath=`.spec.service.port.number`
 type APIVersion struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -45,9 +43,6 @@ type APIVersion struct {
 
 // APIVersionSpec configures an APIVersion.
 type APIVersionSpec struct {
-	// APIName is the name of the API this version belongs to.
-	APIName string `json:"apiName"`
-
 	// Title is the public facing name of the APIVersion.
 	// +optional
 	Title string `json:"title,omitempty"`
@@ -59,44 +54,10 @@ type APIVersionSpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a valid semver version",rule="self.matches(r\"\"\"^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\"\"\")"
 	Release string `json:"release,omitempty"`
 
-	// StripPathPrefix strips the PathPrefix defined in the Routes when forwarding requests to the backend service.
+	// OpenAPISpec defines the API contract as an OpenAPI specification.
 	// +optional
-	StripPathPrefix bool `json:"stripPathPrefix"`
-
-	// Routes defines the different ways of accessing this APIVersion.
-	// +optional
-	// +kubebuilder:validation:MaxItems=10
-	Routes []Route `json:"routes,omitempty"`
-
-	// Service defines the backend handling the incoming traffic.
-	Service APIService `json:"service"`
-
-	// Headers manipulates HTTP request and response headers.
-	// +optional
-	Headers *Headers `json:"headers,omitempty"`
-
-	// CORS configures Cross-origin resource sharing headers.
-	// +optional
-	CORS *CORS `json:"cors,omitempty"`
-}
-
-// Route determines how to match the version.
-type Route struct {
-	// QueryParams defines the URL query parameters that must be present in the request to be routed on this APIVersion.
-	// +optional
-	QueryParams map[string]string `json:"queryParams,omitempty"`
-
-	// Headers defines the HTTP headers that must be present in the request to be routed on this APIVersion.
-	// +optional
-	Headers map[string]string `json:"headers,omitempty"`
-
-	// PathPrefix defines the path prefix to be routed to this APIVersion.
-	// This PathPrefix is appended to the PathPrefix of the APICollection and API.
-	// +optional
-	// +kubebuilder:validation:MaxLength=255
-	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
-	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
-	PathPrefix string `json:"pathPrefix,omitempty"`
+	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
+	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
 }
 
 // APIVersionStatus is the status of an APIVersion.

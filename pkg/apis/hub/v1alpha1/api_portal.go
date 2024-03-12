@@ -23,12 +23,10 @@ import (
 )
 
 // +genclient
-// +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIPortal defines a portal that exposes APIs.
+// APIPortal defines a developer portal for accessing the documentation of APIs.
 // +kubebuilder:printcolumn:name="URLs",type=string,JSONPath=`.status.urls`
-// +kubebuilder:resource:scope=Cluster
 type APIPortal struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -52,23 +50,25 @@ type APIPortalSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
-	// APIGateway is the APIGateway resource the APIPortal will render documentation for.
-	APIGateway string `json:"apiGateway"`
-
-	// CustomDomains are the custom domains under which the portal will be exposed.
+	// Domains are the domains under which the portal will be exposed.
 	// +optional
 	// +kubebuilder:validation:MaxItems=20
 	// +kubebuilder:validation:XValidation:message="duplicate domains",rule="self.all(x, self.exists_one(y, y == x))"
-	CustomDomains []Domain `json:"customDomains,omitempty"`
+	Domains []Domain `json:"domains,omitempty"`
 
 	// UI holds the UI customization options.
 	// +optional
 	UI *UISpec `json:"ui,omitempty"`
 }
 
+// Domain is the domain name under which an APIPortal will be exposed.
+// +kubebuilder:validation:MaxLength=253
+// +kubebuilder:validation:XValidation:message="domain must be a valid domain name",rule="self.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\")"
+type Domain string
+
 // UISpec configures the UI customization.
 type UISpec struct {
-	// Service defines a custom service exposing the UI.
+	// Service defines a Kubernetes Service exposing a custom UI.
 	// +optional
 	Service *UIService `json:"service,omitempty"`
 
@@ -119,9 +119,9 @@ type APIPortalStatus struct {
 	// +optional
 	HubDomain string `json:"hubDomain"`
 
-	// CustomDomains are the custom domains for accessing the exposed APIPortal WebUI.
+	// Domains are the domains for accessing the exposed APIPortal.
 	// +optional
-	CustomDomains []string `json:"customDomains,omitempty"`
+	Domains []string `json:"domains,omitempty"`
 
 	// OIDC is the OIDC configuration for accessing the exposed APIPortal WebUI.
 	// +optional
