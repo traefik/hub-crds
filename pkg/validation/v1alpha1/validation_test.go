@@ -52,7 +52,7 @@ func checkValidation(t *testing.T, test validationTestCase) {
 	require.NoError(t, err)
 
 	var object unstructured.Unstructured
-	_, decoderErr := decoder.Decode(test.manifest, &object)
+	decoderErr := decoder.Decode(test.manifest, &object)
 	require.NoError(t, decoderErr)
 
 	gotErrs := validator.Validate(&object)

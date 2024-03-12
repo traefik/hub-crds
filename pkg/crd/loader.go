@@ -81,6 +81,7 @@ func loadManifests(filesystem fs.FS) ([]manifest, error) {
 		if err != nil {
 			return fmt.Errorf("opening file: %w", err)
 		}
+
 		defer func() { _ = reader.Close() }()
 
 		r := yaml.NewYAMLReader(bufio.NewReader(reader))
