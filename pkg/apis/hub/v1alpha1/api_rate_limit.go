@@ -70,10 +70,10 @@ type APIRateLimitSpec struct {
 	// +optional
 	Groups []string `json:"groups"`
 
-	// Everyone states that all user groups will by default be rate limited with this configuration.
+	// Everyone states that everyone will, by default, be rate limited with this configuration.
 	// If an APIRateLimit explicitly target a group, the default rate limit will be ignored.
 	// +optional
-	Everyone bool `json:"everyone"`
+	Everyone bool `json:"everyone,omitempty"`
 
 	// APISelector selects the APIs that will be rate limited.
 	// Multiple APIRateLimits can select the same set of APIs.

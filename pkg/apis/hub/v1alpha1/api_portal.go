@@ -25,7 +25,7 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIPortal defines a portal that exposes APIs.
+// APIPortal defines a developer portal for accessing the documentation of APIs.
 // +kubebuilder:printcolumn:name="URLs",type=string,JSONPath=`.status.urls`
 type APIPortal struct {
 	metav1.TypeMeta `json:",inline"`
@@ -50,7 +50,7 @@ type APIPortalSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
-	// Domains are the custom domains under which the portal will be exposed.
+	// Domains are the domains under which the portal will be exposed.
 	// +optional
 	// +kubebuilder:validation:MaxItems=20
 	// +kubebuilder:validation:XValidation:message="duplicate domains",rule="self.all(x, self.exists_one(y, y == x))"
@@ -61,9 +61,9 @@ type APIPortalSpec struct {
 	UI *UISpec `json:"ui,omitempty"`
 }
 
-// Domain is the domain name.
+// Domain is the domain name under which an APIPortal will be exposed.
 // +kubebuilder:validation:MaxLength=253
-// +kubebuilder:validation:XValidation:message="custom domain must be a valid domain name",rule="self.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\")"
+// +kubebuilder:validation:XValidation:message="domain must be a valid domain name",rule="self.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\")"
 type Domain string
 
 // UISpec configures the UI customization.

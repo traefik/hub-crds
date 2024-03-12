@@ -48,7 +48,7 @@ type APISpec struct {
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
 	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
 
-	// Versions defines the current APIVersion.
+	// Versions are the different APIVersions available.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:MinItems=1

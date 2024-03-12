@@ -24,7 +24,7 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIAccess defines which group of consumers can access APIs and APICollections.
+// APIAccess defines which consumer groups of can access APIs.
 type APIAccess struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -47,7 +47,7 @@ type APIAccessSpec struct {
 
 	// Everyone states that everyone will gain access to the selected APIs.
 	// +optional
-	Everyone bool `json:"everyone"`
+	Everyone bool `json:"everyone,omitempty"`
 
 	// APISelector selects the APIs that will be accessible to the configured user groups.
 	// Multiple APIAccesses can select the same set of APIs.
