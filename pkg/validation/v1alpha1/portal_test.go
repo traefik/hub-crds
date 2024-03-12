@@ -35,8 +35,7 @@ kind: APIPortal
 metadata:
   name: my-portal
   namespace: default
-spec:
-  apiGateway: my-gateway`),
+spec: {}`),
 		},
 		{
 			desc: "missing resource namespace",
@@ -58,7 +57,6 @@ metadata:
 spec:
   title: title
   description: description
-  apiGateway: my-gateway
   domains:
     - example.com
   ui:
@@ -78,8 +76,7 @@ kind: APIPortal
 metadata:
   name: .non-dns-compliant-portal
   namespace: default
-spec:
-  apiGateway: my-gateway`),
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-portal", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
 		},
 		{
@@ -90,8 +87,7 @@ kind: APIPortal
 metadata:
   name: ""
   namespace: default
-spec:
-  apiGateway: my-gateway`),
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
 		},
 		{
@@ -102,8 +98,7 @@ kind: APIPortal
 metadata:
   name: portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default
-spec:
-  apiGateway: my-gateway`),
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
@@ -115,7 +110,6 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  apiGateway: my-gateway
   domains:
     - ""`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains[0]", BadValue: "string", Detail: "domain must be a valid domain name"}},
@@ -129,7 +123,6 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  apiGateway: my-gateway
   domains:
     - example..com`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains[0]", BadValue: "string", Detail: "domain must be a valid domain name"}},
@@ -143,7 +136,6 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  apiGateway: my-gateway
   domains:
     - example.com
     - example.com`),
@@ -158,7 +150,6 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  apiGateway: my-gateway
   ui:
     service:
       port:
@@ -174,7 +165,6 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  apiGateway: my-gateway
   ui:
     service:
       name: my-service`),
@@ -189,7 +179,6 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  apiGateway: my-gateway
   ui:
     service:
       name: my-service

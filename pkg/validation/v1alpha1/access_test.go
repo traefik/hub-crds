@@ -62,11 +62,6 @@ spec:
   apiSelector:
     labelSelector:
       key: value
-  apiCollections:
-    - name: my-api-collection
-  apiCollectionSelector:
-    labelSelector:
-      key: value
   operationFilter:
     include:
       - my-filter`),
@@ -162,33 +157,6 @@ spec:
     - name: my-api`),
 		},
 		{
-			desc: "duplicated collections",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apiCollections:
-    - name: my-collection
-    - name: my-collection`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiCollections", BadValue: "array", Detail: "duplicated collections"}},
-		},
-		{
-			desc: "valid: different collections",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apiCollections:
-    - name: my-collection-1
-    - name: my-collection-2`),
-		},
-		{
 			desc: "invalid API selector",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -201,20 +169,6 @@ spec:
     matchExpressions:
       - key: value`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiSelector.matchExpressions[0].operator", BadValue: ""}},
-		},
-		{
-			desc: "invalid collection selector",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apiCollectionSelector:
-    matchExpressions:
-      - key: value`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiCollectionSelector.matchExpressions[0].operator", BadValue: ""}},
 		},
 		{
 			desc: "everyone and groups both set",
