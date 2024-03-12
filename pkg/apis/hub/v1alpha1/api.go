@@ -25,10 +25,6 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // API defines an API exposed within a portal.
-// +kubebuilder:printcolumn:name="PathPrefix",type=string,JSONPath=`.spec.pathPrefix`
-// +kubebuilder:printcolumn:name="ServiceName",type=string,JSONPath=`.spec.service.name`
-// +kubebuilder:printcolumn:name="ServicePort",type=string,JSONPath=`.spec.service.port.number`
-// +kubebuilder:printcolumn:name="Versions",type=string,JSONPath=`.spec.currentVersion`
 type API struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -120,59 +116,6 @@ type OperationMatcher struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=10
 	Methods *[]string `json:"methods,omitempty"`
-}
-
-// Headers configures the requests and responses headers manipulations.
-type Headers struct {
-	// Request configures the request headers.
-	// +optional
-	Request *HeadersConfig `json:"request,omitempty"`
-
-	// Response configures the response headers.
-	// +optional
-	Response *HeadersConfig `json:"response,omitempty"`
-}
-
-// HeadersConfig configures headers manipulations.
-type HeadersConfig struct {
-	// Set sets the value of headers
-	// +optional
-	Set map[string]string `json:"set,omitempty"`
-
-	// Delete deletes headers.
-	// +optional
-	Delete []string `json:"delete,omitempty"`
-}
-
-// CORS configures the CORS for the API.
-type CORS struct {
-	// AllowCredentials defines whether the request can include user credentials.
-	// +optional
-	AllowCredentials bool `json:"allowCredentials"`
-
-	// AllowHeaders defines the Access-Control-Request-Headers values sent in preflight response.
-	// +optional
-	AllowHeaders []string `json:"allowHeaders,omitempty"`
-
-	// AllowMethods defines the Access-Control-Request-Method values sent in preflight response.
-	// +optional
-	AllowMethods []string `json:"allowMethods,omitempty"`
-
-	// AllowOriginList is a list of allowable origins. Can also be a wildcard origin "*".
-	// +optional
-	AllowOriginList []string `json:"allowOriginList,omitempty"`
-
-	// AllowOriginListRegex is a list of allowable origins written following the Regular Expression syntax (https://golang.org/pkg/regexp/).
-	// +optional
-	AllowOriginListRegex []string `json:"allowOriginListRegex,omitempty"`
-
-	// ExposeHeaders defines the Access-Control-Expose-Headers values sent in preflight response.
-	// +optional
-	ExposeHeaders []string `json:"exposeHeaders,omitempty"`
-
-	// MaxAge defines the time that a preflight request may be cached.
-	// +optional
-	MaxAge int64 `json:"maxAge"`
 }
 
 // APIStatus is the status of an API.

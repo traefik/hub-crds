@@ -28,8 +28,6 @@ import (
 // +kubebuilder:printcolumn:name="APIName",type=string,JSONPath=`.spec.apiName`
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`
 // +kubebuilder:printcolumn:name="Release",type=string,JSONPath=`.spec.release`
-// +kubebuilder:printcolumn:name="ServiceName",type=string,JSONPath=`.spec.service.name`
-// +kubebuilder:printcolumn:name="ServicePort",type=string,JSONPath=`.spec.service.port.number`
 type APIVersion struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -60,25 +58,6 @@ type APIVersionSpec struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
 	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
-}
-
-// Route determines how to match the version.
-type Route struct {
-	// QueryParams defines the URL query parameters that must be present in the request to be routed on this APIVersion.
-	// +optional
-	QueryParams map[string]string `json:"queryParams,omitempty"`
-
-	// Headers defines the HTTP headers that must be present in the request to be routed on this APIVersion.
-	// +optional
-	Headers map[string]string `json:"headers,omitempty"`
-
-	// PathPrefix defines the path prefix to be routed to this APIVersion.
-	// This PathPrefix is appended to the PathPrefix of the APICollection and API.
-	// +optional
-	// +kubebuilder:validation:MaxLength=255
-	// +kubebuilder:validation:XValidation:message="must start with a '/'",rule="self.startsWith('/')"
-	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
-	PathPrefix string `json:"pathPrefix,omitempty"`
 }
 
 // APIVersionStatus is the status of an APIVersion.
