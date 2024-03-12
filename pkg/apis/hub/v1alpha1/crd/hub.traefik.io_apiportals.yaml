@@ -68,7 +68,8 @@ spec:
                     description: LogoURL is the public URL of the logo.
                     type: string
                   service:
-                    description: Service defines a custom service exposing the UI.
+                    description: Service defines a Kubernetes Service exposing a custom
+                      UI.
                     properties:
                       name:
                         description: Name of the Kubernetes Service resource.
@@ -103,9 +104,8 @@ spec:
           status:
             description: The current status of this APIPortal.
             properties:
-              customDomains:
-                description: CustomDomains are the custom domains for accessing the
-                  exposed APIPortal WebUI.
+              domains:
+                description: Domains are the domains for accessing the exposed APIPortal.
                 items:
                   type: string
                 type: array

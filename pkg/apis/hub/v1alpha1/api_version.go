@@ -24,7 +24,7 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIVersion defines an APIVersion.
+// APIVersion defines a version of an API.
 // +kubebuilder:printcolumn:name="APIName",type=string,JSONPath=`.spec.apiName`
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`
 // +kubebuilder:printcolumn:name="Release",type=string,JSONPath=`.spec.release`
@@ -54,7 +54,7 @@ type APIVersionSpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a valid semver version",rule="self.matches(r\"\"\"^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\"\"\")"
 	Release string `json:"release,omitempty"`
 
-	// OpenAPISpec defines where to obtain the OpenAPI specification of the Service.
+	// OpenAPISpec defines the API contract as an OpenAPI specification.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
 	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`

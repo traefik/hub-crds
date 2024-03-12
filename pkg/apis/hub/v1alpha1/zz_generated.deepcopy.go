@@ -296,8 +296,8 @@ func (in *APIPortalSpec) DeepCopy() *APIPortalSpec {
 func (in *APIPortalStatus) DeepCopyInto(out *APIPortalStatus) {
 	*out = *in
 	in.SyncedAt.DeepCopyInto(&out.SyncedAt)
-	if in.CustomDomains != nil {
-		in, out := &in.CustomDomains, &out.CustomDomains
+	if in.Domains != nil {
+		in, out := &in.Domains, &out.Domains
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}

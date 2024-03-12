@@ -88,8 +88,7 @@ spec:
                   Multiple APIRateLimits can select the same APIs. When combined with
                   APISelector, this set of APIs is appended to the matching APIs.
                 items:
-                  description: APIReference contains information to identify an API
-                    to add to an APIAccess or an APIRateLimit.
+                  description: APIReference references an API.
                   properties:
                     name:
                       description: Name of the API.
@@ -111,15 +110,15 @@ spec:
                     (has(y.__namespace__) && y.__namespace__ != '''' ? y.__namespace__
                     : ''default'')))'
               everyone:
-                description: Everyone states that everyone will, by default, be rate
-                  limited with this configuration. If an APIRateLimit explicitly target
-                  a group, the default rate limit will be ignored.
+                description: Everyone indicates that all users will, by default, be
+                  rate limited with this configuration. If an APIRateLimit explicitly
+                  target a group, the default rate limit will be ignored.
                 type: boolean
               groups:
-                description: Groups are the user groups that will be rate limited.
-                  Multiple APIRateLimits can target the same set of user groups, the
-                  most restrictive one applies. When a user belongs to multiple groups,
-                  the least restrictive APIRateLimit applies.
+                description: Groups are the consumer groups that will be rate limited.
+                  Multiple APIRateLimits can target the same set of consumer groups,
+                  the most restrictive one applies. When a consumer belongs to multiple
+                  groups, the least restrictive APIRateLimit applies.
                 items:
                   type: string
                 type: array
@@ -130,7 +129,7 @@ spec:
                 - message: must be a positive number
                   rule: self >= 0
               period:
-                description: Period is frequency of bucket full refill.
+                description: Period is the unit of time for the Limit.
                 format: duration
                 type: string
                 x-kubernetes-validations:
@@ -138,8 +137,8 @@ spec:
                   rule: self >= duration('1s') && self <= duration('1h')
               strategy:
                 description: Strategy defines how the bucket state will be synchronized
-                  between the different Traefik Hub agent instances. It can be, either
-                  "local" or "distributed".
+                  between the different Traefik Hub instances. It can be, either "local"
+                  or "distributed".
                 enum:
                 - local
                 - distributed

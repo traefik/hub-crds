@@ -53,24 +53,24 @@ type APIRateLimitSpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Limit int `json:"limit"`
 
-	// Period is frequency of bucket full refill.
+	// Period is the unit of time for the Limit.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 1h",rule="self >= duration('1s') && self <= duration('1h')"
 	Period *Period `json:"period,omitempty"`
 
-	// Strategy defines how the bucket state will be synchronized between the different Traefik Hub agent instances.
+	// Strategy defines how the bucket state will be synchronized between the different Traefik Hub instances.
 	// It can be, either "local" or "distributed".
 	// +optional
 	// +kubebuilder:validation:Enum=local;distributed
 	Strategy Strategy `json:"strategy,omitempty"`
 
-	// Groups are the user groups that will be rate limited.
-	// Multiple APIRateLimits can target the same set of user groups, the most restrictive one applies.
-	// When a user belongs to multiple groups, the least restrictive APIRateLimit applies.
+	// Groups are the consumer groups that will be rate limited.
+	// Multiple APIRateLimits can target the same set of consumer groups, the most restrictive one applies.
+	// When a consumer belongs to multiple groups, the least restrictive APIRateLimit applies.
 	// +optional
 	Groups []string `json:"groups"`
 
-	// Everyone states that everyone will, by default, be rate limited with this configuration.
+	// Everyone indicates that all users will, by default, be rate limited with this configuration.
 	// If an APIRateLimit explicitly target a group, the default rate limit will be ignored.
 	// +optional
 	Everyone bool `json:"everyone,omitempty"`

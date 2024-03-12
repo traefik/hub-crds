@@ -68,7 +68,7 @@ type Domain string
 
 // UISpec configures the UI customization.
 type UISpec struct {
-	// Service defines a custom service exposing the UI.
+	// Service defines a Kubernetes Service exposing a custom UI.
 	// +optional
 	Service *UIService `json:"service,omitempty"`
 
@@ -119,9 +119,9 @@ type APIPortalStatus struct {
 	// +optional
 	HubDomain string `json:"hubDomain"`
 
-	// CustomDomains are the custom domains for accessing the exposed APIPortal WebUI.
+	// Domains are the domains for accessing the exposed APIPortal.
 	// +optional
-	CustomDomains []string `json:"customDomains,omitempty"`
+	Domains []string `json:"domains,omitempty"`
 
 	// OIDC is the OIDC configuration for accessing the exposed APIPortal WebUI.
 	// +optional

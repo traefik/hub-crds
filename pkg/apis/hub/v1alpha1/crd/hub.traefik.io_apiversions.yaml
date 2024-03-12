@@ -27,7 +27,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: APIVersion defines an APIVersion.
+        description: APIVersion defines a version of an API.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -45,33 +45,33 @@ spec:
             description: The desired behavior of this APIVersion.
             properties:
               openApiSpec:
-                description: OpenAPISpec defines where to obtain the OpenAPI specification
-                  of the Service.
+                description: OpenAPISpec defines the API contract as an OpenAPI specification.
                 properties:
                   operationSets:
-                    description: OperationSets defines the sets of operations that
-                      can be used for advanced filtering in APIAccesses.
+                    description: OperationSets defines the sets of operations to be
+                      referenced for granular filtering in APIAccesses.
                     items:
-                      description: OperationSet selects a set of OpenAPI operations
-                        that can be referenced for advanced filtering on APIAccesses.
+                      description: OperationSet gives a name to a set of matching
+                        OpenAPI operations. This set of operations can then be referenced
+                        for granular filtering in APIAccesses.
                       properties:
                         matchers:
-                          description: Matchers defines a set of OperationMatchers
-                            that selects spec operations.
+                          description: Matchers defines a list of alternative rules
+                            for matching OpenAPI operations.
                           items:
-                            description: OperationMatcher selects the operations that
-                              will be part of the OperationSet.
+                            description: OperationMatcher defines criteria for matching
+                              an OpenAPI operation.
                             minProperties: 1
                             properties:
                               methods:
-                                description: Methods defines a set of methods of the
-                                  specs operation to select.
+                                description: Methods specifies the HTTP methods to
+                                  be included for selection.
                                 items:
                                   type: string
                                 maxItems: 10
                                 type: array
                               path:
-                                description: Path defines the exact path of the spec
+                                description: Path specifies the exact path of the
                                   operations to select.
                                 maxLength: 255
                                 type: string
@@ -81,8 +81,8 @@ spec:
                                 - message: cannot contains '../'
                                   rule: '!self.matches(r"""(\/\.\.\/)|(\/\.\.$)""")'
                               pathPrefix:
-                                description: PathPrefix defines the path prefix of
-                                  the spec operations to select.
+                                description: PathPrefix specifies the path prefix
+                                  of the operations to select.
                                 maxLength: 255
                                 type: string
                                 x-kubernetes-validations:
@@ -91,8 +91,8 @@ spec:
                                 - message: cannot contains '../'
                                   rule: '!self.matches(r"""(\/\.\.\/)|(\/\.\.$)""")'
                               pathRegex:
-                                description: PathRegex defines the path regex of the
-                                  matching spec operations to select.
+                                description: PathRegex specifies a regular expression
+                                  pattern for matching operations based on their paths.
                                 type: string
                             type: object
                             x-kubernetes-validations:
@@ -104,7 +104,8 @@ spec:
                           minItems: 1
                           type: array
                         name:
-                          description: Name is the name of the OperationSet.
+                          description: Name is the name of the OperationSet to reference
+                            in APIAccesses.
                           maxLength: 253
                           type: string
                       required:
@@ -114,9 +115,14 @@ spec:
                     maxItems: 100
                     type: array
                   path:
-                    description: Path is the path on the Kubernetes Service for obtaining
-                      the specification. This Path must be queryable with a GET method
-                      and serve a YAML or JSON document.
+                    description: Path specifies the endpoint path within the Kubernetes
+                      Service where the OpenAPI specification can be obtained. The
+                      Service queried is determined by the associated Ingress, IngressRoute,
+                      or HTTPRoute resource to which the API is attached. It's important
+                      to note that this option is incompatible if the Ingress or IngressRoute
+                      specifies multiple backend services. The Path must be accessible
+                      via a GET request method and should serve a YAML or JSON document
+                      containing the OpenAPI specification.
                     maxLength: 255
                     type: string
                     x-kubernetes-validations:
@@ -126,8 +132,9 @@ spec:
                       rule: '!self.matches(r"""(\/\.\.\/)|(\/\.\.$)""")'
                   url:
                     description: URL is a Traefik Hub agent accessible URL for obtaining
-                      the specification. This URL must be queryable with a GET method
-                      and serve a YAML or JSON document.
+                      the OpenAPI specification. The URL must be accessible via a
+                      GET request method and should serve a YAML or JSON document
+                      containing the OpenAPI specification.
                     type: string
                     x-kubernetes-validations:
                     - message: must be a valid URL
