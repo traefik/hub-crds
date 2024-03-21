@@ -39,15 +39,6 @@ spec:
   limit: 1`),
 		},
 		{
-			desc: "missing resource namespace",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIRateLimit
-metadata:
-  name: my-ratelimit`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
-		},
-		{
 			desc: "valid: full",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -64,6 +55,15 @@ spec:
   apis:
     - name: my-api
       namespace: my-ns`),
+		},
+		{
+			desc: "missing resource namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIRateLimit
+metadata:
+  name: my-ratelimit`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "invalid resource name",

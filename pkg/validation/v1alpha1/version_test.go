@@ -36,6 +36,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /openapi.json`),
 		},
@@ -68,6 +69,7 @@ kind: APIVersion
 metadata:
   name: "my-api-v1"
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /openapi.json`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
@@ -81,6 +83,7 @@ metadata:
   name: .non-dns-compliant-version
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /openapi.json`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-version", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
@@ -94,6 +97,7 @@ metadata:
   name: ""
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /openapi.json`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
@@ -107,9 +111,23 @@ metadata:
   name: version-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /openapi.json`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "version-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
+		},
+		{
+			desc: "missing release",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIVersion
+metadata:
+  name: my-api-v1
+  namespace: my-ns
+spec:
+  openApiSpec:
+    path: /openapi.json`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.release", BadValue: "", Detail: ""}},
 		},
 		{
 			desc: "openApiSpec must have a path or an url",
@@ -120,6 +138,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec", BadValue: "object", Detail: "path or url must be defined"}},
 		},
@@ -132,6 +151,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     url: ../invalid-spec-url.json`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.url", BadValue: "string", Detail: "must be a valid URL"}},
@@ -145,6 +165,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: something`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "must start with a '/'"}},
@@ -158,8 +179,9 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo/../bar`),
+  release: v1.0.0  
+  openApiSpec:
+    path: /foo/../bar`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
@@ -171,8 +193,9 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo/..`),
+  release: v1.0.0
+  openApiSpec:
+    path: /foo/..`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
@@ -184,8 +207,9 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
-    openApiSpec:
-      path: /foo/..bar`),
+  release: v1.0.0
+  openApiSpec:
+    path: /foo/..bar`),
 		},
 		{
 			desc: "missing operationSet name",
@@ -196,6 +220,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -212,6 +237,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -228,6 +254,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -243,6 +270,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -260,6 +288,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -278,6 +307,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -296,6 +326,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -314,6 +345,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -333,6 +365,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -350,6 +383,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -367,6 +401,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -384,6 +419,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -400,6 +436,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -417,6 +454,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -434,6 +472,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -451,6 +490,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
@@ -467,6 +507,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
+  release: v1.0.0
   openApiSpec:
     path: /foo
     operationSets:
