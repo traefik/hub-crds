@@ -38,15 +38,6 @@ metadata:
 spec: {}`),
 		},
 		{
-			desc: "missing resource namespace",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIPortal
-metadata:
-  name: my-portal`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
-		},
-		{
 			desc: "valid: full",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -67,6 +58,15 @@ spec:
       port:
         number: 8080
   `),
+		},
+		{
+			desc: "missing resource namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "invalid resource name",
