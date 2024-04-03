@@ -87,7 +87,7 @@ type APIRateLimitSpec struct {
 	// When combined with APISelector, this set of APIs is appended to the matching APIs.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
-	// +kubebuilder:validation:XValidation:message="duplicated apis",rule="self.all(x, self.exists_one(y, x.name == y.name && (has(x.__namespace__) && x.__namespace__ != '' ? x.__namespace__ : 'default') == (has(y.__namespace__) && y.__namespace__ != '' ? y.__namespace__ : 'default')))"
+	// +kubebuilder:validation:XValidation:message="duplicated apis",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	APIs []APIReference `json:"apis,omitempty"`
 }
 
