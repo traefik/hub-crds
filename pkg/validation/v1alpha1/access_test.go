@@ -58,7 +58,6 @@ spec:
     - my-group
   apis:
     - name: my-api
-      namespace: my-ns
   apiSelector:
     matchLabels:
       key: value
@@ -107,9 +106,7 @@ metadata:
 spec:
   apis:
     - name: my-api
-      namespace: my-ns
-    - name: my-api
-      namespace: my-ns`),
+    - name: my-api`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
 		},
 		{
@@ -123,38 +120,8 @@ metadata:
 spec:
   apis:
     - name: my-api
-      namespace: default
     - name: my-api`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
-		},
-		{
-			desc: "valid: apis with same name but different namespaces",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apis:
-    - name: my-api
-      namespace: my-ns-1
-    - name: my-api
-      namespace: my-ns-2`),
-		},
-		{
-			desc: "valid: apis with same name but only one with namespace",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apis:
-    - name: my-api
-      namespace: my-ns
-    - name: my-api`),
 		},
 		{
 			desc: "invalid API selector",

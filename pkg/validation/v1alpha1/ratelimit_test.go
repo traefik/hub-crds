@@ -62,8 +62,7 @@ spec:
   groups:
     - my-group
   apis:
-    - name: my-api
-      namespace: my-ns`),
+    - name: my-api`),
 		},
 		{
 			desc: "invalid resource name",
@@ -183,9 +182,7 @@ spec:
   limit: 1
   apis:
     - name: my-api
-      namespace: my-ns
-    - name: my-api
-      namespace: my-ns`),
+    - name: my-api`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
 		},
 		{
@@ -200,40 +197,8 @@ spec:
   limit: 1
   apis:
     - name: my-api
-      namespace: default
     - name: my-api`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
-		},
-		{
-			desc: "valid: apis with same name but different namespaces",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIRateLimit
-metadata:
-  name: my-ratelimit
-  namespace: default
-spec:
-  limit: 1
-  apis:
-    - name: my-api
-      namespace: my-ns-1
-    - name: my-api
-      namespace: my-ns-2`),
-		},
-		{
-			desc: "valid: apis with same name but only one with namespace",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIRateLimit
-metadata:
-  name: my-ratelimit
-  namespace: default
-spec:
-  limit: 1
-  apis:
-    - name: my-api
-      namespace: my-ns
-    - name: my-api`),
 		},
 		{
 			desc: "invalid API selector",
