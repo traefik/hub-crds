@@ -109,15 +109,11 @@ type OIDCConfigStatus struct {
 
 // APIPortalStatus is the status of an APIPortal.
 type APIPortalStatus struct {
-	Version  string      `json:"version,omitempty"`
-	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
+	Version  string       `json:"version,omitempty"`
+	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 
 	// URLs are the URLs for accessing the APIPortal WebUI.
 	URLs string `json:"urls"`
-
-	// HubDomain is the hub generated domain of the APIPortal WebUI.
-	// +optional
-	HubDomain string `json:"hubDomain"`
 
 	// Domains are the domains for accessing the exposed APIPortal.
 	// +optional

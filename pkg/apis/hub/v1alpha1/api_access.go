@@ -43,7 +43,7 @@ type APIAccess struct {
 type APIAccessSpec struct {
 	// Groups are the consumer groups that will gain access to the selected APIs.
 	// +optional
-	Groups []string `json:"groups"`
+	Groups []string `json:"groups,omitempty"`
 
 	// Everyone indicates that all users will have access to the selected APIs.
 	// +optional
@@ -88,8 +88,8 @@ type OperationFilter struct {
 
 // APIAccessStatus is the status of an APIAccess.
 type APIAccessStatus struct {
-	Version  string      `json:"version,omitempty"`
-	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
+	Version  string       `json:"version,omitempty"`
+	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 
 	// Hash is a hash representing the APIAccess.
 	Hash string `json:"hash,omitempty"`
