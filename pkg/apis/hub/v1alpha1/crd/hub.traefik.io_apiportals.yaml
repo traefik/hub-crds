@@ -112,10 +112,6 @@ spec:
               hash:
                 description: Hash is a hash representing the APIPortal.
                 type: string
-              hubDomain:
-                description: HubDomain is the hub generated domain of the APIPortal
-                  WebUI.
-                type: string
               oidc:
                 description: OIDC is the OIDC configuration for accessing the exposed
                   APIPortal WebUI.

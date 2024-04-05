@@ -68,7 +68,7 @@ type APIRateLimitSpec struct {
 	// Multiple APIRateLimits can target the same set of consumer groups, the most restrictive one applies.
 	// When a consumer belongs to multiple groups, the least restrictive APIRateLimit applies.
 	// +optional
-	Groups []string `json:"groups"`
+	Groups []string `json:"groups,omitempty"`
 
 	// Everyone indicates that all users will, by default, be rate limited with this configuration.
 	// If an APIRateLimit explicitly target a group, the default rate limit will be ignored.
@@ -102,8 +102,8 @@ const (
 
 // APIRateLimitStatus is the status of an APIRateLimit.
 type APIRateLimitStatus struct {
-	Version  string      `json:"version,omitempty"`
-	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
+	Version  string       `json:"version,omitempty"`
+	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 	// Hash is a hash representing the APIRateLimit.
 	Hash string `json:"hash,omitempty"`
 }

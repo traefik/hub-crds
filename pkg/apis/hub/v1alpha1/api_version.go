@@ -61,8 +61,8 @@ type APIVersionSpec struct {
 
 // APIVersionStatus is the status of an APIVersion.
 type APIVersionStatus struct {
-	Version  string      `json:"version,omitempty"`
-	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
+	Version  string       `json:"version,omitempty"`
+	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 	// Hash is a hash representing the APIVersion.
 	Hash string `json:"hash,omitempty"`
 }

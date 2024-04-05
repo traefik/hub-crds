@@ -127,8 +127,8 @@ type OperationMatcher struct {
 
 // APIStatus is the status of the API.
 type APIStatus struct {
-	Version  string      `json:"version,omitempty"`
-	SyncedAt metav1.Time `json:"syncedAt,omitempty"`
+	Version  string       `json:"version,omitempty"`
+	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 	// Hash is a hash representing the API.
 	Hash string `json:"hash,omitempty"`
 }
