@@ -49,10 +49,9 @@ type APIVersionSpec struct {
 
 	// Release is the version number of the API.
 	// This value must follow the SemVer format: https://semver.org/
-	// +optional
 	// +kubebuilder:validation:MaxLength=100
 	// +kubebuilder:validation:XValidation:message="must be a valid semver version",rule="self.matches(r\"\"\"^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$\"\"\")"
-	Release string `json:"release,omitempty"`
+	Release string `json:"release"`
 
 	// OpenAPISpec defines the API contract as an OpenAPI specification.
 	// +optional

@@ -154,6 +154,8 @@ spec:
               title:
                 description: Title is the public facing name of the APIVersion.
                 type: string
+            required:
+            - release
             type: object
           status:
             description: The current status of this APIVersion.
