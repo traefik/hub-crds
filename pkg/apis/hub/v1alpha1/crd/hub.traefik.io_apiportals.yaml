@@ -39,25 +39,39 @@ spec:
           spec:
             description: The desired behavior of this APIPortal.
             properties:
+              auth:
+                description: Auth configures the authentication.
+                properties:
+                  logoutUris:
+                    description: LogoutURIs specifies the URIs where the user can
+                      be redirected after they have logged out.
+                    items:
+                      type: string
+                    maxItems: 20
+                    minItems: 1
+                    type: array
+                    x-kubernetes-validations:
+                    - message: LogoutUris must be valid URIs
+                      rule: self.all(x, isURL(x))
+                  redirectUris:
+                    description: RedirectURIs specifies the URIs to which the OAuth
+                      2.0 authorization server can redirect the user-agent once access
+                      is granted.
+                    items:
+                      type: string
+                    maxItems: 20
+                    minItems: 1
+                    type: array
+                    x-kubernetes-validations:
+                    - message: redirectUris must be valid URIs
+                      rule: self.all(x, isURL(x))
+                required:
+                - logoutUris
+                - redirectUris
+                type: object
               description:
                 description: Description of the APIPortal.
                 type: string
-              domains:
-                description: Domains are the domains under which the portal will be
-                  exposed.
-                items:
-                  description: Domain is the domain name under which an APIPortal
-                    will be exposed.
-                  maxLength: 253
-                  type: string
-                  x-kubernetes-validations:
-                  - message: domain must be a valid domain name
-                    rule: self.matches(r"""([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]""")
-                maxItems: 20
-                type: array
-                x-kubernetes-validations:
-                - message: duplicate domains
-                  rule: self.all(x, self.exists_one(y, y == x))
               title:
                 description: Title is the public facing name of the APIPortal.
                 type: string
@@ -67,39 +81,9 @@ spec:
                   logoUrl:
                     description: LogoURL is the public URL of the logo.
                     type: string
-                  service:
-                    description: Service defines a Kubernetes Service exposing a custom
-                      UI.
-                    properties:
-                      name:
-                        description: Name of the Kubernetes Service resource.
-                        type: string
-                      namespace:
-                        description: Namespace of the Kubernetes Service resource.
-                        type: string
-                      port:
-                        description: Port of the referenced service. A port name or
-                          port number is required.
-                        properties:
-                          name:
-                            description: Name is the name of the port on the Service.
-                              This is a mutually exclusive setting with "Number".
-                            type: string
-                          number:
-                            description: Number is the numerical port number (e.g.
-                              80) on the Service. This is a mutually exclusive setting
-                              with "Name".
-                            format: int32
-                            type: integer
-                        type: object
-                        x-kubernetes-validations:
-                        - message: name or number must be defined
-                          rule: has(self.name) || has(self.number)
-                    required:
-                    - name
-                    - port
-                    type: object
                 type: object
+            required:
+            - auth
             type: object
           status:
             description: The current status of this APIPortal.

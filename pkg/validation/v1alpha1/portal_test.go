@@ -35,7 +35,10 @@ kind: APIPortal
 metadata:
   name: my-portal
   namespace: default
-spec: {}`),
+spec:
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: ["https://example.com"]`),
 		},
 		{
 			desc: "valid: full",
@@ -48,15 +51,11 @@ metadata:
 spec:
   title: title
   description: description
-  domains:
-    - example.com
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: ["https://example.com"]
   ui:
     logoUrl: https://example.com/logo.png
-    service:
-      name: my-service
-      namespace: default
-      port:
-        number: 8080
   `),
 		},
 		{
@@ -65,7 +64,11 @@ spec:
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
-  name: my-portal`),
+  name: my-portal
+spec:
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
@@ -76,7 +79,10 @@ kind: APIPortal
 metadata:
   name: .non-dns-compliant-portal
   namespace: default
-spec: {}`),
+spec:
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-portal", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
 		},
 		{
@@ -87,7 +93,10 @@ kind: APIPortal
 metadata:
   name: ""
   namespace: default
-spec: {}`),
+spec:
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
 		},
 		{
@@ -98,24 +107,25 @@ kind: APIPortal
 metadata:
   name: portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default
-spec: {}`),
+spec:
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
-			desc: "empty custom domain",
+			desc: "missing auth",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
 metadata:
   name: my-portal
   namespace: default
-spec:
-  domains:
-    - ""`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains[0]", BadValue: "string", Detail: "domain must be a valid domain name"}},
+spec: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.auth", BadValue: ""}},
 		},
 		{
-			desc: "invalid custom domain",
+			desc: "missing redirectUris",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -123,12 +133,12 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  domains:
-    - example..com`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains[0]", BadValue: "string", Detail: "domain must be a valid domain name"}},
+  auth:
+    logoutUris: ["https://example.com"]`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.auth.redirectUris", BadValue: ""}},
 		},
 		{
-			desc: "duplicated custom domain",
+			desc: "missing logoutUris",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -136,13 +146,12 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  domains:
-    - example.com
-    - example.com`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.domains", BadValue: "array", Detail: "duplicate domains"}},
+  auth:
+    redirectUris: ["https://example.com/callback"]`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.auth.logoutUris", BadValue: ""}},
 		},
 		{
-			desc: "missing custom ui service name",
+			desc: "empty redirectUris",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -150,14 +159,13 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  ui:
-    service:
-      port:
-        number: 8080`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.ui.service.name", BadValue: ""}},
+  auth:
+    redirectUris: []
+    logoutUris: ["https://example.com"]`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.auth.redirectUris", BadValue: int64(0), Detail: "spec.auth.redirectUris in body should have at least 1 items"}},
 		},
 		{
-			desc: "missing custom ui service port",
+			desc: "empty logoutUris",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -165,25 +173,10 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  ui:
-    service:
-      name: my-service`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.ui.service.port", BadValue: ""}},
-		},
-		{
-			desc: "custom ui service port must have a name or number",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIPortal
-metadata:
-  name: my-portal
-  namespace: default
-spec:
-  ui:
-    service:
-      name: my-service
-      port: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ui.service.port", BadValue: "object", Detail: "name or number must be defined"}},
+  auth:
+    redirectUris: ["https://example.com/callback"]
+    logoutUris: []`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.auth.logoutUris", BadValue: int64(0), Detail: "spec.auth.logoutUris in body should have at least 1 items"}},
 		},
 	}
 
