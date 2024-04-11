@@ -66,11 +66,6 @@ spec:
           status:
             description: The current status of this APIPortal.
             properties:
-              domains:
-                description: Domains are the domains for accessing the exposed APIPortal.
-                items:
-                  type: string
-                type: array
               hash:
                 description: Hash is a hash representing the APIPortal.
                 type: string
@@ -94,13 +89,8 @@ spec:
               syncedAt:
                 format: date-time
                 type: string
-              urls:
-                description: URLs are the URLs for accessing the APIPortal WebUI.
-                type: string
               version:
                 type: string
-            required:
-            - urls
             type: object
         type: object
     served: true

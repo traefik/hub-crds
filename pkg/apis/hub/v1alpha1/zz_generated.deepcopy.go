@@ -302,11 +302,6 @@ func (in *APIPortalStatus) DeepCopyInto(out *APIPortalStatus) {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
 	}
-	if in.Domains != nil {
-		in, out := &in.Domains, &out.Domains
-		*out = make([]string, len(*in))
-		copy(*out, *in)
-	}
 	if in.OIDC != nil {
 		in, out := &in.OIDC, &out.OIDC
 		*out = new(OIDCConfigStatus)
