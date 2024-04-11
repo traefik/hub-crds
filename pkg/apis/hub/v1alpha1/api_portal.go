@@ -49,27 +49,14 @@ type APIPortalSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
-	// Auth configures the authentication.
-	Auth Auth `json:"auth"`
+	// TrustedDomains are the domains that are trusted by the OAuth 2.0 authorization server.
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=20
+	TrustedDomains []string `json:"trustedDomains"`
 
 	// UI holds the UI customization options.
 	// +optional
 	UI *UISpec `json:"ui,omitempty"`
-}
-
-// Auth holds the authentication configuration.
-type Auth struct {
-	// RedirectURIs specifies the URIs to which the OAuth 2.0 authorization server can redirect the user-agent once access is granted.
-	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:MaxItems=20
-	// +kubebuilder:validation:XValidation:message="redirectUris must be valid URIs",rule="self.all(x, isURL(x))"
-	RedirectURIs []string `json:"redirectUris"`
-
-	// LogoutURIs specifies the URIs where the user can be redirected after they have logged out.
-	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:MaxItems=20
-	// +kubebuilder:validation:XValidation:message="LogoutUris must be valid URIs",rule="self.all(x, isURL(x))"
-	LogoutURIs []string `json:"logoutUris"`
 }
 
 // UISpec configures the UI customization.
