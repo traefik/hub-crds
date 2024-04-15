@@ -42,73 +42,30 @@ spec:
               description:
                 description: Description of the APIPortal.
                 type: string
-              domains:
-                description: Domains are the domains under which the portal will be
-                  exposed.
-                items:
-                  description: Domain is the domain name under which an APIPortal
-                    will be exposed.
-                  maxLength: 253
-                  type: string
-                  x-kubernetes-validations:
-                  - message: domain must be a valid domain name
-                    rule: self.matches(r"""([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]""")
-                maxItems: 20
-                type: array
-                x-kubernetes-validations:
-                - message: duplicate domains
-                  rule: self.all(x, self.exists_one(y, y == x))
               title:
                 description: Title is the public facing name of the APIPortal.
                 type: string
+              trustedDomains:
+                description: TrustedDomains are the domains that are trusted by the
+                  OAuth 2.0 authorization server.
+                items:
+                  type: string
+                maxItems: 20
+                minItems: 1
+                type: array
               ui:
                 description: UI holds the UI customization options.
                 properties:
                   logoUrl:
                     description: LogoURL is the public URL of the logo.
                     type: string
-                  service:
-                    description: Service defines a Kubernetes Service exposing a custom
-                      UI.
-                    properties:
-                      name:
-                        description: Name of the Kubernetes Service resource.
-                        type: string
-                      namespace:
-                        description: Namespace of the Kubernetes Service resource.
-                        type: string
-                      port:
-                        description: Port of the referenced service. A port name or
-                          port number is required.
-                        properties:
-                          name:
-                            description: Name is the name of the port on the Service.
-                              This is a mutually exclusive setting with "Number".
-                            type: string
-                          number:
-                            description: Number is the numerical port number (e.g.
-                              80) on the Service. This is a mutually exclusive setting
-                              with "Name".
-                            format: int32
-                            type: integer
-                        type: object
-                        x-kubernetes-validations:
-                        - message: name or number must be defined
-                          rule: has(self.name) || has(self.number)
-                    required:
-                    - name
-                    - port
-                    type: object
                 type: object
+            required:
+            - trustedDomains
             type: object
           status:
             description: The current status of this APIPortal.
             properties:
-              domains:
-                description: Domains are the domains for accessing the exposed APIPortal.
-                items:
-                  type: string
-                type: array
               hash:
                 description: Hash is a hash representing the APIPortal.
                 type: string
@@ -132,13 +89,8 @@ spec:
               syncedAt:
                 format: date-time
                 type: string
-              urls:
-                description: URLs are the URLs for accessing the APIPortal WebUI.
-                type: string
               version:
                 type: string
-            required:
-            - urls
             type: object
         type: object
     served: true

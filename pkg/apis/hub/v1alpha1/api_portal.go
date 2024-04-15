@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	netv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -50,46 +49,21 @@ type APIPortalSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
-	// Domains are the domains under which the portal will be exposed.
-	// +optional
+	// TrustedDomains are the domains that are trusted by the OAuth 2.0 authorization server.
+	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:MaxItems=20
-	// +kubebuilder:validation:XValidation:message="duplicate domains",rule="self.all(x, self.exists_one(y, y == x))"
-	Domains []Domain `json:"domains,omitempty"`
+	TrustedDomains []string `json:"trustedDomains"`
 
 	// UI holds the UI customization options.
 	// +optional
 	UI *UISpec `json:"ui,omitempty"`
 }
 
-// Domain is the domain name under which an APIPortal will be exposed.
-// +kubebuilder:validation:MaxLength=253
-// +kubebuilder:validation:XValidation:message="domain must be a valid domain name",rule="self.matches(r\"\"\"([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\"\"\")"
-type Domain string
-
 // UISpec configures the UI customization.
 type UISpec struct {
-	// Service defines a Kubernetes Service exposing a custom UI.
-	// +optional
-	Service *UIService `json:"service,omitempty"`
-
 	// LogoURL is the public URL of the logo.
 	// +optional
 	LogoURL string `json:"logoUrl,omitempty"`
-}
-
-// UIService configures the service to expose on the edge.
-type UIService struct {
-	// Name of the Kubernetes Service resource.
-	Name string `json:"name"`
-
-	// Namespace of the Kubernetes Service resource.
-	// +optional
-	Namespace string `json:"namespace,omitempty"`
-
-	// Port of the referenced service.
-	// A port name or port number is required.
-	// +kubebuilder:validation:XValidation:message="name or number must be defined",rule="has(self.name) || has(self.number)"
-	Port netv1.ServiceBackendPort `json:"port"`
 }
 
 // OIDCConfigStatus is the OIDC configuration status.
@@ -111,13 +85,6 @@ type OIDCConfigStatus struct {
 type APIPortalStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
-
-	// URLs are the URLs for accessing the APIPortal WebUI.
-	URLs string `json:"urls"`
-
-	// Domains are the domains for accessing the exposed APIPortal.
-	// +optional
-	Domains []string `json:"domains,omitempty"`
 
 	// OIDC is the OIDC configuration for accessing the exposed APIPortal WebUI.
 	// +optional
