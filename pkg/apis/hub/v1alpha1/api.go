@@ -68,6 +68,10 @@ type OpenAPISpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
 	URL string `json:"url,omitempty"`
 
+	// Override holds data used to override OpenAPI specification.
+	// +optional
+	Override *Override `json:"override,omitempty"`
+
 	// Path specifies the endpoint path within the Kubernetes Service where the OpenAPI specification can be obtained.
 	// The Service queried is determined by the associated Ingress, IngressRoute, or HTTPRoute resource to which the API is attached.
 	// It's important to note that this option is incompatible if the Ingress or IngressRoute specifies multiple backend services.
@@ -82,6 +86,13 @@ type OpenAPISpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	OperationSets []OperationSet `json:"operationSets,omitempty"`
+}
+
+type Override struct {
+	// +kubebuilder:validation:MaxItems=100
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="self.all(x, isURL(x))"
+	Servers []string `json:"servers"`
 }
 
 // OperationSet gives a name to a set of matching OpenAPI operations.
