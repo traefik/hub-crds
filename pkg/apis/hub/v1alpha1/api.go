@@ -91,10 +91,10 @@ type OpenAPISpec struct {
 type Override struct {
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:MinItems=1
-	Servers []Servers `json:"servers"`
+	Servers []Server `json:"servers"`
 }
 
-type Servers struct {
+type Server struct {
 	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
 	URL string `json:"url"`
 }
