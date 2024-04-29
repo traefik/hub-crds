@@ -91,8 +91,12 @@ type OpenAPISpec struct {
 type Override struct {
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="self.all(x, isURL(x))"
-	Servers []string `json:"servers"`
+	Servers []Servers `json:"servers"`
+}
+
+type Servers struct {
+	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
+	URL string `json:"url"`
 }
 
 // OperationSet gives a name to a set of matching OpenAPI operations.

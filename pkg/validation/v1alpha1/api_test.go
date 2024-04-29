@@ -165,6 +165,22 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "cannot contains '../'"}},
 		},
 		{
+			desc: "override server url is broken",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: API
+metadata:
+  name: my-api
+  namespace: my-ns
+spec:
+  openApiSpec:
+    path: /foo
+    override:
+      servers:
+      - url: aaa`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.override.servers[0].url", BadValue: "string", Detail: "must be a valid URL"}},
+		},
+		{
 			desc: "valid: openApiSpec path with segment starting with ..",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
