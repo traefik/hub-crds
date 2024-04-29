@@ -113,13 +113,18 @@ spec:
                     properties:
                       servers:
                         items:
-                          type: string
+                          properties:
+                            url:
+                              type: string
+                              x-kubernetes-validations:
+                              - message: must be a valid URL
+                                rule: isURL(self)
+                          required:
+                          - url
+                          type: object
                         maxItems: 100
                         minItems: 1
                         type: array
-                        x-kubernetes-validations:
-                        - message: must be a valid URL
-                          rule: self.all(x, isURL(x))
                     required:
                     - servers
                     type: object
