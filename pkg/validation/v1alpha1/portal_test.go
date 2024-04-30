@@ -36,7 +36,7 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  trustedDomains: ["example.com"]`),
+  trustedUrls: ["https://example.com"]`),
 		},
 		{
 			desc: "valid: full",
@@ -49,7 +49,7 @@ metadata:
 spec:
   title: title
   description: description
-  trustedDomains: ["example.com"]
+  trustedUrls: ["https://example.com"]
   ui:
     logoUrl: https://example.com/logo.png
   `),
@@ -62,7 +62,7 @@ kind: APIPortal
 metadata:
   name: my-portal
 spec:
-  trustedDomains: ["example.com"]`),
+  trustedUrls: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
@@ -74,7 +74,7 @@ metadata:
   name: .non-dns-compliant-portal
   namespace: default
 spec:
-  trustedDomains: ["example.com"]`),
+  trustedUrls: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-portal", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
 		},
 		{
@@ -86,7 +86,7 @@ metadata:
   name: ""
   namespace: default
 spec:
-  trustedDomains: ["example.com"]`),
+  trustedUrls: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
 		},
 		{
@@ -98,11 +98,11 @@ metadata:
   name: portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default
 spec:
-  trustedDomains: ["example.com"]`),
+  trustedUrls: ["https://example.com"]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "portal-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
-			desc: "missing trustedDomains",
+			desc: "missing trustedUrls",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -110,10 +110,10 @@ metadata:
   name: my-portal
   namespace: default
 spec: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.trustedDomains", BadValue: ""}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.trustedUrls", BadValue: ""}},
 		},
 		{
-			desc: "empty trustedDomains",
+			desc: "empty trustedUrls",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -121,8 +121,20 @@ metadata:
   name: my-portal
   namespace: default
 spec:
-  trustedDomains: []`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.trustedDomains", BadValue: int64(0), Detail: "spec.trustedDomains in body should have at least 1 items"}},
+  trustedUrls: []`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.trustedUrls", BadValue: int64(0), Detail: "spec.trustedUrls in body should have at least 1 items"}},
+		},
+		{
+			desc: "too many trustedUrls",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com", https://another.example.com]`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.trustedUrls", BadValue: 2, Detail: "must have at most 1 items"}},
 		},
 	}
 

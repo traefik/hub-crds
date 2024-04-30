@@ -49,10 +49,11 @@ type APIPortalSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
-	// TrustedDomains are the domains that are trusted by the OAuth 2.0 authorization server.
+	// TrustedURLs are the urls that are trusted by the OAuth 2.0 authorization server.
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:MaxItems=20
-	TrustedDomains []string `json:"trustedDomains"`
+	// +kubebuilder:validation:MaxItems=1
+	// +kubebuilder:validation:XValidation:message="must be a valid URLs",rule="self.all(x, isURL(x))"
+	TrustedURLs []string `json:"trustedUrls"`
 
 	// UI holds the UI customization options.
 	// +optional
