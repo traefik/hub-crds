@@ -14,11 +14,7 @@ spec:
     singular: apiportal
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - jsonPath: .status.urls
-      name: URLs
-      type: string
-    name: v1alpha1
+  - name: v1alpha1
     schema:
       openAPIV3Schema:
         description: APIPortal defines a developer portal for accessing the documentation
@@ -98,4 +94,3 @@ spec:
         type: object
     served: true
     storage: true
-    subresources: {}

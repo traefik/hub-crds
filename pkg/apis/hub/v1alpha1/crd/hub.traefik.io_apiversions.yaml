@@ -15,9 +15,6 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.apiName
-      name: APIName
-      type: string
     - jsonPath: .spec.title
       name: Title
       type: string
