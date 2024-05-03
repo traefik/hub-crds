@@ -25,7 +25,6 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIVersion defines a version of an API.
-// +kubebuilder:printcolumn:name="APIName",type=string,JSONPath=`.spec.apiName`
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`
 // +kubebuilder:printcolumn:name="Release",type=string,JSONPath=`.spec.release`
 type APIVersion struct {
