@@ -174,18 +174,6 @@ type AccessControlOAuthIntroClientConfig struct {
 	TokenTypeHint string `json:"tokenTypeHint,omitempty"`
 }
 
-// AccessControlOAuthIntroClientConfigAuth configures authentication to the Authorization Server.
-type AccessControlOAuthIntroClientConfigAuth struct {
-	// Kind sets the kind of authentication that can be used to authenticate requests.
-	// The content of the referenced depends on this kind.
-	// +kubebuilder:validation:Enum:=Basic;Bearer;Header;Query
-	// +kubebuilder:validation:Required
-	Kind string `json:"kind"`
-	// Secret is the reference to the Kubernetes secrets containing sensitive authentication data.
-	// +kubebuilder:validation:Required
-	Secret corev1.SecretReference `json:"secret"`
-}
-
 // HTTPClientConfig configures HTTP clients.
 type HTTPClientConfig struct {
 	// TLS configures TLS communication with the Authorization Server.
