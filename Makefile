@@ -8,6 +8,9 @@ lint:
 test:
 	go test -v -cover ./...
 
+clean:
+	find pkg/apis/hub/ -name '*.yaml' -delete
+
 .PHONY: build
-build:
+build: clean
 	@$(CURDIR)/script/code-gen-docker.sh
