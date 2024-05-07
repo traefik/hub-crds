@@ -1,8 +1,6 @@
 run:
   timeout: 10m
   skip-files: [ ]
-  skip-dirs:
-    - hub/v1alpha1/generated/
 
 linters:
   enable-all: true
@@ -75,6 +73,7 @@ linters-settings:
           - k8s.io/apimachinery/pkg/util/yaml
           - k8s.io/apimachinery/pkg/runtime
           - k8s.io/kube-openapi/pkg/validation/validate
+          - k8s.io/apiserver/pkg/apis/cel
   importas:
     no-unaliased: true
   goheader:
@@ -99,9 +98,11 @@ linters-settings:
 
 issues:
   exclude-rules:
-      - path: pkg/validation/v1alpha1/api_test.go
-        linters:
-          - maintidx
-      - path: pkg/validation/v1alpha1/version_test.go
-        linters:
-          - maintidx
+    - path: pkg/validation/v1alpha1/api_test.go
+      linters:
+        - maintidx
+    - path: pkg/validation/v1alpha1/version_test.go
+      linters:
+        - maintidx
+  exclude-dirs:
+    - hub/v1alpha1/generated/
