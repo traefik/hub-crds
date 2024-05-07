@@ -30,7 +30,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	runtimeschema "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/validation/field"
-	"k8s.io/kube-openapi/pkg/validation/validate"
+	apiservercel "k8s.io/apiserver/pkg/apis/cel"
 )
 
 // Validator validates the Kubernetes resources against their OpenAPI specification.
@@ -38,7 +38,7 @@ import (
 type Validator struct {
 	structuralSchemas map[string]*schema.Structural
 	namespaced        map[string]bool
-	schemaValidators  map[string]validate.SchemaValidator
+	schemaValidators  map[string]apiservervalidation.SchemaValidator
 	celValidators     map[string]*cel.Validator
 }
 
@@ -47,7 +47,7 @@ func NewValidator() *Validator {
 	return &Validator{
 		structuralSchemas: make(map[string]*schema.Structural),
 		namespaced:        make(map[string]bool),
-		schemaValidators:  make(map[string]validate.SchemaValidator),
+		schemaValidators:  make(map[string]apiservervalidation.SchemaValidator),
 		celValidators:     make(map[string]*cel.Validator),
 	}
 }
@@ -65,12 +65,12 @@ func (v *Validator) Register(crd *apiextensions.CustomResourceDefinition) error 
 			return fmt.Errorf("building structural schema: %w", err)
 		}
 
-		schemaValidator, _, err := apiservervalidation.NewSchemaValidator(validationSchema)
+		schemaValidator, _, err := apiservervalidation.NewSchemaValidator(validationSchema.OpenAPIV3Schema)
 		if err != nil {
 			return fmt.Errorf("creating schema validator: %w", err)
 		}
 
-		celValidator := cel.NewValidator(structuralSchema, true, cel.PerCallLimit)
+		celValidator := cel.NewValidator(structuralSchema, true, apiservercel.PerCallLimit)
 
 		key := runtimeschema.GroupVersionKind{
 			Group:   crd.Spec.Group,
@@ -78,7 +78,7 @@ func (v *Validator) Register(crd *apiextensions.CustomResourceDefinition) error 
 			Kind:    crd.Spec.Names.Kind,
 		}.String()
 
-		v.schemaValidators[key] = *schemaValidator
+		v.schemaValidators[key] = schemaValidator
 		v.celValidators[key] = celValidator
 		v.structuralSchemas[key] = structuralSchema
 		v.namespaced[key] = crd.Spec.Scope == apiextensions.NamespaceScoped
@@ -115,12 +115,12 @@ func (v *Validator) Validate(obj *unstructured.Unstructured) field.ErrorList {
 
 	// Validate object schema.
 	if validator, ok := v.schemaValidators[key]; ok {
-		fieldErrs = append(fieldErrs, apiservervalidation.ValidateCustomResource(nil, unstructuredContent, &validator)...)
+		fieldErrs = append(fieldErrs, apiservervalidation.ValidateCustomResource(nil, unstructuredContent, validator)...)
 	}
 
 	// Validate CEL rules.
 	if validator, ok := v.celValidators[key]; ok {
-		celErrs, _ := validator.Validate(context.Background(), nil, structuralSchema, unstructuredContent, nil, cel.RuntimeCELCostBudget)
+		celErrs, _ := validator.Validate(context.Background(), nil, structuralSchema, unstructuredContent, nil, apiservercel.RuntimeCELCostBudget)
 		fieldErrs = append(fieldErrs, celErrs...)
 	}
 
