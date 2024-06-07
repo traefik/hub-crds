@@ -29,7 +29,14 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ steps.go_version.outputs.go_version }}
+      - name: setup proxy credentials
+        run: |
+          cat <<EOF ~/.netrc
+          ${{secrets.GOPROXY_CREDS}}
+          EOF
       - name: update go.mod
+        env:
+          GOPROXY: https://gomod.traefiklabs.tech,https://proxy.golang.org,direct
         run: |
           sed -i -e "s|github.com/traefik/hub-crds .*|github.com/traefik/hub-crds ${{ inputs.CRDS_VERSION }}|g" go.mod
           go mod tidy
