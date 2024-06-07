@@ -31,7 +31,7 @@ jobs:
           go-version: ${{ steps.go_version.outputs.go_version }}
       - name: setup proxy credentials
         run: |
-          cat <<EOF ~/.netrc
+          cat <<EOF > ~/.netrc
           ${{secrets.GOPROXY_CREDS}}
           EOF
       - name: update go.mod
