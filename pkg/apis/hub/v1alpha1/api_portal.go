@@ -68,6 +68,10 @@ type UISpec struct {
 
 // OIDCConfigStatus is the OIDC configuration status.
 type OIDCConfigStatus struct {
+	// Generic indicates weather or not the APIPortal authentication relies on Generic OIDC.
+	// +optional
+	Generic bool `json:"generic,omitempty"`
+
 	// Issuer is the OIDC issuer for accessing the exposed APIPortal WebUI.
 	// +optional
 	Issuer string `json:"issuer,omitempty"`
@@ -79,6 +83,30 @@ type OIDCConfigStatus struct {
 	// SecretName is the name of the secret containing the OIDC ClientSecret for accessing the exposed APIPortal WebUI.
 	// +optional
 	SecretName string `json:"secretName,omitempty"`
+
+	// Scopes is the OIDC scopes for accessing the exposed APIPortal WebUI.
+	// +optional
+	Scopes string `json:"scopes,omitempty"`
+
+	// FirstnameClaim is the name of the JWT claim containing the user firstname.
+	// +optional
+	FirstnameClaim string `json:"firstnameClaim,omitempty"`
+
+	// LastnameClaim is the name of the JWT claim containing the user lastname.
+	// +optional
+	LastnameClaim string `json:"lastnameClaim,omitempty"`
+
+	// EmailClaim is the name of the JWT claim containing the user email.
+	// +optional
+	EmailClaim string `json:"emailClaim,omitempty"`
+
+	// GroupsClaim is the name of the JWT claim containing the user groups.
+	// +optional
+	GroupsClaim string `json:"groupsClaim,omitempty"`
+
+	// CompanyClaim is the name of the JWT claim containing the user groups.
+	// +optional
+	CompanyClaim string `json:"companyClaim,omitempty"`
 }
 
 // APIPortalStatus is the status of an APIPortal.
