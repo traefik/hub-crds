@@ -94,7 +94,7 @@ spec:
                       the user firstname.
                     type: string
                   generic:
-                    description: Generic indicates weather or not the APIPortal authentication
+                    description: Generic indicates whether or not the APIPortal authentication
                       relies on Generic OIDC.
                     type: boolean
                   groupsClaim:
@@ -110,8 +110,8 @@ spec:
                       the user lastname.
                     type: string
                   scopes:
-                    description: Scopes is the OIDC scopes for accessing the exposed
-                      APIPortal WebUI.
+                    description: Scopes is the OIDC scopes for getting user attributes
+                      during the authentication to the exposed APIPortal WebUI.
                     type: string
                   secretName:
                     description: SecretName is the name of the secret containing the

@@ -68,7 +68,7 @@ type UISpec struct {
 
 // OIDCConfigStatus is the OIDC configuration status.
 type OIDCConfigStatus struct {
-	// Generic indicates weather or not the APIPortal authentication relies on Generic OIDC.
+	// Generic indicates whether or not the APIPortal authentication relies on Generic OIDC.
 	// +optional
 	Generic bool `json:"generic,omitempty"`
 
@@ -84,7 +84,7 @@ type OIDCConfigStatus struct {
 	// +optional
 	SecretName string `json:"secretName,omitempty"`
 
-	// Scopes is the OIDC scopes for accessing the exposed APIPortal WebUI.
+	// Scopes is the OIDC scopes for getting user attributes during the authentication to the exposed APIPortal WebUI.
 	// +optional
 	Scopes string `json:"scopes,omitempty"`
 
