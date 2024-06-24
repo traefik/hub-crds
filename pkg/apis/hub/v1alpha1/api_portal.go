@@ -108,7 +108,7 @@ type OIDCConfigStatus struct {
 	// +optional
 	GroupsClaim string `json:"groupsClaim,omitempty"`
 
-	// CompanyClaim is the name of the JWT claim containing the user groups.
+	// CompanyClaim is the name of the JWT claim containing the user company.
 	// +optional
 	CompanyClaim string `json:"companyClaim,omitempty"`
 }
