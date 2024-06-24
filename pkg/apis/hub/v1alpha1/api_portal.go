@@ -88,6 +88,10 @@ type OIDCConfigStatus struct {
 	// +optional
 	Scopes string `json:"scopes,omitempty"`
 
+	// ExternalIDClaim is the name of the JWT claim containing the user external ID.
+	// +optional
+	ExternalIDClaim string `json:"externalIdClaim,omitempty"`
+
 	// FirstnameClaim is the name of the JWT claim containing the user firstname.
 	// +optional
 	FirstnameClaim string `json:"firstnameClaim,omitempty"`
@@ -104,7 +108,7 @@ type OIDCConfigStatus struct {
 	// +optional
 	GroupsClaim string `json:"groupsClaim,omitempty"`
 
-	// CompanyClaim is the name of the JWT claim containing the user groups.
+	// CompanyClaim is the name of the JWT claim containing the user company.
 	// +optional
 	CompanyClaim string `json:"companyClaim,omitempty"`
 }
