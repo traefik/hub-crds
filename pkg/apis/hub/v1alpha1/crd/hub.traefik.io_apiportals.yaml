@@ -89,6 +89,10 @@ spec:
                     description: EmailClaim is the name of the JWT claim containing
                       the user email.
                     type: string
+                  externalIdClaim:
+                    description: ExternalIDClaim is the name of the JWT claim containing
+                      the user external ID.
+                    type: string
                   firstnameClaim:
                     description: FirstnameClaim is the name of the JWT claim containing
                       the user firstname.
