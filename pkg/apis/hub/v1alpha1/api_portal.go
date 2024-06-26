@@ -88,9 +88,9 @@ type OIDCConfigStatus struct {
 	// +optional
 	Scopes string `json:"scopes,omitempty"`
 
-	// ExternalIDClaim is the name of the JWT claim containing the user external ID.
+	// UserIDClaim is the name of the JWT claim containing the user ID.
 	// +optional
-	ExternalIDClaim string `json:"externalIdClaim,omitempty"`
+	UserIDClaim string `json:"userIdClaim,omitempty"`
 
 	// FirstnameClaim is the name of the JWT claim containing the user firstname.
 	// +optional
@@ -111,6 +111,10 @@ type OIDCConfigStatus struct {
 	// CompanyClaim is the name of the JWT claim containing the user company.
 	// +optional
 	CompanyClaim string `json:"companyClaim,omitempty"`
+
+	// StoredAttributes configure the user attributes to store.
+	// +optional
+	StoredAttributes []string `json:"storedAttributes,omitempty"`
 }
 
 // APIPortalStatus is the status of an APIPortal.
