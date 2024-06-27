@@ -112,9 +112,9 @@ type OIDCConfigStatus struct {
 	// +optional
 	CompanyClaim string `json:"companyClaim,omitempty"`
 
-	// StoredAttributes configure the user attributes to store.
+	// SyncedAttributes configure the user attributes to sync.
 	// +optional
-	StoredAttributes []string `json:"storedAttributes,omitempty"`
+	SyncedAttributes []string `json:"syncedAttributes,omitempty"`
 }
 
 // APIPortalStatus is the status of an APIPortal.

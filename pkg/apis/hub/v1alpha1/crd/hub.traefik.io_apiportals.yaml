@@ -117,9 +117,9 @@ spec:
                     description: SecretName is the name of the secret containing the
                       OIDC ClientSecret for accessing the exposed APIPortal WebUI.
                     type: string
-                  storedAttributes:
-                    description: StoredAttributes configure the user attributes to
-                      store.
+                  syncedAttributes:
+                    description: SyncedAttributes configure the user attributes to
+                      sync.
                     items:
                       type: string
                     type: array
