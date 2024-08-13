@@ -37,6 +37,14 @@ type APIAccessListerExpansion interface{}
 // APIAccessNamespaceLister.
 type APIAccessNamespaceListerExpansion interface{}
 
+// APIPlanListerExpansion allows custom methods to be added to
+// APIPlanLister.
+type APIPlanListerExpansion interface{}
+
+// APIPlanNamespaceListerExpansion allows custom methods to be added to
+// APIPlanNamespaceLister.
+type APIPlanNamespaceListerExpansion interface{}
+
 // APIPortalListerExpansion allows custom methods to be added to
 // APIPortalLister.
 type APIPortalListerExpansion interface{}

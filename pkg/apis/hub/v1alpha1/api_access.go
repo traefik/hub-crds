@@ -69,6 +69,21 @@ type APIAccessSpec struct {
 	// An empty OperationFilter prohibits all operations.
 	// +optional
 	OperationFilter *OperationFilter `json:"operationFilter,omitempty"`
+
+	// APIPlan defines which APIPlan will be used.
+	APIPlan APIPlanReference `json:"apiPlan"`
+
+	// Weight specifies the evaluation order of the plan.
+	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
+	// +optional
+	Weight int `json:"weight,omitempty"`
+}
+
+// APIPlanReference references an APIPlan.
+type APIPlanReference struct {
+	// Name of the APIPlan.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
 }
 
 // APIReference references an API.

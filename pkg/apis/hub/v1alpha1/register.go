@@ -54,6 +54,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APIAccessList{},
 		&APIRateLimit{},
 		&APIRateLimitList{},
+		&APIPlan{},
+		&APIPlanList{},
 		&APIVersion{},
 		&APIVersionList{},
 	)
