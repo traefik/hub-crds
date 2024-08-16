@@ -33,6 +33,7 @@ type HubV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	APIsGetter
 	APIAccessesGetter
+	APIPlansGetter
 	APIPortalsGetter
 	APIRateLimitsGetter
 	APIVersionsGetter
@@ -50,6 +51,10 @@ func (c *HubV1alpha1Client) APIs(namespace string) APIInterface {
 
 func (c *HubV1alpha1Client) APIAccesses(namespace string) APIAccessInterface {
 	return newAPIAccesses(c, namespace)
+}
+
+func (c *HubV1alpha1Client) APIPlans(namespace string) APIPlanInterface {
+	return newAPIPlans(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIPortals(namespace string) APIPortalInterface {

@@ -25,6 +25,8 @@ type APIExpansion interface{}
 
 type APIAccessExpansion interface{}
 
+type APIPlanExpansion interface{}
+
 type APIPortalExpansion interface{}
 
 type APIRateLimitExpansion interface{}

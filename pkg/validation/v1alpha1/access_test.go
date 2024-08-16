@@ -33,7 +33,10 @@ func TestAPIAccess_Validation(t *testing.T) {
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
-  name: "my-access"`),
+  name: "my-access"
+spec:
+  apiPlan:
+    name: my-plan`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
@@ -43,7 +46,10 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
-  namespace: default`),
+  namespace: default
+spec:
+  apiPlan:
+    name: my-plan`),
 		},
 		{
 			desc: "valid: full",
@@ -54,6 +60,9 @@ metadata:
   name: my-access
   namespace: default
 spec:
+  apiPlan:
+    name: my-plan
+  weight: 100
   groups:
     - my-group
   apis:
@@ -104,6 +113,8 @@ metadata:
   name: my-access
   namespace: default
 spec:
+  apiPlan:
+    name: my-plan
   apis:
     - name: my-api
     - name: my-api`),
@@ -118,6 +129,8 @@ metadata:
   name: my-access
   namespace: default
 spec:
+  apiPlan:
+    name: my-plan
   apis:
     - name: my-api
     - name: my-api`),
@@ -132,6 +145,8 @@ metadata:
   name: my-access
   namespace: default
 spec:
+  apiPlan:
+    name: my-plan
   apiSelector:
     matchExpressions:
       - key: value`),
@@ -146,10 +161,35 @@ metadata:
   name: my-access
   namespace: default
 spec:
+  apiPlan:
+    name: my-plan
   everyone: true
   groups:
     - my-group`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
+		},
+		{
+			desc: "missing apiPlan",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAccess
+metadata:
+  name: my-access
+  namespace: default
+spec: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan", BadValue: ""}},
+		},
+		{
+			desc: "missing apiPlan name",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAccess
+metadata:
+  name: my-access
+  namespace: default
+spec:
+  apiPlan: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
 		},
 	}
 
