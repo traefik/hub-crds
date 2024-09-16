@@ -39,6 +39,10 @@ func (c *FakeHubV1alpha1) APIAccesses(namespace string) v1alpha1.APIAccessInterf
 	return &FakeAPIAccesses{c, namespace}
 }
 
+func (c *FakeHubV1alpha1) APIBundles(namespace string) v1alpha1.APIBundleInterface {
+	return &FakeAPIBundles{c, namespace}
+}
+
 func (c *FakeHubV1alpha1) APIPlans(namespace string) v1alpha1.APIPlanInterface {
 	return &FakeAPIPlans{c, namespace}
 }
