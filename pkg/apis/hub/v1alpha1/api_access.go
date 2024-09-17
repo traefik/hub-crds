@@ -49,7 +49,7 @@ type APIAccessSpec struct {
 	// +optional
 	Everyone bool `json:"everyone,omitempty"`
 
-	// APIBundles defines a set of APIBundles that will be accessible to the configured audience.
+	// APIBundles defines a set of APIBundle that will be accessible to the configured audience.
 	// Multiple APIAccesses can select the same APIBundles.
 	// When combined with APISelector and APIs, this set of APIBundles is appended to the matching APIs.
 	// +optional
