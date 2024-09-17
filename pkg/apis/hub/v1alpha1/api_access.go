@@ -79,7 +79,7 @@ type APIAccessSpec struct {
 
 	// APIPlan defines which APIPlan will be used.
 	// +optional
-	APIPlan APIPlanReference `json:"apiPlan,omitempty"`
+	APIPlan *APIPlanReference `json:"apiPlan,omitempty"`
 
 	// Weight specifies the evaluation order of the plan.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
