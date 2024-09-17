@@ -58,6 +58,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APIPlanList{},
 		&APIVersion{},
 		&APIVersionList{},
+		&APIBundle{},
+		&APIBundleList{},
 	)
 
 	metav1.AddToGroupVersion(

@@ -49,6 +49,13 @@ type APIAccessSpec struct {
 	// +optional
 	Everyone bool `json:"everyone,omitempty"`
 
+	// APIBundles defines a set of APIBundle that will be accessible to the configured audience.
+	// Multiple APIAccesses can select the same APIBundles.
+	// +optional
+	// +kubebuilder:validation:MaxItems=100
+	// +kubebuilder:validation:XValidation:message="duplicated apiBundles",rule="self.all(x, self.exists_one(y, x.name == y.name))"
+	APIBundles []APIBundleReference `json:"apiBundles,omitempty"`
+
 	// APISelector selects the APIs that will be accessible to the configured audience.
 	// Multiple APIAccesses can select the same set of APIs.
 	// This field is optional and follows standard label selector semantics.
@@ -71,7 +78,8 @@ type APIAccessSpec struct {
 	OperationFilter *OperationFilter `json:"operationFilter,omitempty"`
 
 	// APIPlan defines which APIPlan will be used.
-	APIPlan APIPlanReference `json:"apiPlan"`
+	// +optional
+	APIPlan APIPlanReference `json:"apiPlan,omitempty"`
 
 	// Weight specifies the evaluation order of the plan.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
@@ -89,6 +97,13 @@ type APIPlanReference struct {
 // APIReference references an API.
 type APIReference struct {
 	// Name of the API.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+}
+
+// APIBundleReference references an APIBundle.
+type APIBundleReference struct {
+	// Name of the APIBundle.
 	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
 }

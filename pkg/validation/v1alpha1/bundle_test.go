@@ -23,7 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func TestAPIAccess_Validation(t *testing.T) {
+func TestAPIBundle_Validation(t *testing.T) {
 	t.Parallel()
 
 	tests := []validationTestCase{
@@ -31,51 +31,46 @@ func TestAPIAccess_Validation(t *testing.T) {
 			desc: "missing resource namespace",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
-  name: "my-access"
+  name: "my-bundle"
 spec:
-  apiPlan:
-    name: my-plan`),
+  apis:
+    - name: my-api`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "valid: minimal",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
-  name: my-access
-  namespace: default`),
+  name: my-bundle
+  namespace: default
+spec:
+  apis:
+    - name: my-api`),
 		},
 		{
 			desc: "valid: full",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
-  name: my-access
+  name: my-bundle
   namespace: default
-spec:
-  apiPlan:
-    name: my-plan
-  weight: 100
-  groups:
-    - my-group
+spec: 
   apis:
     - name: my-api
   apiSelector:
     matchLabels:
-      key: value
-  operationFilter:
-    include:
-      - my-filter`),
+      key: value`),
 		},
 		{
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
   name: .non-dns-compliant-access
   namespace: default`),
@@ -85,7 +80,7 @@ metadata:
 			desc: "missing resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
   name: ""
   namespace: default`),
@@ -95,7 +90,7 @@ metadata:
 			desc: "resource name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
   name: access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default`),
@@ -105,13 +100,11 @@ metadata:
 			desc: "duplicated APIs",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
-  name: my-access
+  name: my-bundle
   namespace: default
 spec:
-  apiPlan:
-    name: my-plan
   apis:
     - name: my-api
     - name: my-api`),
@@ -121,13 +114,11 @@ spec:
 			desc: "duplicated API: implicit default",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
-  name: my-access
+  name: my-bundle
   namespace: default
 spec:
-  apiPlan:
-    name: my-plan
   apis:
     - name: my-api
     - name: my-api`),
@@ -137,45 +128,15 @@ spec:
 			desc: "invalid API selector",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: APIBundle
 metadata:
-  name: my-access
+  name: my-bundle
   namespace: default
 spec:
-  apiPlan:
-    name: my-plan
   apiSelector:
     matchExpressions:
       - key: value`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiSelector.matchExpressions[0].operator", BadValue: ""}},
-		},
-		{
-			desc: "everyone and groups both set",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apiPlan:
-    name: my-plan
-  everyone: true
-  groups:
-    - my-group`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
-		},
-		{
-			desc: "missing apiPlan name",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apiPlan: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
 		},
 	}
 
