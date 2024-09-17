@@ -41,7 +41,7 @@ spec:
             properties:
               apiBundles:
                 description: |-
-                  APIBundles defines a set of APIBundles that will be accessible to the configured audience.
+                  APIBundles defines a set of APIBundle that will be accessible to the configured audience.
                   Multiple APIAccesses can select the same APIBundles.
                 items:
                   description: APIBundleReference references an APIBundle.

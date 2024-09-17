@@ -147,7 +147,11 @@ func (in *APIAccessSpec) DeepCopyInto(out *APIAccessSpec) {
 		*out = new(OperationFilter)
 		(*in).DeepCopyInto(*out)
 	}
-	out.APIPlan = in.APIPlan
+	if in.APIPlan != nil {
+		in, out := &in.APIPlan, &out.APIPlan
+		*out = new(APIPlanReference)
+		**out = **in
+	}
 	return
 }
 
