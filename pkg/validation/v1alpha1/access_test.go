@@ -46,10 +46,7 @@ apiVersion: hub.traefik.io/v1alpha1
 kind: APIAccess
 metadata:
   name: my-access
-  namespace: default
-spec:
-  apiPlan:
-    name: my-plan`),
+  namespace: default`),
 		},
 		{
 			desc: "valid: full",
@@ -167,17 +164,6 @@ spec:
   groups:
     - my-group`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
-		},
-		{
-			desc: "missing apiPlan",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan", BadValue: ""}},
 		},
 		{
 			desc: "missing apiPlan name",

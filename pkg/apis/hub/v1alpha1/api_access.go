@@ -51,7 +51,6 @@ type APIAccessSpec struct {
 
 	// APIBundles defines a set of APIBundle that will be accessible to the configured audience.
 	// Multiple APIAccesses can select the same APIBundles.
-	// When combined with APISelector and APIs, this set of APIBundles is appended to the matching APIs.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated apiBundles",rule="self.all(x, self.exists_one(y, x.name == y.name))"
@@ -80,7 +79,7 @@ type APIAccessSpec struct {
 
 	// APIPlan defines which APIPlan will be used.
 	// +optional
-	APIPlan APIPlanReference `json:"apiPlan"`
+	APIPlan APIPlanReference `json:"apiPlan,omitempty"`
 
 	// Weight specifies the evaluation order of the plan.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
