@@ -22,7 +22,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	v1alpha1crd "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1/crd"
+	hubcrd "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1/crd"
 	"github.com/traefik/hub-crds/pkg/crd"
 	"github.com/traefik/hub-crds/pkg/validation"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -38,12 +38,12 @@ type validationTestCase struct {
 func checkValidation(t *testing.T, test validationTestCase) {
 	t.Helper()
 
-	crds, err := crd.GetCRDs(v1alpha1crd.CRDs)
+	crds, err := crd.GetCRDs(hubcrd.CRDs)
 	require.NoError(t, err)
 
 	validator := validation.NewValidator()
-	for _, crd := range crds {
-		if err = validator.Register(crd); err != nil {
+	for _, definition := range crds {
+		if err = validator.Register(definition); err != nil {
 			require.NoError(t, err)
 		}
 	}

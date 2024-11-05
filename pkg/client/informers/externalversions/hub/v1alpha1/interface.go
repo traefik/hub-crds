@@ -43,6 +43,8 @@ type Interface interface {
 	APIVersions() APIVersionInformer
 	// AccessControlPolicies returns a AccessControlPolicyInformer.
 	AccessControlPolicies() AccessControlPolicyInformer
+	// ManagedSubscriptions returns a ManagedSubscriptionInformer.
+	ManagedSubscriptions() ManagedSubscriptionInformer
 }
 
 type version struct {
@@ -94,4 +96,9 @@ func (v *version) APIVersions() APIVersionInformer {
 // AccessControlPolicies returns a AccessControlPolicyInformer.
 func (v *version) AccessControlPolicies() AccessControlPolicyInformer {
 	return &accessControlPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// ManagedSubscriptions returns a ManagedSubscriptionInformer.
+func (v *version) ManagedSubscriptions() ManagedSubscriptionInformer {
+	return &managedSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

@@ -36,3 +36,5 @@ type APIRateLimitExpansion interface{}
 type APIVersionExpansion interface{}
 
 type AccessControlPolicyExpansion interface{}
+
+type ManagedSubscriptionExpansion interface{}

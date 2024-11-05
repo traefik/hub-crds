@@ -63,6 +63,10 @@ func (c *FakeHubV1alpha1) AccessControlPolicies() v1alpha1.AccessControlPolicyIn
 	return &FakeAccessControlPolicies{c}
 }
 
+func (c *FakeHubV1alpha1) ManagedSubscriptions(namespace string) v1alpha1.ManagedSubscriptionInterface {
+	return &FakeManagedSubscriptions{c, namespace}
+}
+
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakeHubV1alpha1) RESTClient() rest.Interface {

@@ -23,7 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func TestAPIAccess_Validation(t *testing.T) {
+func TestManagedSubscription_Validation(t *testing.T) {
 	t.Parallel()
 
 	tests := []validationTestCase{
@@ -31,35 +31,39 @@ func TestAPIAccess_Validation(t *testing.T) {
 			desc: "missing resource namespace",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: "my-access"
-`),
+  name: my-managed-subscription
+spec:
+  applications:
+    - appId: p1`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "valid: minimal",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: my-access
-  namespace: default`),
+  name: my-managed-subscription
+  namespace: default
+spec:
+  applications:
+    - appId: p1`),
 		},
 		{
 			desc: "valid: full",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: my-access
+  name: my-managed-subscription
   namespace: default
 spec:
+  applications:
+    - appId: app1
   apiPlan:
     name: my-plan
-  weight: 100
-  groups:
-    - my-group
   apis:
     - name: my-api
   apiSelector:
@@ -73,43 +77,75 @@ spec:
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
   name: .non-dns-compliant-access
-  namespace: default`),
+  namespace: default
+spec:
+  applications:
+    - appId: p1`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-access", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
 		},
 		{
 			desc: "missing resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
   name: ""
-  namespace: default`),
+  namespace: default
+spec:
+  applications:
+    - appId: p1`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
 		},
 		{
 			desc: "resource name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
   name: access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
-  namespace: default`),
+  namespace: default
+spec:
+  applications:
+    - appId: p1`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
+		},
+		{
+			desc: "missing applications",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedSubscription
+metadata:
+  name: my-managed-subscription
+  namespace: default
+spec: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.applications", BadValue: ""}},
+		},
+		{
+			desc: "no applications",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedSubscription
+metadata:
+  name: my-managed-subscription
+  namespace: default
+spec:
+  applications: []`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.applications", BadValue: int64(0), Detail: "spec.applications in body should have at least 1 items"}},
 		},
 		{
 			desc: "duplicated APIs",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: my-access
+  name: my-managed-subscription
   namespace: default
 spec:
-  apiPlan:
-    name: my-plan
+  applications:
+    - appId: app1
   apis:
     - name: my-api
     - name: my-api`),
@@ -119,13 +155,13 @@ spec:
 			desc: "duplicated API: implicit default",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: my-access
+  name: my-managed-subscription
   namespace: default
 spec:
-  apiPlan:
-    name: my-plan
+  applications:
+    - appId: app1
   apis:
     - name: my-api
     - name: my-api`),
@@ -135,43 +171,29 @@ spec:
 			desc: "invalid API selector",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: my-access
+  name: my-managed-subscription
   namespace: default
 spec:
-  apiPlan:
-    name: my-plan
+  applications:
+    - appId: app1
   apiSelector:
     matchExpressions:
       - key: value`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiSelector.matchExpressions[0].operator", BadValue: ""}},
 		},
 		{
-			desc: "everyone and groups both set",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
-metadata:
-  name: my-access
-  namespace: default
-spec:
-  apiPlan:
-    name: my-plan
-  everyone: true
-  groups:
-    - my-group`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
-		},
-		{
 			desc: "missing apiPlan name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APIAccess
+kind: ManagedSubscription
 metadata:
-  name: my-access
+  name: my-managed-subscription
   namespace: default
 spec:
+  applications:
+    - appId: app1
   apiPlan: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
 		},

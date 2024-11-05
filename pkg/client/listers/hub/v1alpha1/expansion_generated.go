@@ -80,3 +80,11 @@ type APIVersionNamespaceListerExpansion interface{}
 // AccessControlPolicyListerExpansion allows custom methods to be added to
 // AccessControlPolicyLister.
 type AccessControlPolicyListerExpansion interface{}
+
+// ManagedSubscriptionListerExpansion allows custom methods to be added to
+// ManagedSubscriptionLister.
+type ManagedSubscriptionListerExpansion interface{}
+
+// ManagedSubscriptionNamespaceListerExpansion allows custom methods to be added to
+// ManagedSubscriptionNamespaceLister.
+type ManagedSubscriptionNamespaceListerExpansion interface{}
