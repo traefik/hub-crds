@@ -27,6 +27,8 @@ type APIAccessExpansion interface{}
 
 type APIBundleExpansion interface{}
 
+type APICatalogItemsExpansion interface{}
+
 type APIPlanExpansion interface{}
 
 type APIPortalExpansion interface{}

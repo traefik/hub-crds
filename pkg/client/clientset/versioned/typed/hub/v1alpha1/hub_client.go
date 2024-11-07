@@ -34,6 +34,7 @@ type HubV1alpha1Interface interface {
 	APIsGetter
 	APIAccessesGetter
 	APIBundlesGetter
+	APICatalogItemsesGetter
 	APIPlansGetter
 	APIPortalsGetter
 	APIRateLimitsGetter
@@ -57,6 +58,10 @@ func (c *HubV1alpha1Client) APIAccesses(namespace string) APIAccessInterface {
 
 func (c *HubV1alpha1Client) APIBundles(namespace string) APIBundleInterface {
 	return newAPIBundles(c, namespace)
+}
+
+func (c *HubV1alpha1Client) APICatalogItemses(namespace string) APICatalogItemsInterface {
+	return newAPICatalogItemses(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIPlans(namespace string) APIPlanInterface {

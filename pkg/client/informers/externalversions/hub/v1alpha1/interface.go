@@ -33,6 +33,8 @@ type Interface interface {
 	APIAccesses() APIAccessInformer
 	// APIBundles returns a APIBundleInformer.
 	APIBundles() APIBundleInformer
+	// APICatalogItemses returns a APICatalogItemsInformer.
+	APICatalogItemses() APICatalogItemsInformer
 	// APIPlans returns a APIPlanInformer.
 	APIPlans() APIPlanInformer
 	// APIPortals returns a APIPortalInformer.
@@ -71,6 +73,11 @@ func (v *version) APIAccesses() APIAccessInformer {
 // APIBundles returns a APIBundleInformer.
 func (v *version) APIBundles() APIBundleInformer {
 	return &aPIBundleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// APICatalogItemses returns a APICatalogItemsInformer.
+func (v *version) APICatalogItemses() APICatalogItemsInformer {
+	return &aPICatalogItemsInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIPlans returns a APIPlanInformer.

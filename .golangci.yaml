@@ -21,6 +21,7 @@ linters:
     - wrapcheck # Not relevant
     - lll # KubeBuilder annotations can be very long.
     - ireturn # Not relevant
+    - dupl # Too many false positive
 linters-settings:
   govet:
     enable-all: true

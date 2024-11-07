@@ -62,6 +62,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APIBundleList{},
 		&ManagedSubscription{},
 		&ManagedSubscriptionList{},
+		&APICatalogItems{},
+		&APICatalogItemsList{},
 	)
 
 	metav1.AddToGroupVersion(
