@@ -45,13 +45,13 @@ type APIBundleListerExpansion interface{}
 // APIBundleNamespaceLister.
 type APIBundleNamespaceListerExpansion interface{}
 
-// APICatalogItemsListerExpansion allows custom methods to be added to
-// APICatalogItemsLister.
-type APICatalogItemsListerExpansion interface{}
+// APICatalogItemListerExpansion allows custom methods to be added to
+// APICatalogItemLister.
+type APICatalogItemListerExpansion interface{}
 
-// APICatalogItemsNamespaceListerExpansion allows custom methods to be added to
-// APICatalogItemsNamespaceLister.
-type APICatalogItemsNamespaceListerExpansion interface{}
+// APICatalogItemNamespaceListerExpansion allows custom methods to be added to
+// APICatalogItemNamespaceLister.
+type APICatalogItemNamespaceListerExpansion interface{}
 
 // APIPlanListerExpansion allows custom methods to be added to
 // APIPlanLister.

@@ -35,59 +35,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// APICatalogItemsInformer provides access to a shared informer and lister for
-// APICatalogItemses.
-type APICatalogItemsInformer interface {
+// APICatalogItemInformer provides access to a shared informer and lister for
+// APICatalogItems.
+type APICatalogItemInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APICatalogItemsLister
+	Lister() v1alpha1.APICatalogItemLister
 }
 
-type aPICatalogItemsInformer struct {
+type aPICatalogItemInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewAPICatalogItemsInformer constructs a new informer for APICatalogItems type.
+// NewAPICatalogItemInformer constructs a new informer for APICatalogItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAPICatalogItemsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPICatalogItemsInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewAPICatalogItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredAPICatalogItemInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredAPICatalogItemsInformer constructs a new informer for APICatalogItems type.
+// NewFilteredAPICatalogItemInformer constructs a new informer for APICatalogItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAPICatalogItemsInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredAPICatalogItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().APICatalogItemses(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APICatalogItems(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().APICatalogItemses(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APICatalogItems(namespace).Watch(context.TODO(), options)
 			},
 		},
-		&hubv1alpha1.APICatalogItems{},
+		&hubv1alpha1.APICatalogItem{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *aPICatalogItemsInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPICatalogItemsInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *aPICatalogItemInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredAPICatalogItemInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *aPICatalogItemsInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APICatalogItems{}, f.defaultInformer)
+func (f *aPICatalogItemInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&hubv1alpha1.APICatalogItem{}, f.defaultInformer)
 }
 
-func (f *aPICatalogItemsInformer) Lister() v1alpha1.APICatalogItemsLister {
-	return v1alpha1.NewAPICatalogItemsLister(f.Informer().GetIndexer())
+func (f *aPICatalogItemInformer) Lister() v1alpha1.APICatalogItemLister {
+	return v1alpha1.NewAPICatalogItemLister(f.Informer().GetIndexer())
 }

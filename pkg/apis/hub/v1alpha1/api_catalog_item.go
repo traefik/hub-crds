@@ -24,23 +24,23 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APICatalogItems defines APIs that will be part of the API catalog on the portal.
-type APICatalogItems struct {
+// APICatalogItem defines APIs that will be part of the API catalog on the portal.
+type APICatalogItem struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// The desired behavior of this APICatalogItems.
+	// The desired behavior of this APICatalogItem.
 	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
-	Spec APICatalogItemsSpec `json:"spec,omitempty"`
+	Spec APICatalogItemSpec `json:"spec,omitempty"`
 
-	// The current status of this APICatalogItems.
+	// The current status of this APICatalogItem.
 	// +optional
-	Status APICatalogItemsStatus `json:"status,omitempty"`
+	Status APICatalogItemStatus `json:"status,omitempty"`
 }
 
-// APICatalogItemsSpec configures an APICatalogItems.
-type APICatalogItemsSpec struct {
+// APICatalogItemSpec configures an APICatalogItem.
+type APICatalogItemSpec struct {
 	// Groups are the consumer groups that will see the APIs.
 	// +optional
 	Groups []string `json:"groups,omitempty"`
@@ -50,21 +50,21 @@ type APICatalogItemsSpec struct {
 	Everyone bool `json:"everyone,omitempty"`
 
 	// APIBundles defines a set of APIBundle that will be visible to the configured audience.
-	// Multiple APICatalogItems can select the same APIBundles.
+	// Multiple APICatalogItem can select the same APIBundles.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated apiBundles",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	APIBundles []APIBundleReference `json:"apiBundles,omitempty"`
 
 	// APISelector selects the APIs that will be visible to the configured audience.
-	// Multiple APICatalogItems can select the same set of APIs.
+	// Multiple APICatalogItem can select the same set of APIs.
 	// This field is optional and follows standard label selector semantics.
 	// An empty APISelector matches any API.
 	// +optional
 	APISelector *metav1.LabelSelector `json:"apiSelector,omitempty"`
 
 	// APIs defines a set of APIs that will be visible to the configured audience.
-	// Multiple APICatalogItems can select the same APIs.
+	// Multiple APICatalogItem can select the same APIs.
 	// When combined with APISelector, this set of APIs is appended to the matching APIs.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
@@ -78,28 +78,28 @@ type APICatalogItemsSpec struct {
 	OperationFilter *OperationFilter `json:"operationFilter,omitempty"`
 
 	// APIPlan defines which APIPlan will be available.
-	// If multiple APICatalogItems specify the same API with different APIPlan, the API consumer will be able to pick
+	// If multiple APICatalogItem specify the same API with different APIPlan, the API consumer will be able to pick
 	// a plan from this list.
 	// +optional
 	APIPlan *APIPlanReference `json:"apiPlan,omitempty"`
 }
 
-// APICatalogItemsStatus is the status of an APICatalogItems.
-type APICatalogItemsStatus struct {
+// APICatalogItemStatus is the status of an APICatalogItem.
+type APICatalogItemStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 
-	// Hash is a hash representing the APICatalogItems.
+	// Hash is a hash representing the APICatalogItem.
 	Hash string `json:"hash,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APICatalogItemsList defines a list of APICatalogItems.
-type APICatalogItemsList struct {
+// APICatalogItemList defines a list of APICatalogItem.
+type APICatalogItemList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []APICatalogItems `json:"items"`
+	Items []APICatalogItem `json:"items"`
 }

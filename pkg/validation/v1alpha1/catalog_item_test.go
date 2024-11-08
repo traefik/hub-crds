@@ -23,7 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func TestAPICatalogItems_Validation(t *testing.T) {
+func TestAPICatalogItem_Validation(t *testing.T) {
 	t.Parallel()
 
 	tests := []validationTestCase{
@@ -31,7 +31,7 @@ func TestAPICatalogItems_Validation(t *testing.T) {
 			desc: "missing resource namespace",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: "my-catalog-items"
 `),
@@ -41,7 +41,7 @@ metadata:
 			desc: "valid: minimal",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default`),
@@ -50,7 +50,7 @@ metadata:
 			desc: "valid: full",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default
@@ -72,7 +72,7 @@ spec:
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: .non-dns-compliant-catalog-items
   namespace: default`),
@@ -82,7 +82,7 @@ metadata:
 			desc: "missing resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: ""
   namespace: default`),
@@ -92,7 +92,7 @@ metadata:
 			desc: "resource name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: catalog-items-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default`),
@@ -102,7 +102,7 @@ metadata:
 			desc: "duplicated APIs",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default
@@ -118,7 +118,7 @@ spec:
 			desc: "duplicated API: implicit default",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default
@@ -134,7 +134,7 @@ spec:
 			desc: "invalid API selector",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default
@@ -150,7 +150,7 @@ spec:
 			desc: "everyone and groups both set",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default
@@ -166,7 +166,7 @@ spec:
 			desc: "missing apiPlan name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItems
+kind: APICatalogItem
 metadata:
   name: my-catalog-items
   namespace: default
