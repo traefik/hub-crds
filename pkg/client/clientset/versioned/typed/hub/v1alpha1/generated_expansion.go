@@ -27,6 +27,8 @@ type APIAccessExpansion interface{}
 
 type APIBundleExpansion interface{}
 
+type APICatalogItemExpansion interface{}
+
 type APIPlanExpansion interface{}
 
 type APIPortalExpansion interface{}
@@ -36,3 +38,5 @@ type APIRateLimitExpansion interface{}
 type APIVersionExpansion interface{}
 
 type AccessControlPolicyExpansion interface{}
+
+type ManagedSubscriptionExpansion interface{}

@@ -43,6 +43,10 @@ func (c *FakeHubV1alpha1) APIBundles(namespace string) v1alpha1.APIBundleInterfa
 	return &FakeAPIBundles{c, namespace}
 }
 
+func (c *FakeHubV1alpha1) APICatalogItems(namespace string) v1alpha1.APICatalogItemInterface {
+	return &FakeAPICatalogItems{c, namespace}
+}
+
 func (c *FakeHubV1alpha1) APIPlans(namespace string) v1alpha1.APIPlanInterface {
 	return &FakeAPIPlans{c, namespace}
 }
@@ -61,6 +65,10 @@ func (c *FakeHubV1alpha1) APIVersions(namespace string) v1alpha1.APIVersionInter
 
 func (c *FakeHubV1alpha1) AccessControlPolicies() v1alpha1.AccessControlPolicyInterface {
 	return &FakeAccessControlPolicies{c}
+}
+
+func (c *FakeHubV1alpha1) ManagedSubscriptions(namespace string) v1alpha1.ManagedSubscriptionInterface {
+	return &FakeManagedSubscriptions{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

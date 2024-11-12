@@ -45,6 +45,14 @@ type APIBundleListerExpansion interface{}
 // APIBundleNamespaceLister.
 type APIBundleNamespaceListerExpansion interface{}
 
+// APICatalogItemListerExpansion allows custom methods to be added to
+// APICatalogItemLister.
+type APICatalogItemListerExpansion interface{}
+
+// APICatalogItemNamespaceListerExpansion allows custom methods to be added to
+// APICatalogItemNamespaceLister.
+type APICatalogItemNamespaceListerExpansion interface{}
+
 // APIPlanListerExpansion allows custom methods to be added to
 // APIPlanLister.
 type APIPlanListerExpansion interface{}
@@ -80,3 +88,11 @@ type APIVersionNamespaceListerExpansion interface{}
 // AccessControlPolicyListerExpansion allows custom methods to be added to
 // AccessControlPolicyLister.
 type AccessControlPolicyListerExpansion interface{}
+
+// ManagedSubscriptionListerExpansion allows custom methods to be added to
+// ManagedSubscriptionLister.
+type ManagedSubscriptionListerExpansion interface{}
+
+// ManagedSubscriptionNamespaceListerExpansion allows custom methods to be added to
+// ManagedSubscriptionNamespaceLister.
+type ManagedSubscriptionNamespaceListerExpansion interface{}

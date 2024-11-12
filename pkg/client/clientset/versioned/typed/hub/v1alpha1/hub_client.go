@@ -34,11 +34,13 @@ type HubV1alpha1Interface interface {
 	APIsGetter
 	APIAccessesGetter
 	APIBundlesGetter
+	APICatalogItemsGetter
 	APIPlansGetter
 	APIPortalsGetter
 	APIRateLimitsGetter
 	APIVersionsGetter
 	AccessControlPoliciesGetter
+	ManagedSubscriptionsGetter
 }
 
 // HubV1alpha1Client is used to interact with features provided by the hub.traefik.io group.
@@ -56,6 +58,10 @@ func (c *HubV1alpha1Client) APIAccesses(namespace string) APIAccessInterface {
 
 func (c *HubV1alpha1Client) APIBundles(namespace string) APIBundleInterface {
 	return newAPIBundles(c, namespace)
+}
+
+func (c *HubV1alpha1Client) APICatalogItems(namespace string) APICatalogItemInterface {
+	return newAPICatalogItems(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIPlans(namespace string) APIPlanInterface {
@@ -76,6 +82,10 @@ func (c *HubV1alpha1Client) APIVersions(namespace string) APIVersionInterface {
 
 func (c *HubV1alpha1Client) AccessControlPolicies() AccessControlPolicyInterface {
 	return newAccessControlPolicies(c)
+}
+
+func (c *HubV1alpha1Client) ManagedSubscriptions(namespace string) ManagedSubscriptionInterface {
+	return newManagedSubscriptions(c, namespace)
 }
 
 // NewForConfig creates a new HubV1alpha1Client for the given config.

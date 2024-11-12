@@ -33,6 +33,8 @@ type Interface interface {
 	APIAccesses() APIAccessInformer
 	// APIBundles returns a APIBundleInformer.
 	APIBundles() APIBundleInformer
+	// APICatalogItems returns a APICatalogItemInformer.
+	APICatalogItems() APICatalogItemInformer
 	// APIPlans returns a APIPlanInformer.
 	APIPlans() APIPlanInformer
 	// APIPortals returns a APIPortalInformer.
@@ -43,6 +45,8 @@ type Interface interface {
 	APIVersions() APIVersionInformer
 	// AccessControlPolicies returns a AccessControlPolicyInformer.
 	AccessControlPolicies() AccessControlPolicyInformer
+	// ManagedSubscriptions returns a ManagedSubscriptionInformer.
+	ManagedSubscriptions() ManagedSubscriptionInformer
 }
 
 type version struct {
@@ -71,6 +75,11 @@ func (v *version) APIBundles() APIBundleInformer {
 	return &aPIBundleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
+// APICatalogItems returns a APICatalogItemInformer.
+func (v *version) APICatalogItems() APICatalogItemInformer {
+	return &aPICatalogItemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
 // APIPlans returns a APIPlanInformer.
 func (v *version) APIPlans() APIPlanInformer {
 	return &aPIPlanInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -94,4 +103,9 @@ func (v *version) APIVersions() APIVersionInformer {
 // AccessControlPolicies returns a AccessControlPolicyInformer.
 func (v *version) AccessControlPolicies() AccessControlPolicyInformer {
 	return &accessControlPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// ManagedSubscriptions returns a ManagedSubscriptionInformer.
+func (v *version) ManagedSubscriptions() ManagedSubscriptionInformer {
+	return &managedSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

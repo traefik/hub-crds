@@ -23,49 +23,46 @@ import (
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:deprecatedversion:warning="APIAccess is deprecated in favor of APICatalogItems and ManagedSubscription"
 
-// APIAccess defines who can access to a set of APIs.
-type APIAccess struct {
+// ManagedSubscription defines a Subscription managed by the API manager as the result of a pre-negotiation with its
+// API consumers. This subscription grant consuming access to a set of APIs to a set of Applications.
+type ManagedSubscription struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// The desired behavior of this APIAccess.
-	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
-	Spec APIAccessSpec `json:"spec,omitempty"`
+	// The desired behavior of this ManagedSubscription.
+	Spec ManagedSubscriptionSpec `json:"spec,omitempty"`
 
-	// The current status of this APIAccess.
+	// The current status of this ManagedSubscription.
 	// +optional
-	Status APIAccessStatus `json:"status,omitempty"`
+	Status ManagedSubscriptionStatus `json:"status,omitempty"`
 }
 
-// APIAccessSpec configures an APIAccess.
-type APIAccessSpec struct {
-	// Groups are the consumer groups that will gain access to the selected APIs.
-	// +optional
-	Groups []string `json:"groups,omitempty"`
+// ManagedSubscriptionSpec configures an ManagedSubscription.
+type ManagedSubscriptionSpec struct {
+	// Applications references the Applications that will gain access to the specified APIs.
+	// Multiple ManagedSubscriptions can select the same AppID.
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=100
+	Applications []ApplicationReference `json:"applications"`
 
-	// Everyone indicates that all users will have access to the selected APIs.
-	// +optional
-	Everyone bool `json:"everyone,omitempty"`
-
-	// APIBundles defines a set of APIBundle that will be accessible to the configured audience.
-	// Multiple APIAccesses can select the same APIBundles.
+	// APIBundles defines a set of APIBundle that will be accessible.
+	// Multiple ManagedSubscriptions can select the same APIBundles.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated apiBundles",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	APIBundles []APIBundleReference `json:"apiBundles,omitempty"`
 
-	// APISelector selects the APIs that will be accessible to the configured audience.
-	// Multiple APIAccesses can select the same set of APIs.
+	// APISelector selects the APIs that will be accessible.
+	// Multiple ManagedSubscriptions can select the same set of APIs.
 	// This field is optional and follows standard label selector semantics.
 	// An empty APISelector matches any API.
 	// +optional
 	APISelector *metav1.LabelSelector `json:"apiSelector,omitempty"`
 
-	// APIs defines a set of APIs that will be accessible to the configured audience.
-	// Multiple APIAccesses can select the same APIs.
+	// APIs defines a set of APIs that will be accessible.
+	// Multiple ManagedSubscriptions can select the same APIs.
 	// When combined with APISelector, this set of APIs is appended to the matching APIs.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
@@ -82,57 +79,38 @@ type APIAccessSpec struct {
 	// +optional
 	APIPlan *APIPlanReference `json:"apiPlan,omitempty"`
 
-	// Weight specifies the evaluation order of the plan.
+	// Weight specifies the evaluation order of the APIPlan.
+	// When multiple ManagedSubscriptions targets the same API and Application with different APIPlan,
+	// the APIPlan with the highest weight will be enforced. If weights are equal, alphabetical order is used.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	// +optional
 	Weight int `json:"weight,omitempty"`
 }
 
-// APIPlanReference references an APIPlan.
-type APIPlanReference struct {
-	// Name of the APIPlan.
-	// +kubebuilder:validation:MaxLength=253
-	Name string `json:"name"`
-}
-
-// APIReference references an API.
-type APIReference struct {
-	// Name of the API.
-	// +kubebuilder:validation:MaxLength=253
-	Name string `json:"name"`
-}
-
-// APIBundleReference references an APIBundle.
-type APIBundleReference struct {
-	// Name of the APIBundle.
-	// +kubebuilder:validation:MaxLength=253
-	Name string `json:"name"`
-}
-
-// OperationFilter specifies the allowed operations on APIs and APIVersions.
-type OperationFilter struct {
-	// Include defines the names of OperationSets that will be accessible.
-	// +optional
-	// +kubebuilder:validation:MaxItems=100
-	Include []string `json:"include,omitempty"`
-}
-
-// APIAccessStatus is the status of an APIAccess.
-type APIAccessStatus struct {
+// ManagedSubscriptionStatus is the status of an ManagedSubscription.
+type ManagedSubscriptionStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 
-	// Hash is a hash representing the APIAccess.
+	// Hash is a hash representing the ManagedSubscription.
 	Hash string `json:"hash,omitempty"`
+}
+
+// ApplicationReference references an Application.
+type ApplicationReference struct {
+	// AppID is the public identifier of the application.
+	// In the case of OIDC, it corresponds to the clientId.
+	// +kubebuilder:validation:MaxLength=253
+	AppID string `json:"appId"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// APIAccessList defines a list of APIAccesses.
-type APIAccessList struct {
+// ManagedSubscriptionList defines a list of ManagedSubscriptions.
+type ManagedSubscriptionList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []APIAccess `json:"items"`
+	Items []ManagedSubscription `json:"items"`
 }
