@@ -64,16 +64,6 @@ type APIPlanStatus struct {
 	Hash string `json:"hash,omitempty"`
 }
 
-// Bucket defines the scope of rate limit or quota.
-// +kubebuilder:validation:Enum=user;access
-type Bucket string
-
-// List of supported buckets.
-const (
-	BucketUser   Bucket = "user"
-	BucketAccess Bucket = "access"
-)
-
 type RateLimit struct {
 	// Limit is the maximum number of token in the bucket.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
@@ -83,10 +73,6 @@ type RateLimit struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 1h",rule="self >= duration('1s') && self <= duration('1h')"
 	Period *Period `json:"period,omitempty"`
-
-	// Bucket defines the scope of the rate limit.
-	// +optional
-	Bucket Bucket `json:"bucket,omitempty"`
 }
 
 type Quota struct {
@@ -98,10 +84,6 @@ type Quota struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 9999h",rule="self >= duration('1s') && self <= duration('9999h')"
 	Period *Period `json:"period,omitempty"`
-
-	// Bucket defines the scope of the quota.
-	// +optional
-	Bucket Bucket `json:"bucket,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -54,11 +54,9 @@ spec:
   rateLimit:
     limit: 1
     period: 2s
-    bucket: user
   quota:
     limit: 1
-    period: 2s
-    bucket: access`),
+    period: 2s`),
 		},
 		{
 			desc: "missing resource namespace",
@@ -218,22 +216,6 @@ spec:
     limit: 1
     period: 0s`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.period", BadValue: "string", Detail: "must be between 1s and 1h"}},
-		},
-		{
-			desc: "unsupported ratelimit bucket",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIPlan
-metadata:
-  name: my-plan
-  namespace: default
-spec:
-  title: my-plan
-  rateLimit:
-    limit: 1
-    period: 1s
-    bucket: something`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.rateLimit.bucket", BadValue: "something", Detail: "supported values: \"user\", \"access\""}},
 		},
 	}
 
