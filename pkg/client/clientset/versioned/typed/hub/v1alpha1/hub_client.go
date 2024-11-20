@@ -31,6 +31,7 @@ import (
 
 type HubV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	AIServicesGetter
 	APIsGetter
 	APIAccessesGetter
 	APIBundlesGetter
@@ -46,6 +47,10 @@ type HubV1alpha1Interface interface {
 // HubV1alpha1Client is used to interact with features provided by the hub.traefik.io group.
 type HubV1alpha1Client struct {
 	restClient rest.Interface
+}
+
+func (c *HubV1alpha1Client) AIServices(namespace string) AIServiceInterface {
+	return newAIServices(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIs(namespace string) APIInterface {

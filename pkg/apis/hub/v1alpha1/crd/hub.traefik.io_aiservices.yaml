@@ -1,0 +1,227 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: aiservices.hub.traefik.io
+spec:
+  group: hub.traefik.io
+  names:
+    kind: AIService
+    listKind: AIServiceList
+    plural: aiservices
+    singular: aiservice
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: AIService  defines AI Service.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: The desired behavior of this APIPlan.
+            properties:
+              anthropic:
+                description: Anthropic configures anthropic.
+                properties:
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                  token:
+                    type: string
+                type: object
+              azureOpenAi:
+                description: AzureOpenAi configures AzureOpenAi.
+                properties:
+                  apiKey:
+                    type: string
+                  baseUrl:
+                    type: string
+                  deploymentName:
+                    type: string
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                type: object
+              bedrock:
+                description: Bedrock configures Bedrock.
+                properties:
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                  region:
+                    type: string
+                  systemMessage:
+                    type: boolean
+                type: object
+              cohere:
+                description: Cohere configures Cohere.
+                properties:
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                  token:
+                    type: string
+                type: object
+              gemini:
+                description: Gemini configures Gemini.
+                properties:
+                  apiKey:
+                    type: string
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                type: object
+              mistral:
+                description: Mistral configures Mistral.
+                properties:
+                  apiKey:
+                    type: string
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                type: object
+              ollama:
+                description: Ollama configures Ollama.
+                properties:
+                  baseUrl:
+                    type: string
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                type: object
+              openAi:
+                description: OpenAi configures OpenAi.
+                properties:
+                  model:
+                    type: string
+                  params:
+                    description: Params holds LLM params.
+                    properties:
+                      frequencyPenalty:
+                        type: number
+                      maxTokens:
+                        type: integer
+                      presencePenalty:
+                        type: number
+                      temperature:
+                        type: number
+                      topP:
+                        type: number
+                    type: object
+                  token:
+                    type: string
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true

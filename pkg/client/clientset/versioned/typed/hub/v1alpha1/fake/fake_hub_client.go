@@ -31,6 +31,10 @@ type FakeHubV1alpha1 struct {
 	*testing.Fake
 }
 
+func (c *FakeHubV1alpha1) AIServices(namespace string) v1alpha1.AIServiceInterface {
+	return &FakeAIServices{c, namespace}
+}
+
 func (c *FakeHubV1alpha1) APIs(namespace string) v1alpha1.APIInterface {
 	return &FakeAPIs{c, namespace}
 }

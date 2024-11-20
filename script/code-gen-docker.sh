@@ -29,6 +29,6 @@ docker run --rm \
            -v "${CURRENT_DIR}:/go/src/${PROJECT_MODULE}" \
            -w "/go/src/${PROJECT_MODULE}" \
            "${IMAGE_NAME}" \
-           controller-gen crd:crdVersions=v1 \
+           controller-gen crd:crdVersions=v1,allowDangerousTypes=true  \
            paths=./pkg/apis/hub/v1alpha1/... \
-           output:dir=./pkg/apis/hub/v1alpha1/crd
+           output:dir=./pkg/apis/hub/v1alpha1/crd \

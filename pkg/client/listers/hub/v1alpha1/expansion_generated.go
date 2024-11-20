@@ -21,6 +21,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 package v1alpha1
 
+// AIServiceListerExpansion allows custom methods to be added to
+// AIServiceLister.
+type AIServiceListerExpansion interface{}
+
+// AIServiceNamespaceListerExpansion allows custom methods to be added to
+// AIServiceNamespaceLister.
+type AIServiceNamespaceListerExpansion interface{}
+
 // APIListerExpansion allows custom methods to be added to
 // APILister.
 type APIListerExpansion interface{}
