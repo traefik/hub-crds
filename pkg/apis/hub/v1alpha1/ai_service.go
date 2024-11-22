@@ -125,11 +125,11 @@ type OpenAI struct {
 
 // Params holds the LLM hyperparameters.
 type Params struct {
-	Temperature      float32 `json:"temperature,string,omitempty"`
-	TopP             float32 `json:"topP,string,omitempty"`
-	MaxTokens        int     `json:"maxTokens,string,omitempty"`
-	FrequencyPenalty float32 `json:"frequencyPenalty,string,omitempty"`
-	PresencePenalty  float32 `json:"presencePenalty,string,omitempty"`
+	Temperature      float32 `json:"temperature,omitempty"`
+	TopP             float32 `json:"topP,omitempty"`
+	MaxTokens        int     `json:"maxTokens,omitempty"`
+	FrequencyPenalty float32 `json:"frequencyPenalty,omitempty"`
+	PresencePenalty  float32 `json:"presencePenalty,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
