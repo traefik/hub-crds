@@ -22,7 +22,7 @@ import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// AIService  defines AI Service.
+// AIService is a Kubernetes-like Service to interact with a text-based LLM provider. It defines the parameters and credentials required to interact with various LLM providers.
 type AIService struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -34,7 +34,7 @@ type AIService struct {
 
 // +k8s:deepcopy-gen=true
 
-// AIServiceSpec the plugin configuration.
+// AIServiceSpec describes the LLM service provider.
 type AIServiceSpec struct {
 	Anthropic   *Anthropic   `json:"anthropic,omitempty"`
 	AzureOpenAI *AzureOpenAi `json:"azureOpenAi,omitempty"`
@@ -48,7 +48,7 @@ type AIServiceSpec struct {
 
 // +k8s:deepcopy-gen=true
 
-// Anthropic configures anthropic.
+// Anthropic configures Anthropic backend.
 type Anthropic struct {
 	Token  string  `json:"token,omitempty"`
 	Model  string  `json:"model,omitempty"`
@@ -68,7 +68,7 @@ type AzureOpenAi struct {
 
 // +k8s:deepcopy-gen=true
 
-// Bedrock configures Bedrock.
+// Bedrock configures Bedrock backend.
 type Bedrock struct {
 	Model         string  `json:"model,omitempty"`
 	Region        string  `json:"region,omitempty"`
@@ -78,7 +78,7 @@ type Bedrock struct {
 
 // +k8s:deepcopy-gen=true
 
-// Cohere configures Cohere.
+// Cohere configures Cohere backend.
 type Cohere struct {
 	Token  string  `json:"token,omitempty"`
 	Model  string  `json:"model,omitempty"`
@@ -87,7 +87,7 @@ type Cohere struct {
 
 // +k8s:deepcopy-gen=true
 
-// Gemini configures Gemini.
+// Gemini configures Gemini backend.
 type Gemini struct {
 	APIKey string  `json:"apiKey,omitempty"`
 	Model  string  `json:"model,omitempty"`
@@ -96,7 +96,7 @@ type Gemini struct {
 
 // +k8s:deepcopy-gen=true
 
-// Mistral configures Mistral.
+// Mistral configures Mistral AI backend.
 type Mistral struct {
 	APIKey string  `json:"apiKey,omitempty"`
 	Model  string  `json:"model,omitempty"`
@@ -105,7 +105,7 @@ type Mistral struct {
 
 // +k8s:deepcopy-gen=true
 
-// Ollama configures Ollama.
+// Ollama configures Ollama backend.
 type Ollama struct {
 	Model   string  `json:"model,omitempty"`
 	BaseURL string  `json:"baseUrl,omitempty"`
@@ -123,7 +123,7 @@ type OpenAi struct {
 
 // +k8s:deepcopy-gen=true
 
-// Params holds LLM params.
+// Params holds the LLM hyperparameters.
 type Params struct {
 	Temperature      float32 `json:"temperature,string,omitempty"`
 	TopP             float32 `json:"topP,string,omitempty"`
