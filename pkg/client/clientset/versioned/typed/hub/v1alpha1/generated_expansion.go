@@ -21,6 +21,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 package v1alpha1
 
+type AIServiceExpansion interface{}
+
 type APIExpansion interface{}
 
 type APIAccessExpansion interface{}

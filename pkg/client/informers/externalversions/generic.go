@@ -56,6 +56,8 @@ func (f *genericInformer) Lister() cache.GenericLister {
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
 	// Group=hub.traefik.io, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithResource("aiservices"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().AIServices().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("apis"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIs().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("apiaccesses"):

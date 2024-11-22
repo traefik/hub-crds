@@ -27,6 +27,8 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
+	// AIServices returns a AIServiceInformer.
+	AIServices() AIServiceInformer
 	// APIs returns a APIInformer.
 	APIs() APIInformer
 	// APIAccesses returns a APIAccessInformer.
@@ -58,6 +60,11 @@ type version struct {
 // New returns a new Interface.
 func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakListOptions internalinterfaces.TweakListOptionsFunc) Interface {
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
+}
+
+// AIServices returns a AIServiceInformer.
+func (v *version) AIServices() AIServiceInformer {
+	return &aIServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIs returns a APIInformer.
