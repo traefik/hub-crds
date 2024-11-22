@@ -60,9 +60,11 @@ spec:
                     type: object
                   token:
                     type: string
+                required:
+                - token
                 type: object
-              azureOpenAi:
-                description: AzureOpenAi configures AzureOpenAi.
+              azureOpenai:
+                description: AzureOpenAI configures AzureOpenAI.
                 properties:
                   apiKey:
                     type: string
@@ -86,6 +88,10 @@ spec:
                       topP:
                         type: number
                     type: object
+                required:
+                - apiKey
+                - baseUrl
+                - deploymentName
                 type: object
               bedrock:
                 description: Bedrock configures Bedrock.
@@ -132,6 +138,8 @@ spec:
                     type: object
                   token:
                     type: string
+                required:
+                - token
                 type: object
               gemini:
                 description: Gemini configures Gemini.
@@ -154,6 +162,8 @@ spec:
                       topP:
                         type: number
                     type: object
+                required:
+                - apiKey
                 type: object
               mistral:
                 description: Mistral configures Mistral.
@@ -176,6 +186,8 @@ spec:
                       topP:
                         type: number
                     type: object
+                required:
+                - apiKey
                 type: object
               ollama:
                 description: Ollama configures Ollama.
@@ -198,9 +210,11 @@ spec:
                       topP:
                         type: number
                     type: object
+                required:
+                - baseUrl
                 type: object
-              openAi:
-                description: OpenAi configures OpenAi.
+              openai:
+                description: OpenAI configures OpenAI.
                 properties:
                   model:
                     type: string
@@ -220,6 +234,8 @@ spec:
                     type: object
                   token:
                     type: string
+                required:
+                - token
                 type: object
             type: object
         type: object

@@ -35,7 +35,7 @@ kind: AIService
 metadata:
   name: "my-ai-service"
 spec:
-  openAi:
+  openai:
     token: xxx`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
@@ -48,7 +48,7 @@ metadata:
   name: my-ai-service
   namespace: default
 spec:
-  openAi:
+  openai:
     token: xxxx`),
 		},
 		{

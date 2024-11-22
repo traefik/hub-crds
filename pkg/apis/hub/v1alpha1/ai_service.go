@@ -37,32 +37,32 @@ type AIService struct {
 // AIServiceSpec describes the LLM service provider.
 type AIServiceSpec struct {
 	Anthropic   *Anthropic   `json:"anthropic,omitempty"`
-	AzureOpenAI *AzureOpenAi `json:"azureOpenAi,omitempty"`
+	AzureOpenAI *AzureOpenAI `json:"azureOpenai,omitempty"`
 	Bedrock     *Bedrock     `json:"bedrock,omitempty"`
 	Cohere      *Cohere      `json:"cohere,omitempty"`
 	Gemini      *Gemini      `json:"gemini,omitempty"`
 	Mistral     *Mistral     `json:"mistral,omitempty"`
 	Ollama      *Ollama      `json:"ollama,omitempty"`
-	OpenAI      *OpenAi      `json:"openAi,omitempty"`
+	OpenAI      *OpenAI      `json:"openai,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
 // Anthropic configures Anthropic backend.
 type Anthropic struct {
-	Token  string  `json:"token,omitempty"`
+	Token  string  `json:"token"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
-// AzureOpenAi configures AzureOpenAi.
-type AzureOpenAi struct {
-	APIKey         string  `json:"apiKey,omitempty"`
+// AzureOpenAI configures AzureOpenAI.
+type AzureOpenAI struct {
+	APIKey         string  `json:"apiKey"`
 	Model          string  `json:"model,omitempty"`
-	DeploymentName string  `json:"deploymentName,omitempty"`
-	BaseURL        string  `json:"baseUrl,omitempty"`
+	DeploymentName string  `json:"deploymentName"`
+	BaseURL        string  `json:"baseUrl"`
 	Params         *Params `json:"params,omitempty"`
 }
 
@@ -80,7 +80,7 @@ type Bedrock struct {
 
 // Cohere configures Cohere backend.
 type Cohere struct {
-	Token  string  `json:"token,omitempty"`
+	Token  string  `json:"token"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -89,7 +89,7 @@ type Cohere struct {
 
 // Gemini configures Gemini backend.
 type Gemini struct {
-	APIKey string  `json:"apiKey,omitempty"`
+	APIKey string  `json:"apiKey"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -98,7 +98,7 @@ type Gemini struct {
 
 // Mistral configures Mistral AI backend.
 type Mistral struct {
-	APIKey string  `json:"apiKey,omitempty"`
+	APIKey string  `json:"apiKey"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -108,15 +108,15 @@ type Mistral struct {
 // Ollama configures Ollama backend.
 type Ollama struct {
 	Model   string  `json:"model,omitempty"`
-	BaseURL string  `json:"baseUrl,omitempty"`
+	BaseURL string  `json:"baseUrl"`
 	Params  *Params `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
-// OpenAi configures OpenAi.
-type OpenAi struct {
-	Token  string  `json:"token,omitempty"`
+// OpenAI configures OpenAI.
+type OpenAI struct {
+	Token  string  `json:"token"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
