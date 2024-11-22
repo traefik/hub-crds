@@ -28,7 +28,7 @@ type AIService struct {
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// The desired behavior of this APIPlan.
+	// The desired behavior of this AIService.
 	Spec AIServiceSpec `json:"spec,omitempty"`
 }
 
