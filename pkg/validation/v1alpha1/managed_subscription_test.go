@@ -66,6 +66,7 @@ spec:
     name: my-plan
   apis:
     - name: my-api
+  claims: expression
   apiSelector:
     matchLabels:
       key: value
