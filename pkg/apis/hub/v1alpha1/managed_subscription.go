@@ -85,6 +85,10 @@ type ManagedSubscriptionSpec struct {
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	// +optional
 	Weight int `json:"weight,omitempty"`
+
+	// Claims specifies an expression that validate claims in order to authorize the request.
+	// +optional
+	Claims string `json:"claims,omitempty"`
 }
 
 // ManagedSubscriptionStatus is the status of an ManagedSubscription.
