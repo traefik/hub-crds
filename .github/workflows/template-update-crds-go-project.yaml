@@ -33,7 +33,7 @@ jobs:
       - name: update go.mod
         env:
           GONOSUMDB: github.com/traefik/hub-crds
-          GOPROXY: https://goproxy.io,https://athens.traefiklabs.tech,direct
+          GOPROXY: https://proxy.golang.org,https://athens.traefiklabs.tech,direct
         run: |
           sed -i -e "s|github.com/traefik/hub-crds .*|github.com/traefik/hub-crds ${{ inputs.CRDS_VERSION }}|g" go.mod
           go mod tidy
