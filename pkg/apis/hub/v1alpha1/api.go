@@ -87,7 +87,7 @@ type OpenAPISpec struct {
 	// +kubebuilder:validation:MaxItems=100
 	OperationSets []OperationSet `json:"operationSets,omitempty"`
 
-	// ValidateRequestMethodAndPath validate that the path and method matches an operation defined in the OpenAPI specification.
+	// ValidateRequestMethodAndPath validates that the path and method matches an operation defined in the OpenAPI specification.
 	// This option overrides the default behavior configured in the static configuration.
 	ValidateRequestMethodAndPath *bool `json:"validateRequestMethodAndPath,omitempty"`
 }
