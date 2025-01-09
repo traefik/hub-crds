@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2024 Traefik Labs
+Copyright (C) 2022-2025 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -52,6 +52,7 @@ spec:
   title: My API Version 1
   openApiSpec:
     path: /openapi.json
+    validateRequestMethodAndPath: true
     operationSets:
       - name: my-operation-set
         matchers:
@@ -179,7 +180,7 @@ metadata:
   name: my-api-v1
   namespace: my-ns
 spec:
-  release: v1.0.0  
+  release: v1.0.0
   openApiSpec:
     path: /foo/../bar`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "cannot contains '../'"}},

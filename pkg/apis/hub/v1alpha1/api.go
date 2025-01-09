@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2024 Traefik Labs
+Copyright (C) 2022-2025 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -86,6 +86,10 @@ type OpenAPISpec struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	OperationSets []OperationSet `json:"operationSets,omitempty"`
+
+	// ValidateRequestMethodAndPath validates that the path and method matches an operation defined in the OpenAPI specification.
+	// This option overrides the default behavior configured in the static configuration.
+	ValidateRequestMethodAndPath *bool `json:"validateRequestMethodAndPath,omitempty"`
 }
 
 type Override struct {
