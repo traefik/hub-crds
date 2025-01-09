@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2024 Traefik Labs
+Copyright (C) 2022-2025 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -59,7 +59,7 @@ kind: APIBundle
 metadata:
   name: my-bundle
   namespace: default
-spec: 
+spec:
   apis:
     - name: my-api
   apiSelector:
