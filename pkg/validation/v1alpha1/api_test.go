@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2024 Traefik Labs
+Copyright (C) 2022-2025 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -47,6 +47,7 @@ metadata:
 spec:
   openApiSpec:
     path: /openapi.json
+    validateRequestMethodAndPath: true
     operationSets:
     - name: my-operation-set
       matchers:
@@ -112,6 +113,7 @@ spec:
   openApiSpec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec", BadValue: "object", Detail: "path or url must be defined"}},
 		},
+
 		{
 			desc: "openApiSpec url must be a valid URL",
 			manifest: []byte(`
