@@ -45,6 +45,7 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
+  title: My API Title
   openApiSpec:
     path: /openapi.json
     validateRequestMethodAndPath: true

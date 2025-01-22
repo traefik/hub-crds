@@ -41,12 +41,12 @@ type API struct {
 
 // APISpec describes the API.
 type APISpec struct {
-	// Title is the API Title.
+	// Title is the human-readable name of the API that will be used on the portal.
 	// +optional
 	// +kubebuilder:validation:MaxLength=253
 	Title string `json:"title"`
 
-	// Description is the API Description.
+	// Description explains what the API does.
 	// +optional
 	Description string `json:"description"`
 
