@@ -76,8 +76,7 @@ type ManagedSubscriptionSpec struct {
 	OperationFilter *OperationFilter `json:"operationFilter,omitempty"`
 
 	// APIPlan defines which APIPlan will be used.
-	// +optional
-	APIPlan *APIPlanReference `json:"apiPlan,omitempty"`
+	APIPlan APIPlanReference `json:"apiPlan"`
 
 	// Weight specifies the evaluation order of the APIPlan.
 	// When multiple ManagedSubscriptions targets the same API and Application with different APIPlan,

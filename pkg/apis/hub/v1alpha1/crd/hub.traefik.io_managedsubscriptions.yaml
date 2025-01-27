@@ -185,6 +185,7 @@ spec:
                 - message: must be a positive number
                   rule: self >= 0
             required:
+            - apiPlan
             - applications
             type: object
           status:
