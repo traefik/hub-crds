@@ -5,19 +5,10 @@ run:
 linters:
   enable-all: true
   disable:
-    - varcheck # Deprecated.
-    - interfacer # Deprecated.
-    - scopelint # Deprecated.
-    - exhaustivestruct # Deprecated.
-    - deadcode # Deprecated.
-    - ifshort # Deprecated.
-    - nosnakecase # Deprecated.
-    - golint # Deprecated.
-    - maligned # Deprecated.
-    - structcheck # Deprecated.
+    - exportloopref # Deprecated
     - exhaustruct # Not relevant
     - gochecknoglobals # Not relevant
-    - goerr113 # Not relevant
+    - err113 # Not relevant
     - wrapcheck # Not relevant
     - lll # KubeBuilder annotations can be very long.
     - ireturn # Not relevant

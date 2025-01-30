@@ -41,6 +41,15 @@ type API struct {
 
 // APISpec describes the API.
 type APISpec struct {
+	// Title is the human-readable name of the API that will be used on the portal.
+	// +optional
+	// +kubebuilder:validation:MaxLength=253
+	Title string `json:"title"`
+
+	// Description explains what the API does.
+	// +optional
+	Description string `json:"description"`
+
 	// OpenAPISpec defines the API contract as an OpenAPI specification.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"

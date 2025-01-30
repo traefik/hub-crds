@@ -45,6 +45,8 @@ metadata:
   name: my-api
   namespace: my-ns
 spec:
+  title: My API Title
+  description: My API Description
   openApiSpec:
     path: /openapi.json
     validateRequestMethodAndPath: true
@@ -100,6 +102,18 @@ spec:
   versions:
     - name: my-api-v2`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "api-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
+		},
+		{
+			desc: "title is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: API
+metadata:
+  name: my-api
+  namespace: my-ns
+spec:
+  title: Way Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long Title`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.title", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
 			desc: "openApiSpec must have a path or an url",
