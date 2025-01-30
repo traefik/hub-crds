@@ -43,7 +43,7 @@ spec:
             description: APISpec describes the API.
             properties:
               description:
-                description: Description is the API Description.
+                description: Description explains what the API does.
                 type: string
               openApiSpec:
                 description: OpenAPISpec defines the API contract as an OpenAPI specification.
@@ -166,7 +166,8 @@ spec:
                 - message: path or url must be defined
                   rule: has(self.path) || has(self.url)
               title:
-                description: Title is the API Title.
+                description: Title is the human-readable name of the API that will
+                  be used on the portal.
                 maxLength: 253
                 type: string
               versions:

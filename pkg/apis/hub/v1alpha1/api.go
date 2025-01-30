@@ -44,11 +44,11 @@ type APISpec struct {
 	// Title is the human-readable name of the API that will be used on the portal.
 	// +optional
 	// +kubebuilder:validation:MaxLength=253
-	Title string `json:"title"`
+	Title string `json:"title,omitempty"`
 
 	// Description explains what the API does.
 	// +optional
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 
 	// OpenAPISpec defines the API contract as an OpenAPI specification.
 	// +optional
