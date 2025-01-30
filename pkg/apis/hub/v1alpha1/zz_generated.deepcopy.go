@@ -1744,11 +1744,7 @@ func (in *ManagedSubscriptionSpec) DeepCopyInto(out *ManagedSubscriptionSpec) {
 		*out = new(OperationFilter)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.APIPlan != nil {
-		in, out := &in.APIPlan, &out.APIPlan
-		*out = new(APIPlanReference)
-		**out = **in
-	}
+	out.APIPlan = in.APIPlan
 	return
 }
 
