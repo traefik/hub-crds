@@ -116,9 +116,10 @@ type Ollama struct {
 
 // OpenAI configures OpenAI.
 type OpenAI struct {
-	Token  string  `json:"token"`
-	Model  string  `json:"model,omitempty"`
-	Params *Params `json:"params,omitempty"`
+	Token   string  `json:"token"`
+	Model   string  `json:"model,omitempty"`
+	BaseURL string  `json:"baseUrl,omitempty"`
+	Params  *Params `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
