@@ -44,6 +44,8 @@ type AIServiceSpec struct {
 	Mistral     *Mistral     `json:"mistral,omitempty"`
 	Ollama      *Ollama      `json:"ollama,omitempty"`
 	OpenAI      *OpenAI      `json:"openai,omitempty"`
+	DeepSeek    *DeepSeek    `json:"deepSeek,omitempty"`
+	QWen        *QWen        `json:"qWen,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
@@ -116,6 +118,26 @@ type Ollama struct {
 
 // OpenAI configures OpenAI.
 type OpenAI struct {
+	Token   string  `json:"token"`
+	Model   string  `json:"model,omitempty"`
+	BaseURL string  `json:"baseUrl,omitempty"`
+	Params  *Params `json:"params,omitempty"`
+}
+
+// +k8s:deepcopy-gen=true
+
+// DeepSeek configures DeepSeek.
+type DeepSeek struct {
+	Token   string  `json:"token"`
+	Model   string  `json:"model,omitempty"`
+	BaseURL string  `json:"baseUrl,omitempty"`
+	Params  *Params `json:"params,omitempty"`
+}
+
+// +k8s:deepcopy-gen=true
+
+// QWen configures QWen.
+type QWen struct {
 	Token   string  `json:"token"`
 	Model   string  `json:"model,omitempty"`
 	BaseURL string  `json:"baseUrl,omitempty"`
