@@ -46,6 +46,10 @@ type APIVersionSpec struct {
 	// +optional
 	Title string `json:"title,omitempty"`
 
+	// Description explains what the APIVersion does.
+	// +optional
+	Description string `json:"description,omitempty"`
+
 	// Release is the version number of the API.
 	// This value must follow the SemVer format: https://semver.org/
 	// +kubebuilder:validation:MaxLength=100
