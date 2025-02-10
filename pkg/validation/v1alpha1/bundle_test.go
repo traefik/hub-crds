@@ -60,6 +60,7 @@ metadata:
   name: my-bundle
   namespace: default
 spec:
+  title: My API Bundle Title
   apis:
     - name: my-api
   apiSelector:
@@ -95,6 +96,18 @@ metadata:
   name: access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
+		},
+		{
+			desc: "title is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIBundle
+metadata:
+  name: my-bundle
+  namespace: default
+spec:
+  title: Way Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long Title`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.title", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
 			desc: "duplicated APIs",

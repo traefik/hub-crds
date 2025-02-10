@@ -40,6 +40,11 @@ type APIBundle struct {
 
 // APIBundleSpec configures an APIBundle.
 type APIBundleSpec struct {
+	// Title is the human-readable name of the APIBundle that will be used on the portal.
+	// +optional
+	// +kubebuilder:validation:MaxLength=253
+	Title string `json:"title,omitempty"`
+
 	// APISelector selects the APIs that will be accessible to the configured audience.
 	// Multiple APIBundles can select the same set of APIs.
 	// This field is optional and follows standard label selector semantics.
