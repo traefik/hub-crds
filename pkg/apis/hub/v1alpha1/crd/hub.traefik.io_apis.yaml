@@ -43,12 +43,11 @@ spec:
             description: APISpec describes the API.
             properties:
               cors:
-                description: Cors defines the Cross-Origin Resource Sharing configuration
+                description: Cors defines the Cross-Origin Resource Sharing configuration.
                 properties:
                   addVaryHeader:
                     description: AddVaryHeader defines whether the Vary header is
-                      automatically added/updated when the AccessControlAllowOriginList
-                      is set.
+                      automatically added/updated when the AllowOriginsList is set.
                     type: boolean
                   allowCredentials:
                     description: AllowCredentials defines whether the request can

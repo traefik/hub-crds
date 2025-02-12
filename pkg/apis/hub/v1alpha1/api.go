@@ -86,7 +86,7 @@ type Cors struct {
 	// MaxAge defines the time that a preflight request may be cached.
 	// +optional
 	MaxAge int64 `json:"maxAgeSeconds,omitempty"`
-	// AddVaryHeader defines whether the Vary header is automatically added/updated when the AccessControlAllowOriginList is set.
+	// AddVaryHeader defines whether the Vary header is automatically added/updated when the AllowOriginsList is set.
 	// +optional
 	AddVaryHeader bool `json:"addVaryHeader,omitempty"`
 	// AllowCredentials defines whether the request can include user credentials.
