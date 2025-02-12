@@ -60,6 +60,38 @@ type APISpec struct {
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:MinItems=1
 	Versions []APIVersionRef `json:"versions,omitempty"`
+
+	// Cors defines the Cross-Origin Resource Sharing configuration.
+	// +optional
+	Cors *Cors `json:"cors,omitempty"`
+}
+
+// Cors defines the Cross-Origin Resource Sharing configuration.
+type Cors struct {
+	// AllowOriginsList is a list of allowable origins. Can also be a wildcard origin "*".
+	// +optional
+	AllowOriginsList []string `json:"allowOriginsList,omitempty"`
+	// AllowOriginListRegex is a list of allowable origins written following the Regular Expression syntax (https://golang.org/pkg/regexp/).
+	// +optional
+	AllowOriginListRegex []string `json:"allowOriginListRegex,omitempty"`
+	// AllowMethodsList defines the Access-Control-Request-Method values sent in preflight response.
+	// +optional
+	AllowMethodsList []string `json:"allowMethodsList,omitempty"`
+	// AllowHeadersList defines the Access-Control-Request-Headers values sent in preflight response.
+	// +optional
+	AllowHeadersList []string `json:"allowHeadersList,omitempty"`
+	// ExposeHeadersList defines the Access-Control-Expose-Headers values sent in preflight response.
+	// +optional
+	ExposeHeadersList []string `json:"exposeHeaders,omitempty"`
+	// MaxAge defines the time that a preflight request may be cached.
+	// +optional
+	MaxAge int64 `json:"maxAgeSeconds,omitempty"`
+	// AddVaryHeader defines whether the Vary header is automatically added/updated when the AllowOriginsList is set.
+	// +optional
+	AddVaryHeader bool `json:"addVaryHeader,omitempty"`
+	// AllowCredentials defines whether the request can include user credentials.
+	// +optional
+	AllowCredentials bool `json:"allowCredentials,omitempty"`
 }
 
 // APIVersionRef references an APIVersion.

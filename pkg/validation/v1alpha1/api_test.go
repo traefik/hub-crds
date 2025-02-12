@@ -47,6 +47,20 @@ metadata:
 spec:
   title: My API Title
   description: My API Description
+  cors:
+    maxAgeSeconds: 3
+    allowOriginListRegex:
+      - "*"
+    allowCredentials: true
+    addVaryHeader: true
+    exposeHeaders:
+      - "*"
+    allowOriginsList:
+      - "http://example.com"
+    allowMethodsList:
+      - POST
+    allowHeadersList:
+      - "*"
   openApiSpec:
     path: /openapi.json
     validateRequestMethodAndPath: true
