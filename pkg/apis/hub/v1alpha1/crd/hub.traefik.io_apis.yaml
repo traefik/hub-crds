@@ -77,13 +77,13 @@ spec:
                     items:
                       type: string
                     type: array
-                  exposeHeaders:
+                  exposeHeadersList:
                     description: ExposeHeadersList defines the Access-Control-Expose-Headers
                       values sent in preflight response.
                     items:
                       type: string
                     type: array
-                  maxAgeSeconds:
+                  maxAge:
                     description: MaxAge defines the time that a preflight request
                       may be cached.
                     format: int64
