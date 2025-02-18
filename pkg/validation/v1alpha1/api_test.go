@@ -48,12 +48,12 @@ spec:
   title: My API Title
   description: My API Description
   cors:
-    maxAgeSeconds: 3
+    maxAge: 3
     allowOriginListRegex:
-      - "*"
+      - ".*"
     allowCredentials: true
     addVaryHeader: true
-    exposeHeaders:
+    exposeHeadersList:
       - "*"
     allowOriginsList:
       - "http://example.com"

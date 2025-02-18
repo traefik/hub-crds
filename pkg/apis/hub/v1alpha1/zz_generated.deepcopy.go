@@ -1098,6 +1098,11 @@ func (in *APIVersionSpec) DeepCopyInto(out *APIVersionSpec) {
 		*out = new(OpenAPISpec)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Cors != nil {
+		in, out := &in.Cors, &out.Cors
+		*out = new(Cors)
+		(*in).DeepCopyInto(*out)
+	}
 	return
 }
 

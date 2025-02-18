@@ -60,6 +60,10 @@ type APIVersionSpec struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="path or url must be defined",rule="has(self.path) || has(self.url)"
 	OpenAPISpec *OpenAPISpec `json:"openApiSpec,omitempty"`
+
+	// Cors defines the Cross-Origin Resource Sharing configuration.
+	// +optional
+	Cors *Cors `json:"cors,omitempty"`
 }
 
 // APIVersionStatus is the status of an APIVersion.
