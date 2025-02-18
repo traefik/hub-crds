@@ -52,12 +52,12 @@ spec:
   title: My API Version 1
   description: My API Version description
   cors:
-    maxAgeSeconds: 3
+    maxAge: 3
     allowOriginListRegex:
       - ".*"
     allowCredentials: true
     addVaryHeader: true
-    exposeHeaders:
+    exposeHeadersList:
       - "*"
     allowOriginsList:
       - "http://example.com"
