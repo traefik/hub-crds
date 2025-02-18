@@ -82,10 +82,10 @@ type Cors struct {
 	AllowHeadersList []string `json:"allowHeadersList,omitempty"`
 	// ExposeHeadersList defines the Access-Control-Expose-Headers values sent in preflight response.
 	// +optional
-	ExposeHeadersList []string `json:"exposeHeaders,omitempty"`
+	ExposeHeadersList []string `json:"exposeHeadersList,omitempty"`
 	// MaxAge defines the time that a preflight request may be cached.
 	// +optional
-	MaxAge int64 `json:"maxAgeSeconds,omitempty"`
+	MaxAge int64 `json:"maxAge,omitempty"`
 	// AddVaryHeader defines whether the Vary header is automatically added/updated when the AllowOriginsList is set.
 	// +optional
 	AddVaryHeader bool `json:"addVaryHeader,omitempty"`
