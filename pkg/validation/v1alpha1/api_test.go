@@ -50,7 +50,7 @@ spec:
   cors:
     maxAgeSeconds: 3
     allowOriginListRegex:
-      - "*"
+      - ".*"
     allowCredentials: true
     addVaryHeader: true
     exposeHeaders:
