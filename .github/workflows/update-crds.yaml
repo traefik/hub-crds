@@ -30,8 +30,10 @@ jobs:
           ref: master
           token: ${{ secrets.GH_TOKEN }}
           path: ${{ github.workspace }}/traefik-helm-chart
-      - name: copy CRDs
-        run: rsync -crv --delete --exclude='kustomization.yaml' --exclude='gateway-standard-install-*.yaml' --exclude='traefik.io_*.yaml' --exclude='*.go' ${{ github.workspace }}/hub-crds/pkg/apis/hub/v1alpha1/crd/ ${{ github.workspace }}/traefik-helm-chart/traefik/crds/
+      - name: copy on Traefik main Chart
+        run: rsync -crv --delete --exclude='kustomization.yaml' --exclude='gateway-standard-install.yaml' --exclude='traefik.io_*.yaml' --exclude='*.go' ${{ github.workspace }}/hub-crds/pkg/apis/hub/v1alpha1/crd/ ${{ github.workspace }}/traefik-helm-chart/traefik/crds/
+      - name: copy on optional CRDs Chart
+        run: rsync -crv --delete --exclude='kustomization.yaml' --exclude='gateway-standard-install.yaml' --exclude='traefik.io_*.yaml' --exclude='*.go' ${{ github.workspace }}/hub-crds/pkg/apis/hub/v1alpha1/crd/ ${{ github.workspace }}/traefik-helm-chart/traefik-crds/crds-files/hub/
       - name: create PR
         uses: peter-evans/create-pull-request@v6
         with:
