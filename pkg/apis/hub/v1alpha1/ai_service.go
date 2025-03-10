@@ -50,9 +50,15 @@ type AIServiceSpec struct {
 
 // +k8s:deepcopy-gen=true
 
+type Secret struct {
+	SecretName string `json:"secretName"`
+}
+
+// +k8s:deepcopy-gen=true
+
 // Anthropic configures Anthropic backend.
 type Anthropic struct {
-	Token  string  `json:"token"`
+	Token  *Secret `json:"token,omitempty"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -61,7 +67,7 @@ type Anthropic struct {
 
 // AzureOpenAI configures AzureOpenAI.
 type AzureOpenAI struct {
-	APIKey         string  `json:"apiKey"`
+	APIKey         *Secret `json:"apiKeySecret,omitempty"`
 	Model          string  `json:"model,omitempty"`
 	DeploymentName string  `json:"deploymentName"`
 	BaseURL        string  `json:"baseUrl"`
@@ -82,7 +88,7 @@ type Bedrock struct {
 
 // Cohere configures Cohere backend.
 type Cohere struct {
-	Token  string  `json:"token"`
+	Token  *Secret `json:"token,omitempty"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -91,7 +97,7 @@ type Cohere struct {
 
 // Gemini configures Gemini backend.
 type Gemini struct {
-	APIKey string  `json:"apiKey"`
+	APIKey *Secret `json:"apiKey,omitempty"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -100,7 +106,7 @@ type Gemini struct {
 
 // Mistral configures Mistral AI backend.
 type Mistral struct {
-	APIKey string  `json:"apiKey"`
+	APIKey *Secret `json:"apiKey,omitempty"`
 	Model  string  `json:"model,omitempty"`
 	Params *Params `json:"params,omitempty"`
 }
@@ -118,7 +124,7 @@ type Ollama struct {
 
 // OpenAI configures OpenAI.
 type OpenAI struct {
-	Token   string  `json:"token"`
+	Token   *Secret `json:"token,omitempty"`
 	Model   string  `json:"model,omitempty"`
 	BaseURL string  `json:"baseUrl,omitempty"`
 	Params  *Params `json:"params,omitempty"`
@@ -128,7 +134,7 @@ type OpenAI struct {
 
 // DeepSeek configures DeepSeek.
 type DeepSeek struct {
-	Token   string  `json:"token"`
+	Token   *Secret `json:"token,omitempty"`
 	Model   string  `json:"model,omitempty"`
 	BaseURL string  `json:"baseUrl,omitempty"`
 	Params  *Params `json:"params,omitempty"`
@@ -138,7 +144,7 @@ type DeepSeek struct {
 
 // QWen configures QWen.
 type QWen struct {
-	Token   string  `json:"token"`
+	Token   *Secret `json:"token,omitempty"`
 	Model   string  `json:"model,omitempty"`
 	BaseURL string  `json:"baseUrl,omitempty"`
 	Params  *Params `json:"params,omitempty"`

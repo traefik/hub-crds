@@ -36,7 +36,8 @@ metadata:
   name: "my-ai-service"
 spec:
   openai:
-    token: xxx`),
+    token: 
+      secretName: xxx`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
@@ -49,7 +50,8 @@ metadata:
   namespace: default
 spec:
   openai:
-    token: xxxx`),
+    token: 
+      secretName: xxxx`),
 		},
 		{
 			desc: "invalid resource name",
