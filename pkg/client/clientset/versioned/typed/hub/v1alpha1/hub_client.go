@@ -33,7 +33,6 @@ type HubV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AIServicesGetter
 	APIsGetter
-	APIAccessesGetter
 	APIBundlesGetter
 	APICatalogItemsGetter
 	APIPlansGetter
@@ -55,10 +54,6 @@ func (c *HubV1alpha1Client) AIServices(namespace string) AIServiceInterface {
 
 func (c *HubV1alpha1Client) APIs(namespace string) APIInterface {
 	return newAPIs(c, namespace)
-}
-
-func (c *HubV1alpha1Client) APIAccesses(namespace string) APIAccessInterface {
-	return newAPIAccesses(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIBundles(namespace string) APIBundleInterface {

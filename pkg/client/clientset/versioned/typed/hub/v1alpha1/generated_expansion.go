@@ -25,8 +25,6 @@ type AIServiceExpansion interface{}
 
 type APIExpansion interface{}
 
-type APIAccessExpansion interface{}
-
 type APIBundleExpansion interface{}
 
 type APICatalogItemExpansion interface{}

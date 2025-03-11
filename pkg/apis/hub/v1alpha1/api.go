@@ -123,7 +123,7 @@ type OpenAPISpec struct {
 	// +kubebuilder:validation:XValidation:message="cannot contains '../'",rule="!self.matches(r\"\"\"(\\/\\.\\.\\/)|(\\/\\.\\.$)\"\"\")"
 	Path string `json:"path,omitempty"`
 
-	// OperationSets defines the sets of operations to be referenced for granular filtering in APIAccesses.
+	// OperationSets defines the sets of operations to be referenced for granular filtering in APICatalogItems or ManagedSubscriptions.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	OperationSets []OperationSet `json:"operationSets,omitempty"`
@@ -145,9 +145,9 @@ type Server struct {
 }
 
 // OperationSet gives a name to a set of matching OpenAPI operations.
-// This set of operations can then be referenced for granular filtering in APIAccesses.
+// This set of operations can then be referenced for granular filtering in APICatalogItems or ManagedSubscriptions.
 type OperationSet struct {
-	// Name is the name of the OperationSet to reference in APIAccesses.
+	// Name is the name of the OperationSet to reference in APICatalogItems or ManagedSubscriptions.
 	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
 
