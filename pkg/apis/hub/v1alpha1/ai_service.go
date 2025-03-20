@@ -50,7 +50,8 @@ type AIServiceSpec struct {
 
 // +k8s:deepcopy-gen=true
 
-type Secret struct {
+// SecretReference references a kubernetes secret.
+type SecretReference struct {
 	SecretName string `json:"secretName"`
 }
 
@@ -58,20 +59,20 @@ type Secret struct {
 
 // Anthropic configures Anthropic backend.
 type Anthropic struct {
-	Token  *Secret `json:"token,omitempty"`
-	Model  string  `json:"model,omitempty"`
-	Params *Params `json:"params,omitempty"`
+	Token  *SecretReference `json:"token,omitempty"`
+	Model  string           `json:"model,omitempty"`
+	Params *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
 // AzureOpenAI configures AzureOpenAI.
 type AzureOpenAI struct {
-	APIKey         *Secret `json:"apiKeySecret,omitempty"`
-	Model          string  `json:"model,omitempty"`
-	DeploymentName string  `json:"deploymentName"`
-	BaseURL        string  `json:"baseUrl"`
-	Params         *Params `json:"params,omitempty"`
+	APIKey         *SecretReference `json:"apiKeySecret,omitempty"`
+	Model          string           `json:"model,omitempty"`
+	DeploymentName string           `json:"deploymentName"`
+	BaseURL        string           `json:"baseUrl"`
+	Params         *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
@@ -88,27 +89,27 @@ type Bedrock struct {
 
 // Cohere configures Cohere backend.
 type Cohere struct {
-	Token  *Secret `json:"token,omitempty"`
-	Model  string  `json:"model,omitempty"`
-	Params *Params `json:"params,omitempty"`
+	Token  *SecretReference `json:"token,omitempty"`
+	Model  string           `json:"model,omitempty"`
+	Params *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
 // Gemini configures Gemini backend.
 type Gemini struct {
-	APIKey *Secret `json:"apiKey,omitempty"`
-	Model  string  `json:"model,omitempty"`
-	Params *Params `json:"params,omitempty"`
+	APIKey *SecretReference `json:"apiKey,omitempty"`
+	Model  string           `json:"model,omitempty"`
+	Params *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
 // Mistral configures Mistral AI backend.
 type Mistral struct {
-	APIKey *Secret `json:"apiKey,omitempty"`
-	Model  string  `json:"model,omitempty"`
-	Params *Params `json:"params,omitempty"`
+	APIKey *SecretReference `json:"apiKey,omitempty"`
+	Model  string           `json:"model,omitempty"`
+	Params *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
@@ -124,30 +125,30 @@ type Ollama struct {
 
 // OpenAI configures OpenAI.
 type OpenAI struct {
-	Token   *Secret `json:"token,omitempty"`
-	Model   string  `json:"model,omitempty"`
-	BaseURL string  `json:"baseUrl,omitempty"`
-	Params  *Params `json:"params,omitempty"`
+	Token   *SecretReference `json:"token,omitempty"`
+	Model   string           `json:"model,omitempty"`
+	BaseURL string           `json:"baseUrl,omitempty"`
+	Params  *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
 // DeepSeek configures DeepSeek.
 type DeepSeek struct {
-	Token   *Secret `json:"token,omitempty"`
-	Model   string  `json:"model,omitempty"`
-	BaseURL string  `json:"baseUrl,omitempty"`
-	Params  *Params `json:"params,omitempty"`
+	Token   *SecretReference `json:"token,omitempty"`
+	Model   string           `json:"model,omitempty"`
+	BaseURL string           `json:"baseUrl,omitempty"`
+	Params  *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true
 
 // QWen configures QWen.
 type QWen struct {
-	Token   *Secret `json:"token,omitempty"`
-	Model   string  `json:"model,omitempty"`
-	BaseURL string  `json:"baseUrl,omitempty"`
-	Params  *Params `json:"params,omitempty"`
+	Token   *SecretReference `json:"token,omitempty"`
+	Model   string           `json:"model,omitempty"`
+	BaseURL string           `json:"baseUrl,omitempty"`
+	Params  *Params          `json:"params,omitempty"`
 }
 
 // +k8s:deepcopy-gen=true

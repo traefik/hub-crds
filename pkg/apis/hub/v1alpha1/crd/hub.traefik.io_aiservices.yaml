@@ -61,6 +61,7 @@ spec:
                         type: number
                     type: object
                   token:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -72,6 +73,7 @@ spec:
                 description: AzureOpenAI configures AzureOpenAI.
                 properties:
                   apiKeySecret:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -146,6 +148,7 @@ spec:
                         type: number
                     type: object
                   token:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -175,6 +178,7 @@ spec:
                         type: number
                     type: object
                   token:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -186,6 +190,7 @@ spec:
                 description: Gemini configures Gemini backend.
                 properties:
                   apiKey:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -213,6 +218,7 @@ spec:
                 description: Mistral configures Mistral AI backend.
                 properties:
                   apiKey:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -282,6 +288,7 @@ spec:
                         type: number
                     type: object
                   token:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
@@ -311,6 +318,7 @@ spec:
                         type: number
                     type: object
                   token:
+                    description: SecretReference references a kubernetes secret.
                     properties:
                       secretName:
                         type: string
