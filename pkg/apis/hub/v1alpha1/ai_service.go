@@ -52,6 +52,7 @@ type AIServiceSpec struct {
 
 // SecretReference references a kubernetes secret.
 type SecretReference struct {
+	// +kubebuilder:validation:MaxLength=253
 	SecretName string `json:"secretName"`
 }
 
