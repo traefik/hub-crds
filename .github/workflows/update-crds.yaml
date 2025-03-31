@@ -39,13 +39,13 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           path: traefik-helm-chart
-          commit-message: "chore: update CRDs to ${{ env.GIT_TAG }}"
+          commit-message: "feat(CRDs): update Traefik HUB CRDs to ${{ env.GIT_TAG }}"
           committer: "Traefiker <traefiker@github.com>"
           author: "${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           signoff: false
           branch: update-crds-${{ env.GIT_TAG }}
           delete-branch: true
-          title: 'chore: update CRDs to ${{ env.GIT_TAG }}'
+          title: 'feat(CRDs): update Traefik HUB CRDs to ${{ env.GIT_TAG }}'
           labels: kind/enhancement,status/2-needs-review
           body: |
             This PR was automatically created by ${{ github.workflow }} workflow on run [#${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
