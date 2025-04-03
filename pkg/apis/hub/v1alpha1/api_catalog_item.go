@@ -84,6 +84,35 @@ type APICatalogItemSpec struct {
 	APIPlan *APIPlanReference `json:"apiPlan,omitempty"`
 }
 
+// APIPlanReference references an APIPlan.
+type APIPlanReference struct {
+	// Name of the APIPlan.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+}
+
+// APIReference references an API.
+type APIReference struct {
+	// Name of the API.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+}
+
+// APIBundleReference references an APIBundle.
+type APIBundleReference struct {
+	// Name of the APIBundle.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+}
+
+// OperationFilter specifies the allowed operations on APIs and APIVersions.
+type OperationFilter struct {
+	// Include defines the names of OperationSets that will be accessible.
+	// +optional
+	// +kubebuilder:validation:MaxItems=100
+	Include []string `json:"include,omitempty"`
+}
+
 // APICatalogItemStatus is the status of an APICatalogItem.
 type APICatalogItemStatus struct {
 	Version  string       `json:"version,omitempty"`

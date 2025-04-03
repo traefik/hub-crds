@@ -10,7 +10,6 @@ Supported CRDs:
 |---------------------|----------|
 | APIPortal           | v1alpha1 |
 | APIPlan             | v1alpha1 |
-| APIAccess           | v1alpha1 |
 | APICatalogItem      | v1alpha1 |
 | APIBundle           | v1alpha1 |
 | API                 | v1alpha1 |
