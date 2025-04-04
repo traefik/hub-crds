@@ -45,7 +45,7 @@ jobs:
           signoff: false
           branch: update-crds-${{ env.GIT_TAG }}
           delete-branch: true
-          title: 'feat(CRDs): update Traefik Hub CRDs to ${{ env.GIT_TAG }}'
+          title: 'feat(CRDs): update Traefik Hub to ${{ env.GIT_TAG }}'
           labels: kind/enhancement,status/2-needs-review
           body: |
             This PR was automatically created by ${{ github.workflow }} workflow on run [#${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
