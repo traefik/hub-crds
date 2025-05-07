@@ -45,6 +45,8 @@ type Interface interface {
 	APIVersions() APIVersionInformer
 	// AccessControlPolicies returns a AccessControlPolicyInformer.
 	AccessControlPolicies() AccessControlPolicyInformer
+	// ManagedApplications returns a ManagedApplicationInformer.
+	ManagedApplications() ManagedApplicationInformer
 	// ManagedSubscriptions returns a ManagedSubscriptionInformer.
 	ManagedSubscriptions() ManagedSubscriptionInformer
 }
@@ -103,6 +105,11 @@ func (v *version) APIVersions() APIVersionInformer {
 // AccessControlPolicies returns a AccessControlPolicyInformer.
 func (v *version) AccessControlPolicies() AccessControlPolicyInformer {
 	return &accessControlPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// ManagedApplications returns a ManagedApplicationInformer.
+func (v *version) ManagedApplications() ManagedApplicationInformer {
+	return &managedApplicationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ManagedSubscriptions returns a ManagedSubscriptionInformer.

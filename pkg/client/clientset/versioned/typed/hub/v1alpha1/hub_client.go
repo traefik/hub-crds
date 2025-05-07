@@ -40,6 +40,7 @@ type HubV1alpha1Interface interface {
 	APIRateLimitsGetter
 	APIVersionsGetter
 	AccessControlPoliciesGetter
+	ManagedApplicationsGetter
 	ManagedSubscriptionsGetter
 }
 
@@ -82,6 +83,10 @@ func (c *HubV1alpha1Client) APIVersions(namespace string) APIVersionInterface {
 
 func (c *HubV1alpha1Client) AccessControlPolicies() AccessControlPolicyInterface {
 	return newAccessControlPolicies(c)
+}
+
+func (c *HubV1alpha1Client) ManagedApplications(namespace string) ManagedApplicationInterface {
+	return newManagedApplications(c, namespace)
 }
 
 func (c *HubV1alpha1Client) ManagedSubscriptions(namespace string) ManagedSubscriptionInterface {

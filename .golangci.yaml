@@ -1,100 +1,113 @@
-run:
-  timeout: 10m
-  skip-files: [ ]
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - exportloopref # Deprecated
-    - exhaustruct # Not relevant
-    - gochecknoglobals # Not relevant
-    - err113 # Not relevant
-    - wrapcheck # Not relevant
-    - lll # KubeBuilder annotations can be very long.
-    - ireturn # Not relevant
-    - dupl # Too many false positive
-linters-settings:
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-  maligned:
-    suggest-new: true
-  goconst:
-    min-len: 5
-    min-occurrences: 3
-  misspell:
-    locale: US
-  funlen:
-    lines: -1
-    statements: 50
-  godox:
-    keywords:
-      - FIXME
-  gofumpt:
-    extra-rules: true
-  depguard:
+    - dupl
+    - err113
+    - exhaustruct
+    - gochecknoglobals
+    - ireturn
+    - lll
+    - wrapcheck
+  settings:
+    depguard:
+      rules:
+        main:
+          allow:
+            - encoding/json
+            - errors
+            - fmt
+            - strings
+            - time
+            - embed
+            - bufio
+            - context
+            - io
+            - path/filepath
+            - testing
+            - github.com/traefik/hub-crds
+            - github.com/stretchr/testify
+            - k8s.io/api/core/v1
+            - k8s.io/api/networking/v1
+            - k8s.io/apiextensions-apiserver/pkg/apis/apiextensions
+            - k8s.io/apiextensions-apiserver/pkg/apiserver/schema
+            - k8s.io/apiextensions-apiserver/pkg/apiserver/validation
+            - k8s.io/apimachinery/pkg/api/meta
+            - k8s.io/apimachinery/pkg/api/validation
+            - k8s.io/apimachinery/pkg/apis/meta/v1
+            - k8s.io/apimachinery/pkg/util/validation
+            - k8s.io/apimachinery/pkg/util/yaml
+            - k8s.io/apimachinery/pkg/runtime
+            - k8s.io/kube-openapi/pkg/validation/validate
+            - k8s.io/apiserver/pkg/apis/cel
+    funlen:
+      lines: -1
+      statements: 50
+    goconst:
+      min-len: 5
+      min-occurrences: 3
+    godox:
+      keywords:
+        - FIXME
+    goheader:
+      values:
+        const:
+          COMPANY: Traefik Labs
+      template: |-
+        Copyright (C) {{ YEAR-RANGE }} {{ COMPANY }}
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as published
+        by the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program. If not, see <https://www.gnu.org/licenses/>.
+    govet:
+      disable:
+        - fieldalignment
+      enable-all: true
+    importas:
+      no-unaliased: true
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      main:
-        allow:
-          # This Go code shouldn't have access to the whole std lib (e.g. http).
-          - encoding/json
-          - errors
-          - fmt
-          - strings
-          - time
-          - embed
-          - bufio
-          - context
-          - io
-          - path/filepath
-          - testing
-          # Github.
-          - github.com/traefik/hub-crds
-          - github.com/stretchr/testify
-          # Kubernetes.
-          - k8s.io/api/core/v1
-          - k8s.io/api/networking/v1
-          - k8s.io/apiextensions-apiserver/pkg/apis/apiextensions
-          - k8s.io/apiextensions-apiserver/pkg/apiserver/schema
-          - k8s.io/apiextensions-apiserver/pkg/apiserver/validation
-          - k8s.io/apimachinery/pkg/api/meta
-          - k8s.io/apimachinery/pkg/api/validation
-          - k8s.io/apimachinery/pkg/apis/meta/v1
-          - k8s.io/apimachinery/pkg/util/validation
-          - k8s.io/apimachinery/pkg/util/yaml
-          - k8s.io/apimachinery/pkg/runtime
-          - k8s.io/kube-openapi/pkg/validation/validate
-          - k8s.io/apiserver/pkg/apis/cel
-  importas:
-    no-unaliased: true
-  goheader:
-    values:
-      const:
-        COMPANY: Traefik Labs
-    template: |-
-      Copyright (C) {{ YEAR-RANGE }} {{ COMPANY }}
-
-      This program is free software: you can redistribute it and/or modify
-      it under the terms of the GNU Affero General Public License as published
-      by the Free Software Foundation, either version 3 of the License, or
-      (at your option) any later version.
-
-      This program is distributed in the hope that it will be useful,
-      but WITHOUT ANY WARRANTY; without even the implied warranty of
-      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-      GNU Affero General Public License for more details.
-
-      You should have received a copy of the GNU Affero General Public License
-      along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-issues:
-  exclude-rules:
-    - path: pkg/validation/v1alpha1/api_test.go
-      linters:
-        - maintidx
-    - path: pkg/validation/v1alpha1/version_test.go
-      linters:
-        - maintidx
-  exclude-dirs:
-    - hub/v1alpha1/generated/
+      - linters:
+          - maintidx
+        path: pkg/validation/v1alpha1/api_test.go
+      - linters:
+          - maintidx
+        path: pkg/validation/v1alpha1/version_test.go
+    paths:
+      - hub/v1alpha1/generated/
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gofumpt:
+      extra-rules: true
+  exclusions:
+    generated: lax
+    paths:
+      - hub/v1alpha1/generated/
+      - third_party$
+      - builtin$
+      - examples$
