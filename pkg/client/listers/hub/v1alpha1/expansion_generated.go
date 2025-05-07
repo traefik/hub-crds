@@ -89,6 +89,14 @@ type APIVersionNamespaceListerExpansion interface{}
 // AccessControlPolicyLister.
 type AccessControlPolicyListerExpansion interface{}
 
+// ManagedApplicationListerExpansion allows custom methods to be added to
+// ManagedApplicationLister.
+type ManagedApplicationListerExpansion interface{}
+
+// ManagedApplicationNamespaceListerExpansion allows custom methods to be added to
+// ManagedApplicationNamespaceLister.
+type ManagedApplicationNamespaceListerExpansion interface{}
+
 // ManagedSubscriptionListerExpansion allows custom methods to be added to
 // ManagedSubscriptionLister.
 type ManagedSubscriptionListerExpansion interface{}
