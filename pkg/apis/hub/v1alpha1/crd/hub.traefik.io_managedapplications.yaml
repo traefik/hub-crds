@@ -39,10 +39,28 @@ spec:
           spec:
             description: ManagedApplicationSpec describes the ManagedApplication.
             properties:
-              apiKeySecrets:
-                description: APIKeySecrets references APIKey secrets.
+              appId:
+                description: |-
+                  AppID is the identifier of the ManagedApplication.
+                  It should be unique.
+                maxLength: 253
+                type: string
+              notes:
+                description: Notes contains notes about application.
+                type: string
+              owner:
+                description: |-
+                  Owner represents the owner of the ManagedApplication.
+                  It should be:
+                  - `sub` when using OIDC
+                  - `externalID` when using external IDP
+                maxLength: 253
+                type: string
+              tokenSecrets:
+                description: TokenSecrets references token secrets.
                 items:
-                  description: APIKeySecret represents a reference to an APIKey secret.
+                  description: TokenSecretRef represents a reference to a kubernetes
+                    secret.
                   properties:
                     name:
                       description: Name of the Secret.
@@ -56,25 +74,7 @@ spec:
                 x-kubernetes-validations:
                 - message: duplicated secrets
                   rule: self.all(x, self.exists_one(y, x.name == y.name))
-              appId:
-                description: |-
-                  AppID is the identifier of the ManagedApplication.
-                  It should be unique.
-                maxLength: 253
-                type: string
-              description:
-                description: Notes contains .
-                type: string
-              owner:
-                description: |-
-                  Owner represents the owner of the ManagedApplication.
-                  It should be:
-                  - `sub` when using OIDC
-                  - `externalID` when using ID
-                maxLength: 253
-                type: string
             required:
-            - apiKeySecrets
             - appId
             - owner
             type: object
@@ -82,11 +82,15 @@ spec:
             description: The current status of this ManagedApplication.
             properties:
               hash:
-                description: Hash is a hash representing the API.
+                description: Hash is a hash representing the ManagedApplication.
                 type: string
               syncedAt:
                 format: date-time
                 type: string
+              tokenSecretVersions:
+                additionalProperties:
+                  type: string
+                type: object
               version:
                 type: string
             type: object

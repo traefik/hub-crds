@@ -36,9 +36,7 @@ metadata:
   name: "my-application"
 spec:
   appId: "123"
-  owner: "456"
-  apiKeySecrets:
-    - name: token`),
+  owner: "456"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
@@ -51,9 +49,7 @@ metadata:
   namespace: default
 spec:
   appId: "123"
-  owner: "456"
-  apiKeySecrets:
-    - name: token`),
+  owner: "456"`),
 		},
 		{
 			desc: "valid: full",
@@ -67,8 +63,8 @@ spec:
   appId: "123"
   owner: "456"
   notes: blablabla
-  apiKeySecrets:
-    - name: token`),
+  tokenSecrets:
+    - name: secret`),
 		},
 		{
 			desc: "invalid resource name",
@@ -110,9 +106,7 @@ metadata:
   namespace: default
 spec:
   appId: Way Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long AppId
-  owner: "456"
-  apiKeySecrets:
-    - name: token`),
+  owner: "456"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.appId", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
@@ -125,13 +119,11 @@ metadata:
   namespace: default
 spec:
   appId: "123"
-  owner: Way Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long Owner
-  apiKeySecrets:
-    - name: token`),
+  owner: Way Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long Owner`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.owner", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
-			desc: "apiKeySecrets name is too long",
+			desc: "tokenSecrets name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: ManagedApplication
@@ -141,9 +133,9 @@ metadata:
 spec:
   appId: "123"
   owner: "456"
-  apiKeySecrets:
+  tokenSecrets:
     - name: Way Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long secret`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.apiKeySecrets[0].name", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.tokenSecrets[0].name", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
 			desc: "duplicated secrets",
@@ -156,10 +148,10 @@ metadata:
 spec:
   appId: "123"
   owner: "456"
-  apiKeySecrets:
-    - name: my-api
-    - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKeySecrets", BadValue: "array", Detail: "duplicated secrets"}},
+  tokenSecrets:
+    - name: secret
+    - name: secret`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.tokenSecrets", BadValue: "array", Detail: "duplicated secrets"}},
 		},
 	}
 

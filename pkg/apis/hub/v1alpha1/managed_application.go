@@ -47,22 +47,23 @@ type ManagedApplicationSpec struct {
 	// Owner represents the owner of the ManagedApplication.
 	// It should be:
 	// - `sub` when using OIDC
-	// - `externalID` when using ID
+	// - `externalID` when using external IDP
 	// +kubebuilder:validation:MaxLength=253
 	Owner string `json:"owner"`
 
-	// Notes contains .
+	// Notes contains notes about application.
 	// +optional
-	Notes string `json:"description,omitempty"`
+	Notes string `json:"notes,omitempty"`
 
-	// APIKeySecrets references APIKey secrets.
+	// TokenSecrets references token secrets.
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:XValidation:message="duplicated secrets",rule="self.all(x, self.exists_one(y, x.name == y.name))"
-	APIKeySecrets []APIKeySecret `json:"apiKeySecrets"`
+	// +optional
+	TokenSecrets []TokenSecretRef `json:"tokenSecrets,omitempty"`
 }
 
-// APIKeySecret represents a reference to an APIKey secret.
-type APIKeySecret struct {
+// TokenSecretRef represents a reference to a kubernetes secret.
+type TokenSecretRef struct {
 	// Name of the Secret.
 	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
@@ -70,9 +71,10 @@ type APIKeySecret struct {
 
 // ManagedApplicationStatus is the status of the ManagedApplication.
 type ManagedApplicationStatus struct {
-	Version  string       `json:"version,omitempty"`
-	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
-	// Hash is a hash representing the API.
+	Version             string            `json:"version,omitempty"`
+	TokenSecretVersions map[string]string `json:"tokenSecretVersions,omitempty"`
+	SyncedAt            *metav1.Time      `json:"syncedAt,omitempty"`
+	// Hash is a hash representing the ManagedApplication.
 	Hash string `json:"hash,omitempty"`
 }
 
