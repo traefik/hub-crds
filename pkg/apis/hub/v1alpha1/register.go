@@ -60,6 +60,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APIBundleList{},
 		&ManagedSubscription{},
 		&ManagedSubscriptionList{},
+		&ManagedApplication{},
+		&ManagedApplicationList{},
 		&APICatalogItem{},
 		&APICatalogItemList{},
 		&AIService{},
