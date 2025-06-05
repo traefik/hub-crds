@@ -67,6 +67,10 @@ func (c *FakeHubV1alpha1) AccessControlPolicies() v1alpha1.AccessControlPolicyIn
 	return &FakeAccessControlPolicies{c}
 }
 
+func (c *FakeHubV1alpha1) ManagedApplications(namespace string) v1alpha1.ManagedApplicationInterface {
+	return &FakeManagedApplications{c, namespace}
+}
+
 func (c *FakeHubV1alpha1) ManagedSubscriptions(namespace string) v1alpha1.ManagedSubscriptionInterface {
 	return &FakeManagedSubscriptions{c, namespace}
 }

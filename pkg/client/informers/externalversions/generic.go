@@ -74,6 +74,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().APIVersions().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("accesscontrolpolicies"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().AccessControlPolicies().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("managedapplications"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().ManagedApplications().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("managedsubscriptions"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().ManagedSubscriptions().Informer()}, nil
 
