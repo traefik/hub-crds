@@ -15,6 +15,7 @@ Supported CRDs:
 | API                 | v1alpha1 |
 | APIVersion          | v1alpha1 |
 | ManagedSubscription | v1alpha1 |
+| ManagedApplication  | v1alpha1 |
 
 Deprecated CRDs:
 
