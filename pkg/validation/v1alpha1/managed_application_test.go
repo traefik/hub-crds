@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1_test
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -145,7 +144,7 @@ spec:
 		},
 		{
 			desc: "apiKey value is too long",
-			manifest: []byte(fmt.Sprintf(`
+			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: ManagedApplication
 metadata:
@@ -155,7 +154,7 @@ spec:
   appId: "123"
   owner: "456"
   apiKeys:
-    - value: %s`, tooLongAPIKey)),
+    - value: ` + tooLongAPIKey),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.apiKeys[0].value", BadValue: "<value omitted>", Detail: "may not be more than 4096 bytes"}},
 		},
 		{

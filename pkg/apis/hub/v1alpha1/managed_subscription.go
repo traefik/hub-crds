@@ -43,9 +43,17 @@ type ManagedSubscription struct {
 type ManagedSubscriptionSpec struct {
 	// Applications references the Applications that will gain access to the specified APIs.
 	// Multiple ManagedSubscriptions can select the same AppID.
-	// +kubebuilder:validation:MinItems=1
+	// +optional
 	// +kubebuilder:validation:MaxItems=100
+	// +kubebuilder:deprecatedversion:warning="Application field is deprecated and will be removed from the CRD in future release. Use ManagedApplications instead."
+	// Deprecated: Use ManagedApplications instead.
 	Applications []ApplicationReference `json:"applications"`
+
+	// ManagedApplications references the ManagedApplications that will gain access to the specified APIs.
+	// Multiple ManagedSubscriptions can select the same ManagedApplication.
+	// +optional
+	// +kubebuilder:validation:MaxItems=100
+	ManagedApplications []ManagedApplicationReference `json:"managedApplications"`
 
 	// APIBundles defines a set of APIBundle that will be accessible.
 	// Multiple ManagedSubscriptions can select the same APIBundles.
@@ -105,6 +113,13 @@ type ApplicationReference struct {
 	// In the case of OIDC, it corresponds to the clientId.
 	// +kubebuilder:validation:MaxLength=253
 	AppID string `json:"appId"`
+}
+
+// ManagedApplicationReference references a ManagedApplication.
+type ManagedApplicationReference struct {
+	// Name is the name of the ManagedApplication.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

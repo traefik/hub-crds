@@ -35,8 +35,6 @@ kind: ManagedSubscription
 metadata:
   name: my-managed-subscription
 spec:
-  applications:
-    - appId: p1
   apiPlan:
     name: my-plan`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
@@ -50,8 +48,6 @@ metadata:
   name: my-managed-subscription
   namespace: default
 spec:
-  applications:
-    - appId: p1
   apiPlan:
     name: my-plan`),
 		},
@@ -66,6 +62,8 @@ metadata:
 spec:
   applications:
     - appId: app1
+  managedApplications:
+    - name: managed-app-1
   apiPlan:
     name: my-plan
   apis:
@@ -87,8 +85,6 @@ metadata:
   name: .non-dns-compliant-access
   namespace: default
 spec:
-  applications:
-    - appId: p1
   apiPlan:
     name: my-plan`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: ".non-dns-compliant-access", Detail: "a lowercase RFC 1123 label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')"}},
@@ -102,8 +98,6 @@ metadata:
   name: ""
   namespace: default
 spec:
-  applications:
-    - appId: p1
   apiPlan:
     name: my-plan`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.name", BadValue: "", Detail: "name or generateName is required"}},
@@ -117,38 +111,9 @@ metadata:
   name: access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default
 spec:
-  applications:
-    - appId: p1
   apiPlan:
     name: my-plan`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "access-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
-		},
-		{
-			desc: "missing applications",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: ManagedSubscription
-metadata:
-  name: my-managed-subscription
-  namespace: default
-spec:
-  apiPlan:
-    name: my-plan`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.applications", BadValue: ""}},
-		},
-		{
-			desc: "no applications",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: ManagedSubscription
-metadata:
-  name: my-managed-subscription
-  namespace: default
-spec:
-  applications: []
-  apiPlan:
-    name: my-plan`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.applications", BadValue: int64(0), Detail: "spec.applications in body should have at least 1 items"}},
 		},
 		{
 			desc: "duplicated APIs",
@@ -159,8 +124,6 @@ metadata:
   name: my-managed-subscription
   namespace: default
 spec:
-  applications:
-    - appId: app1
   apiPlan:
     name: my-plan
   apis:
@@ -177,8 +140,6 @@ metadata:
   name: my-managed-subscription
   namespace: default
 spec:
-  applications:
-    - appId: app1
   apiPlan:
     name: my-plan
   apis:
@@ -195,8 +156,6 @@ metadata:
   name: my-managed-subscription
   namespace: default
 spec:
-  applications:
-    - appId: app1
   apiPlan:
     name: my-plan
   apiSelector:
@@ -212,9 +171,7 @@ kind: ManagedSubscription
 metadata:
   name: my-managed-subscription
   namespace: default
-spec:
-  applications:
-    - appId: app1`),
+spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan", BadValue: ""}},
 		},
 		{
@@ -226,8 +183,6 @@ metadata:
   name: my-managed-subscription
   namespace: default
 spec:
-  applications:
-    - appId: app1
   apiPlan: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
 		},
