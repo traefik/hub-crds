@@ -43,17 +43,17 @@ type ManagedSubscription struct {
 type ManagedSubscriptionSpec struct {
 	// Applications references the Applications that will gain access to the specified APIs.
 	// Multiple ManagedSubscriptions can select the same AppID.
+	// Deprecated: Use ManagedApplications instead.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
-	// +kubebuilder:deprecatedversion:warning="Application field is deprecated and will be removed from the CRD in future release. Use ManagedApplications instead."
-	// Deprecated: Use ManagedApplications instead.
-	Applications []ApplicationReference `json:"applications"`
+	Applications []ApplicationReference `json:"applications,omitempty"`
 
 	// ManagedApplications references the ManagedApplications that will gain access to the specified APIs.
 	// Multiple ManagedSubscriptions can select the same ManagedApplication.
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
-	ManagedApplications []ManagedApplicationReference `json:"managedApplications"`
+	// +kubebuilder:validation:XValidation:message="duplicated managed applications",rule="self.all(x, self.exists_one(y, x.name == y.name))"
+	ManagedApplications []ManagedApplicationReference `json:"managedApplications,omitempty"`
 
 	// APIBundles defines a set of APIBundle that will be accessible.
 	// Multiple ManagedSubscriptions can select the same APIBundles.

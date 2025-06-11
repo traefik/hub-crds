@@ -179,6 +179,9 @@ spec:
                   type: object
                 maxItems: 100
                 type: array
+                x-kubernetes-validations:
+                - message: duplicated managed applications
+                  rule: self.all(x, self.exists_one(y, x.name == y.name))
               operationFilter:
                 description: |-
                   OperationFilter specifies the allowed operations on APIs and APIVersions.
