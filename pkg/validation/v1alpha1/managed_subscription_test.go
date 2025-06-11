@@ -186,6 +186,22 @@ spec:
   apiPlan: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
 		},
+		{
+			desc: "duplicated managedapplications",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedSubscription
+metadata:
+  name: my-managed-subscription
+  namespace: default
+spec:
+  apiPlan:
+    name: my-plan
+  managedApplications:
+    - name: my-managed-application
+    - name: my-managed-application`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.managedApplications", BadValue: "array", Detail: "duplicated managed applications"}},
+		},
 	}
 
 	for _, test := range tests {
