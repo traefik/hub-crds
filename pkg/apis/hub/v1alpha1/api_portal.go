@@ -57,6 +57,10 @@ type APIPortalSpec struct {
 	// UI holds the UI customization options.
 	// +optional
 	UI *UISpec `json:"ui,omitempty"`
+
+	// Auth references the APIPortalAuth resource for authentication configuration.
+	// +optional
+	Auth *APIPortalAuthReference `json:"auth,omitempty"`
 }
 
 // UISpec configures the UI customization.
@@ -64,6 +68,13 @@ type UISpec struct {
 	// LogoURL is the public URL of the logo.
 	// +optional
 	LogoURL string `json:"logoUrl,omitempty"`
+}
+
+// APIPortalAuthReference references an APIPortalAuth resource for authentication configuration.
+type APIPortalAuthReference struct {
+	// Name is the name of the APIPortalAuth resource.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
 }
 
 // OIDCConfigStatus is the OIDC configuration status.

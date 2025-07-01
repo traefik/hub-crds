@@ -39,6 +39,8 @@ type Interface interface {
 	APIPlans() APIPlanInformer
 	// APIPortals returns a APIPortalInformer.
 	APIPortals() APIPortalInformer
+	// APIPortalAuths returns a APIPortalAuthInformer.
+	APIPortalAuths() APIPortalAuthInformer
 	// APIRateLimits returns a APIRateLimitInformer.
 	APIRateLimits() APIRateLimitInformer
 	// APIVersions returns a APIVersionInformer.
@@ -90,6 +92,11 @@ func (v *version) APIPlans() APIPlanInformer {
 // APIPortals returns a APIPortalInformer.
 func (v *version) APIPortals() APIPortalInformer {
 	return &aPIPortalInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// APIPortalAuths returns a APIPortalAuthInformer.
+func (v *version) APIPortalAuths() APIPortalAuthInformer {
+	return &aPIPortalAuthInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIRateLimits returns a APIRateLimitInformer.

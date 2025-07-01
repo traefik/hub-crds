@@ -55,6 +55,10 @@ func (c *FakeHubV1alpha1) APIPortals(namespace string) v1alpha1.APIPortalInterfa
 	return &FakeAPIPortals{c, namespace}
 }
 
+func (c *FakeHubV1alpha1) APIPortalAuths(namespace string) v1alpha1.APIPortalAuthInterface {
+	return &FakeAPIPortalAuths{c, namespace}
+}
+
 func (c *FakeHubV1alpha1) APIRateLimits(namespace string) v1alpha1.APIRateLimitInterface {
 	return &FakeAPIRateLimits{c, namespace}
 }

@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1_test
 
 import (
+	"strings"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -25,6 +26,8 @@ import (
 
 func TestAPIPortal_Validation(t *testing.T) {
 	t.Parallel()
+
+	tooLongAuthName := strings.Repeat("x", 254)
 
 	tests := []validationTestCase{
 		{
@@ -52,6 +55,20 @@ spec:
   trustedUrls: ["https://example.com"]
   ui:
     logoUrl: https://example.com/logo.png
+  `),
+		},
+		{
+			desc: "valid: with auth reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  auth:
+    name: my-auth
   `),
 		},
 		{
@@ -135,6 +152,20 @@ metadata:
 spec:
   trustedUrls: ["https://example.com", https://another.example.com]`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.trustedUrls", BadValue: 2, Detail: "must have at most 1 items"}},
+		},
+		{
+			desc: "auth name too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  auth:
+    name: "` + tooLongAuthName + `"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.auth.name", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 	}
 

@@ -33,6 +33,8 @@ type APIPlanExpansion interface{}
 
 type APIPortalExpansion interface{}
 
+type APIPortalAuthExpansion interface{}
+
 type APIRateLimitExpansion interface{}
 
 type APIVersionExpansion interface{}

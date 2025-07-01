@@ -69,6 +69,14 @@ type APIPortalListerExpansion interface{}
 // APIPortalNamespaceLister.
 type APIPortalNamespaceListerExpansion interface{}
 
+// APIPortalAuthListerExpansion allows custom methods to be added to
+// APIPortalAuthLister.
+type APIPortalAuthListerExpansion interface{}
+
+// APIPortalAuthNamespaceListerExpansion allows custom methods to be added to
+// APIPortalAuthNamespaceLister.
+type APIPortalAuthNamespaceListerExpansion interface{}
+
 // APIRateLimitListerExpansion allows custom methods to be added to
 // APIRateLimitLister.
 type APIRateLimitListerExpansion interface{}
