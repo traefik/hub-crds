@@ -43,7 +43,8 @@ func checkValidation(t *testing.T, test validationTestCase) {
 
 	validator := validation.NewValidator()
 	for _, definition := range crds {
-		if err = validator.Register(definition); err != nil {
+		err = validator.Register(definition)
+		if err != nil {
 			require.NoError(t, err)
 		}
 	}
@@ -52,6 +53,7 @@ func checkValidation(t *testing.T, test validationTestCase) {
 	require.NoError(t, err)
 
 	var object unstructured.Unstructured
+
 	decoderErr := decoder.Decode(test.manifest, &object)
 	require.NoError(t, decoderErr)
 

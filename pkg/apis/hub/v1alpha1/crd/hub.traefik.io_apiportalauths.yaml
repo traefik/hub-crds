@@ -40,62 +40,68 @@ spec:
           spec:
             description: The desired behavior of this APIPortalAuth.
             properties:
-              claims:
-                description: Claims configures JWT claim mappings for user attributes.
+              oidc:
+                description: OIDC configures the OIDC authentication.
                 properties:
-                  company:
-                    description: Company is the JWT claim for user company.
+                  claims:
+                    description: Claims configures JWT claim mappings for user attributes.
+                    properties:
+                      company:
+                        description: Company is the JWT claim for user company.
+                        type: string
+                      email:
+                        description: Email is the JWT claim for user email.
+                        type: string
+                      firstname:
+                        description: Firstname is the JWT claim for user first name.
+                        type: string
+                      groups:
+                        description: Groups is the JWT claim for user groups. This
+                          field is required for authorization.
+                        type: string
+                      lastname:
+                        description: Lastname is the JWT claim for user last name.
+                        type: string
+                      userId:
+                        description: UserID is the JWT claim for user ID mapping.
+                        type: string
+                    required:
+                    - groups
+                    type: object
+                  issuerUrl:
+                    description: IssuerURL is the OIDC provider issuer URL.
                     type: string
-                  email:
-                    description: Email is the JWT claim for user email.
+                    x-kubernetes-validations:
+                    - message: must be a valid URL
+                      rule: isURL(self)
+                  scopes:
+                    description: Scopes is a list of OAuth2 scopes.
+                    items:
+                      type: string
+                    type: array
+                  secretName:
+                    description: SecretName is the name of the Kubernetes Secret containing
+                      clientId and clientSecret keys.
+                    maxLength: 253
                     type: string
-                  firstname:
-                    description: Firstname is the JWT claim for user first name.
-                    type: string
-                  groups:
-                    description: Groups is the JWT claim for user groups. This field
-                      is required for authorization.
-                    type: string
-                  lastname:
-                    description: Lastname is the JWT claim for user last name.
-                    type: string
-                  userId:
-                    description: UserID is the JWT claim for user ID mapping.
-                    type: string
+                  syncedAttributes:
+                    description: |-
+                      SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
+                      Each attribute must correspond to a configured claim field.
+                    items:
+                      type: string
+                    type: array
+                    x-kubernetes-validations:
+                    - message: 'syncedAttributes must only contain: groups, userId,
+                        firstname, lastname, email, company'
+                      rule: self.all(attr, attr in ['groups', 'userId', 'firstname',
+                        'lastname', 'email', 'company'])
                 required:
-                - groups
+                - issuerUrl
+                - secretName
                 type: object
-              issuerUrl:
-                description: IssuerURL is the OIDC provider issuer URL.
-                type: string
-                x-kubernetes-validations:
-                - message: must be a valid URL
-                  rule: isURL(self)
-              scopes:
-                description: Scopes is a list of OAuth2 scopes.
-                items:
-                  type: string
-                type: array
-              secretName:
-                description: SecretName is the name of the Kubernetes Secret containing
-                  clientId and clientSecret keys.
-                maxLength: 253
-                type: string
-              syncedAttributes:
-                description: |-
-                  SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
-                  Each attribute must correspond to a configured claim field.
-                items:
-                  type: string
-                type: array
-                x-kubernetes-validations:
-                - message: 'syncedAttributes must only contain: groups, userId, firstname,
-                    lastname, email, company'
-                  rule: self.all(attr, attr in ['groups', 'userId', 'firstname', 'lastname',
-                    'email', 'company'])
             required:
-            - issuerUrl
-            - secretName
+            - oidc
             type: object
           status:
             description: The current status of this APIPortalAuth.

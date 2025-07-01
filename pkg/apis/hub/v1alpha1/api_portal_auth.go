@@ -40,6 +40,12 @@ type APIPortalAuth struct {
 
 // APIPortalAuthSpec configures the authentication for an APIPortal.
 type APIPortalAuthSpec struct {
+	// OIDC configures the OIDC authentication.
+	OIDC OIDCConfig `json:"oidc"`
+}
+
+// OIDCConfig configures OIDC authentication for an APIPortal.
+type OIDCConfig struct {
 	// IssuerURL is the OIDC provider issuer URL.
 	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
 	IssuerURL string `json:"issuerUrl"`

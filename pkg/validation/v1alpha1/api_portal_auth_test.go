@@ -38,10 +38,11 @@ kind: APIPortalAuth
 metadata:
   name: "my-auth"
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  claims:
-    groups: "groups"`),
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
@@ -53,10 +54,11 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  claims:
-    groups: "groups"`),
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"`),
 		},
 		{
 			desc: "valid: full configuration",
@@ -67,23 +69,24 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  scopes:
-    - "openid"
-    - "profile"
-    - "email"
-  claims:
-    userId: "sub"
-    firstname: "given_name"
-    lastname: "family_name"
-    email: "email"
-    groups: "groups"
-    company: "organization"
-  syncedAttributes:
-    - "userId"
-    - "firstname"
-    - "company"`),
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    scopes:
+      - "openid"
+      - "profile"
+      - "email"
+    claims:
+      userId: "sub"
+      firstname: "given_name"
+      lastname: "family_name"
+      email: "email"
+      groups: "groups"
+      company: "organization"
+    syncedAttributes:
+      - "userId"
+      - "firstname"
+      - "company"`),
 		},
 		{
 			desc: "invalid resource name",
@@ -104,11 +107,11 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  generic: true
-  secretName: "oidc-secret"
-  claims:
-    groups: "groups"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.issuerUrl", BadValue: ""}},
+  oidc:
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.oidc.issuerUrl", BadValue: ""}},
 		},
 		{
 			desc: "missing required secretName",
@@ -119,10 +122,11 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  claims:
-    groups: "groups"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.secretName", BadValue: ""}},
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    claims:
+      groups: "groups"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.oidc.secretName", BadValue: ""}},
 		},
 		{
 			desc: "missing required groups claim",
@@ -133,10 +137,11 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  claims: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.claims.groups", BadValue: ""}},
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.oidc.claims.groups", BadValue: ""}},
 		},
 		{
 			desc: "invalid issuer URL format",
@@ -147,12 +152,12 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  generic: true
-  issuerUrl: "not-a-url"
-  secretName: "oidc-secret"
-  claims:
-    groups: "groups"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.issuerUrl", BadValue: "string", Detail: "must be a valid URL"}},
+  oidc:
+    issuerUrl: "not-a-url"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.issuerUrl", BadValue: "string", Detail: "must be a valid URL"}},
 		},
 		{
 			desc: "secretName too long",
@@ -163,11 +168,12 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "` + tooLongSecretName + `"
-  claims:
-    groups: "groups"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.secretName", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "` + tooLongSecretName + `"
+    claims:
+      groups: "groups"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.oidc.secretName", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
 			desc: "valid: syncedAttributes with configured claims",
@@ -178,18 +184,19 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  claims:
-    userId: "sub"
-    firstname: "given_name"
-    groups: "groups"
-  syncedAttributes:
-    - "userId"
-    - "firstname"`),
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      userId: "sub"
+      firstname: "given_name"
+      groups: "groups"
+    syncedAttributes:
+      - "userId"
+      - "firstname"`),
 		},
 		{
-			desc: "invalid: syncedAttributes contains unconfigured claim",
+			desc: "valid: syncedAttributes contains valid fields",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortalAuth
@@ -197,14 +204,14 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  claims:
-    groups: "groups"
-  syncedAttributes:
-    - "userId"
-    - "company"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "syncedAttributes must only contain configured claim fields (userId, firstname, lastname, email, groups, company)"}},
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+    syncedAttributes:
+      - "userId"
+      - "company"`),
 		},
 		{
 			desc: "invalid: syncedAttributes contains unknown field",
@@ -215,13 +222,14 @@ metadata:
   name: my-auth
   namespace: default
 spec:
-  issuerUrl: "https://auth.example.com"
-  secretName: "oidc-secret"
-  claims:
-    groups: "groups"
-  syncedAttributes:
-    - "unknownField"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "syncedAttributes must only contain configured claim fields (userId, firstname, lastname, email, groups, company)"}},
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+    syncedAttributes:
+      - "unknownField"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.syncedAttributes", BadValue: "array", Detail: "syncedAttributes must only contain: groups, userId, firstname, lastname, email, company"}},
 		},
 	}
 

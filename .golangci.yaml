@@ -9,6 +9,9 @@ linters:
     - ireturn
     - lll
     - wrapcheck
+    - wsl
+    - wsl_v5
+    - noinlineerr
   settings:
     depguard:
       rules:

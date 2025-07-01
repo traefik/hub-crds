@@ -50,6 +50,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APIPortalList{},
 		&APIPortalAuth{},
 		&APIPortalAuthList{},
+		&APIAuth{},
+		&APIAuthList{},
 		&API{},
 		&APIList{},
 		&APIRateLimit{},
