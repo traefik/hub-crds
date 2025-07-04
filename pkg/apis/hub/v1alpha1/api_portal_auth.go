@@ -65,7 +65,8 @@ type OIDCConfig struct {
 	// SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
 	// Each attribute must correspond to a configured claim field.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="syncedAttributes must only contain: groups, userId, firstname, lastname, email, company",rule="self.all(attr, attr in ['groups', 'userId', 'firstname', 'lastname', 'email', 'company'])"
+	// +kubebuilder:validation:MaxItems=6
+	// +kubebuilder:validation:Enum=groups;userId;firstname;lastname;email;company
 	SyncedAttributes []string `json:"syncedAttributes,omitempty"`
 }
 

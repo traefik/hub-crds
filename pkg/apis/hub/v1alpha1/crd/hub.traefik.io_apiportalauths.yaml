@@ -88,14 +88,17 @@ spec:
                     description: |-
                       SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
                       Each attribute must correspond to a configured claim field.
+                    enum:
+                    - groups
+                    - userId
+                    - firstname
+                    - lastname
+                    - email
+                    - company
                     items:
                       type: string
+                    maxItems: 6
                     type: array
-                    x-kubernetes-validations:
-                    - message: 'syncedAttributes must only contain: groups, userId,
-                        firstname, lastname, email, company'
-                      rule: self.all(attr, attr in ['groups', 'userId', 'firstname',
-                        'lastname', 'email', 'company'])
                 required:
                 - issuerUrl
                 - secretName
