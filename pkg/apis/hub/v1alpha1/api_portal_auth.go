@@ -56,7 +56,7 @@ type OIDCConfig struct {
 
 	// Scopes is a list of OAuth2 scopes.
 	// +optional
-	Scopes []string `json:"scopes,omitempty"`
+	Scopes *[]string `json:"scopes,omitempty"`
 
 	// Claims configures JWT claim mappings for user attributes.
 	// +optional

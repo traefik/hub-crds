@@ -2216,8 +2216,12 @@ func (in *OIDCConfig) DeepCopyInto(out *OIDCConfig) {
 	*out = *in
 	if in.Scopes != nil {
 		in, out := &in.Scopes, &out.Scopes
-		*out = make([]string, len(*in))
-		copy(*out, *in)
+		*out = new([]string)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make([]string, len(*in))
+			copy(*out, *in)
+		}
 	}
 	if in.Claims != nil {
 		in, out := &in.Claims, &out.Claims
