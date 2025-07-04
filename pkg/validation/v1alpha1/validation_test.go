@@ -43,10 +43,7 @@ func checkValidation(t *testing.T, test validationTestCase) {
 
 	validator := validation.NewValidator()
 	for _, definition := range crds {
-		err = validator.Register(definition)
-		if err != nil {
-			require.NoError(t, err)
-		}
+		require.NoError(t, validator.Register(definition))
 	}
 
 	decoder, err := crd.NewHubDecoder()

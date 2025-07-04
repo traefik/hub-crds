@@ -37,8 +37,7 @@ type Decoder struct {
 // NewDecoder creates a new Decoder.
 func NewDecoder() (*Decoder, error) {
 	scheme := runtime.NewScheme()
-	err := apiextensionsv1.AddToScheme(scheme)
-	if err != nil {
+	if err := apiextensionsv1.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
 
@@ -58,8 +57,7 @@ func (d *Decoder) Decode(document []byte) (*apiextensions.CustomResourceDefiniti
 	}
 
 	var internalObject apiextensions.CustomResourceDefinition
-	err = d.scheme.Convert(object, &internalObject, nil)
-	if err != nil {
+	if err = d.scheme.Convert(object, &internalObject, nil); err != nil {
 		return nil, fmt.Errorf("converting CRD to internal object: %w", err)
 	}
 
@@ -74,8 +72,7 @@ type HubDecoder struct {
 // NewHubDecoder creates a new HubDecoder.
 func NewHubDecoder() (*HubDecoder, error) {
 	scheme := runtime.NewScheme()
-	err := hubv1alpha1.AddToScheme(scheme)
-	if err != nil {
+	if err := hubv1alpha1.AddToScheme(scheme); err != nil {
 		return nil, fmt.Errorf("adding hub.traefik.io/v1alpha1 resources: %w", err)
 	}
 
