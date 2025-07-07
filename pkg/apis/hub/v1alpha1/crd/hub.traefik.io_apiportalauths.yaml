@@ -88,18 +88,19 @@ spec:
                     description: |-
                       SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
                       Each attribute must correspond to a configured claim field.
-                    enum:
-                    - groups
-                    - userId
-                    - firstname
-                    - lastname
-                    - email
-                    - company
                     items:
+                      enum:
+                      - groups
+                      - userId
+                      - firstname
+                      - lastname
+                      - email
+                      - company
                       type: string
                     maxItems: 6
                     type: array
                 required:
+                - claims
                 - issuerUrl
                 - secretName
                 type: object

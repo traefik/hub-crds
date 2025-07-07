@@ -129,6 +129,20 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.oidc.secretName", BadValue: ""}},
 		},
 		{
+			desc: "missing required claims field",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.oidc.claims", BadValue: ""}},
+		},
+		{
 			desc: "missing required groups claim",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -229,7 +243,7 @@ spec:
       groups: "groups"
     syncedAttributes:
       - "unknownField"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.syncedAttributes", BadValue: "array", Detail: "syncedAttributes must only contain: groups, userId, firstname, lastname, email, company"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.oidc.syncedAttributes[0]", BadValue: "unknownField", Detail: "supported values: \"groups\", \"userId\", \"firstname\", \"lastname\", \"email\", \"company\""}},
 		},
 	}
 

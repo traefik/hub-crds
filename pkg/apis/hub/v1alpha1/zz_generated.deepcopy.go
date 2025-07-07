@@ -2223,11 +2223,7 @@ func (in *OIDCConfig) DeepCopyInto(out *OIDCConfig) {
 			copy(*out, *in)
 		}
 	}
-	if in.Claims != nil {
-		in, out := &in.Claims, &out.Claims
-		*out = new(ClaimsSpec)
-		**out = **in
-	}
+	out.Claims = in.Claims
 	if in.SyncedAttributes != nil {
 		in, out := &in.SyncedAttributes, &out.SyncedAttributes
 		*out = make([]string, len(*in))
