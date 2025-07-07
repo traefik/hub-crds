@@ -9,10 +9,12 @@ Supported CRDs:
 | Name                | Version  | 
 |---------------------|----------|
 | APIPortal           | v1alpha1 |
+| APIPortalAuth       | v1alpha1 |
 | APIPlan             | v1alpha1 |
 | APICatalogItem      | v1alpha1 |
 | APIBundle           | v1alpha1 |
 | API                 | v1alpha1 |
+| APIAuth             | v1alpha1 |
 | APIVersion          | v1alpha1 |
 | ManagedSubscription | v1alpha1 |
 | ManagedApplication  | v1alpha1 |
