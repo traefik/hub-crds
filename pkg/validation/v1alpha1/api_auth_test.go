@@ -65,6 +65,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     signingSecretName: "jwt-secret"`),
 		},
 		{
@@ -78,6 +79,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----"`),
 		},
 		{
@@ -91,6 +93,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     jwksFile: '{"keys":[{"kty":"RSA","use":"sig","kid":"abc","n":"...","e":"AQAB"}]}'`),
 		},
 		{
@@ -104,6 +107,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     jwksUrl: "https://example.com/.well-known/jwks.json"`),
 		},
 		{
@@ -119,6 +123,8 @@ spec:
   jwt:
     stripAuthorizationHeader: true
     tokenQueryKey: "token"
+    appIdClaim: "client_id"
+    tokenNameClaim: "token_name"
     forwardHeaders:
       X-User-ID: "sub"
       X-User-Email: "email"
@@ -170,8 +176,23 @@ spec:
   isDefault: true
   apiKey: {}
   jwt:
+    appIdClaim: "client_id"
     signingSecretName: "jwt-secret"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of apiKey or jwt must be specified"}},
+		},
+		{
+			desc: "JWT missing required appIdClaim",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    signingSecretName: "jwt-secret"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.jwt.appIdClaim", BadValue: ""}},
 		},
 		{
 			desc: "JWT signingSecretName too long",
@@ -184,6 +205,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     signingSecretName: "` + tooLongSecretName + `"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.jwt.signingSecretName", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
@@ -198,6 +220,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     jwksUrl: "not-a-url"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "string", Detail: "must be a valid URL"}},
 		},
@@ -212,6 +235,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     stripAuthorizationHeader: true`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, or jwksUrl must be specified"}},
 		},
@@ -226,6 +250,7 @@ metadata:
 spec:
   isDefault: true
   jwt:
+    appIdClaim: "client_id"
     signingSecretName: "jwt-secret"
     publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, or jwksUrl must be specified"}},

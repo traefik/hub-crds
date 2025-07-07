@@ -68,6 +68,15 @@ type JWTAuthSpec struct {
 	// +optional
 	TokenQueryKey string `json:"tokenQueryKey,omitempty"`
 
+	// AppIDClaim is the name of the claim holding the identifier of the application.
+	// This field is sometimes named `client_id`.
+	AppIDClaim string `json:"appIdClaim"`
+
+	// TokenNameClaim is the name of the claim holding the name of the token.
+	// This name, if provided, will be used in the metrics.
+	// +optional
+	TokenNameClaim string `json:"tokenNameClaim,omitempty"`
+
 	// ForwardHeaders specifies additional headers to forward with the request.
 	// +optional
 	ForwardHeaders map[string]string `json:"forwardHeaders,omitempty"`
