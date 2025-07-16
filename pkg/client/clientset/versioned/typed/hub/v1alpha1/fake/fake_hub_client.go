@@ -39,6 +39,10 @@ func (c *FakeHubV1alpha1) APIs(namespace string) v1alpha1.APIInterface {
 	return &FakeAPIs{c, namespace}
 }
 
+func (c *FakeHubV1alpha1) APIAuths(namespace string) v1alpha1.APIAuthInterface {
+	return &FakeAPIAuths{c, namespace}
+}
+
 func (c *FakeHubV1alpha1) APIBundles(namespace string) v1alpha1.APIBundleInterface {
 	return &FakeAPIBundles{c, namespace}
 }
@@ -53,6 +57,10 @@ func (c *FakeHubV1alpha1) APIPlans(namespace string) v1alpha1.APIPlanInterface {
 
 func (c *FakeHubV1alpha1) APIPortals(namespace string) v1alpha1.APIPortalInterface {
 	return &FakeAPIPortals{c, namespace}
+}
+
+func (c *FakeHubV1alpha1) APIPortalAuths(namespace string) v1alpha1.APIPortalAuthInterface {
+	return &FakeAPIPortalAuths{c, namespace}
 }
 
 func (c *FakeHubV1alpha1) APIRateLimits(namespace string) v1alpha1.APIRateLimitInterface {

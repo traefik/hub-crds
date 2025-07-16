@@ -31,6 +31,8 @@ type Interface interface {
 	AIServices() AIServiceInformer
 	// APIs returns a APIInformer.
 	APIs() APIInformer
+	// APIAuths returns a APIAuthInformer.
+	APIAuths() APIAuthInformer
 	// APIBundles returns a APIBundleInformer.
 	APIBundles() APIBundleInformer
 	// APICatalogItems returns a APICatalogItemInformer.
@@ -39,6 +41,8 @@ type Interface interface {
 	APIPlans() APIPlanInformer
 	// APIPortals returns a APIPortalInformer.
 	APIPortals() APIPortalInformer
+	// APIPortalAuths returns a APIPortalAuthInformer.
+	APIPortalAuths() APIPortalAuthInformer
 	// APIRateLimits returns a APIRateLimitInformer.
 	APIRateLimits() APIRateLimitInformer
 	// APIVersions returns a APIVersionInformer.
@@ -72,6 +76,11 @@ func (v *version) APIs() APIInformer {
 	return &aPIInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
+// APIAuths returns a APIAuthInformer.
+func (v *version) APIAuths() APIAuthInformer {
+	return &aPIAuthInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
 // APIBundles returns a APIBundleInformer.
 func (v *version) APIBundles() APIBundleInformer {
 	return &aPIBundleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -90,6 +99,11 @@ func (v *version) APIPlans() APIPlanInformer {
 // APIPortals returns a APIPortalInformer.
 func (v *version) APIPortals() APIPortalInformer {
 	return &aPIPortalInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// APIPortalAuths returns a APIPortalAuthInformer.
+func (v *version) APIPortalAuths() APIPortalAuthInformer {
+	return &aPIPortalAuthInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // APIRateLimits returns a APIRateLimitInformer.

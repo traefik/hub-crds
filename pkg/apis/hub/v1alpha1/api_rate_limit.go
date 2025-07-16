@@ -145,12 +145,12 @@ func (p *Period) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON unmarshals the buffer into a Period.
 func (p *Period) UnmarshalJSON(b []byte) error {
-	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
+	var rawValue interface{}
+	if err := json.Unmarshal(b, &rawValue); err != nil {
 		return err
 	}
 
-	if value, ok := v.(string); ok {
+	if value, ok := rawValue.(string); ok {
 		duration, err := time.ParseDuration(value)
 		if err != nil {
 			return fmt.Errorf("parse: %w", err)

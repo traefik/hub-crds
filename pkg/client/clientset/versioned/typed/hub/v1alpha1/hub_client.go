@@ -33,10 +33,12 @@ type HubV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AIServicesGetter
 	APIsGetter
+	APIAuthsGetter
 	APIBundlesGetter
 	APICatalogItemsGetter
 	APIPlansGetter
 	APIPortalsGetter
+	APIPortalAuthsGetter
 	APIRateLimitsGetter
 	APIVersionsGetter
 	AccessControlPoliciesGetter
@@ -57,6 +59,10 @@ func (c *HubV1alpha1Client) APIs(namespace string) APIInterface {
 	return newAPIs(c, namespace)
 }
 
+func (c *HubV1alpha1Client) APIAuths(namespace string) APIAuthInterface {
+	return newAPIAuths(c, namespace)
+}
+
 func (c *HubV1alpha1Client) APIBundles(namespace string) APIBundleInterface {
 	return newAPIBundles(c, namespace)
 }
@@ -71,6 +77,10 @@ func (c *HubV1alpha1Client) APIPlans(namespace string) APIPlanInterface {
 
 func (c *HubV1alpha1Client) APIPortals(namespace string) APIPortalInterface {
 	return newAPIPortals(c, namespace)
+}
+
+func (c *HubV1alpha1Client) APIPortalAuths(namespace string) APIPortalAuthInterface {
+	return newAPIPortalAuths(c, namespace)
 }
 
 func (c *HubV1alpha1Client) APIRateLimits(namespace string) APIRateLimitInterface {

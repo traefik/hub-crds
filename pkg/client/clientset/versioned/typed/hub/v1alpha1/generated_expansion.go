@@ -25,6 +25,8 @@ type AIServiceExpansion interface{}
 
 type APIExpansion interface{}
 
+type APIAuthExpansion interface{}
+
 type APIBundleExpansion interface{}
 
 type APICatalogItemExpansion interface{}
@@ -32,6 +34,8 @@ type APICatalogItemExpansion interface{}
 type APIPlanExpansion interface{}
 
 type APIPortalExpansion interface{}
+
+type APIPortalAuthExpansion interface{}
 
 type APIRateLimitExpansion interface{}
 
