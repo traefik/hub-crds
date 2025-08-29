@@ -55,6 +55,9 @@ type APIAuthSpec struct {
 }
 
 // APIKeyAuthSpec configures API key authentication.
+// +kubebuilder:pruning:PreserveUnknownFields
+// PreserveUnknownFields annotation is needed because this is an empty struct,
+// which would generate an invalid OpenAPI schema without explicit properties.
 type APIKeyAuthSpec struct{}
 
 // JWTAuthSpec configures JWT authentication.
