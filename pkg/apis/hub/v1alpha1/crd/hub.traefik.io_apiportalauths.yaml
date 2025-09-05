@@ -49,6 +49,28 @@ spec:
                       Attribute is the LDAP object attribute used to form a bind DN when sending bind queries.
                       The bind DN is formed as <Attribute>=<Username>,<BaseDN>.
                     type: string
+                  attributes:
+                    description: Attributes configures LDAP attribute mappings for
+                      user attributes.
+                    properties:
+                      company:
+                        description: Company is the LDAP attribute for user company.
+                        type: string
+                      email:
+                        description: Email is the LDAP attribute for user email.
+                        type: string
+                      firstname:
+                        description: Firstname is the LDAP attribute for user first
+                          name.
+                        type: string
+                      lastname:
+                        description: Lastname is the LDAP attribute for user last
+                          name.
+                        type: string
+                      userId:
+                        description: UserID is the LDAP attribute for user ID mapping.
+                        type: string
+                    type: object
                   baseDn:
                     description: BaseDN is the base domain name that should be used
                       for bind and search queries.
@@ -115,6 +137,7 @@ spec:
                     - message: must be a valid LDAP URL
                       rule: isURL(self) && (self.startsWith('ldap://') || self.startsWith('ldaps://'))
                 required:
+                - attributes
                 - baseDn
                 - url
                 type: object

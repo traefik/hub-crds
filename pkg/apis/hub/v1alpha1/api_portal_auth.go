@@ -150,12 +150,38 @@ type LDAPConfig struct {
 	// +optional
 	Groups *LDAPGroups `json:"groups,omitempty"`
 
+	// Attributes configures LDAP attribute mappings for user attributes.
+	Attributes LDAPAttributesSpec `json:"attributes"`
+
 	// SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
 	// Each attribute must correspond to a configured claim field.
 	// +optional
 	// +kubebuilder:validation:MaxItems=6
 	// +kubebuilder:validation:items:Enum=groups;userId;firstname;lastname;email;company
 	SyncedAttributes []string `json:"syncedAttributes,omitempty"`
+}
+
+// LDAPAttributesSpec configures LDAP attribute mappings for user attributes.
+type LDAPAttributesSpec struct {
+	// UserID is the LDAP attribute for user ID mapping.
+	// +optional
+	UserID string `json:"userId,omitempty"`
+
+	// Firstname is the LDAP attribute for user first name.
+	// +optional
+	Firstname string `json:"firstname,omitempty"`
+
+	// Lastname is the LDAP attribute for user last name.
+	// +optional
+	Lastname string `json:"lastname,omitempty"`
+
+	// Email is the LDAP attribute for user email.
+	// +optional
+	Email string `json:"email,omitempty"`
+
+	// Company is the LDAP attribute for user company.
+	// +optional
+	Company string `json:"company,omitempty"`
 }
 
 // LDAPGroups configures LDAP group extraction.
