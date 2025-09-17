@@ -143,6 +143,64 @@ spec:
   apiKey: {}`),
 		},
 		{
+			desc: "valid: minimal LDAP configuration",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    url: "ldap://ldap.example.com:389"
+    baseDn: "dc=example,dc=com"`),
+		},
+		{
+			desc: "valid: LDAP with LDAPS",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    url: "ldaps://ldap.example.com:636"
+    baseDn: "dc=example,dc=com"`),
+		},
+		{
+			desc: "valid: full LDAP configuration",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    url: "ldaps://ldap.example.com:636"
+    startTls: true
+    insecureSkipVerify: false
+    certificateAuthority: |
+      -----BEGIN CERTIFICATE-----
+      MIIBCzCBsqADAgECAhBaooOsws+BLdvtfqQ1ggx5MAoGCCqGSM49BAMCMBIxEDAO
+      BgNVBAoTB0V4YW1wbGUwHhcNMjQwMTAxMDAwMDAwWhcNMjUwMTAxMDAwMDAwWjAS
+      MRAwDgYDVQQKEwdFeGFtcGxlMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEKNho
+      zEli5D+VsLgKJcgT0rp+MnYGJ4PjN8qgXfQx1F5JhtVBVnH8qWmza2XwJvVZAgUg
+      WijH8vDvBJU8su1w16MdMBswDgYDVR0PAQH/BAQDAgWgMAkGA1UdEwQCMAAwCgYI
+      KoZIzj0EAwIDSAAwRQIgcu4/UZKPaUPCAB2jjqKbW8XqBp8fv1F8D5FO5hL1DqwC
+      IQDB3g0Lhx4QbM3Kw6bk0gvvVVLkb/TXe2Nvl4dH8gOCEw==
+      -----END CERTIFICATE-----
+    bindDn: "cn=admin,dc=example,dc=com"
+    bindPasswordSecretName: "ldap-bind-password"
+    baseDn: "dc=example,dc=com"
+    attribute: "uid"
+    searchFilter: "(&(objectClass=inetOrgPerson)(uid=%s))"`),
+		},
+		{
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -162,10 +220,10 @@ metadata:
   namespace: default
 spec:
   isDefault: true`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of apiKey or jwt must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one authentication method must be specified"}},
 		},
 		{
-			desc: "both authentication methods specified",
+			desc: "multiple authentication methods specified",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAuth
@@ -178,7 +236,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     signingSecretName: "jwt-secret"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of apiKey or jwt must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one authentication method must be specified"}},
 		},
 		{
 			desc: "JWT missing required appIdClaim",
@@ -254,6 +312,65 @@ spec:
     signingSecretName: "jwt-secret"
     publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, or jwksUrl must be specified"}},
+		},
+		{
+			desc: "LDAP missing required URL",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    baseDn: "dc=example,dc=com"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.ldap.url", BadValue: ""}},
+		},
+		{
+			desc: "LDAP missing required baseDn",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    url: "ldap://ldap.example.com:389"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.ldap.baseDn", BadValue: ""}},
+		},
+		{
+			desc: "LDAP invalid URL format",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    url: "https://ldap.example.com"
+    baseDn: "dc=example,dc=com"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ldap.url", BadValue: "string", Detail: "must be a valid LDAP URL"}},
+		},
+		{
+			desc: "LDAP bindPasswordSecretName too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-ldap-auth
+  namespace: default
+spec:
+  isDefault: true
+  ldap:
+    url: "ldap://ldap.example.com:389"
+    baseDn: "dc=example,dc=com"
+    bindPasswordSecretName: "` + tooLongSecretName + `"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.ldap.bindPasswordSecretName", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 	}
 

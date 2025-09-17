@@ -137,7 +137,6 @@ spec:
                     - message: must be a valid LDAP URL
                       rule: isURL(self) && (self.startsWith('ldap://') || self.startsWith('ldaps://'))
                 required:
-                - attributes
                 - baseDn
                 - url
                 type: object

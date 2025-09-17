@@ -288,6 +288,10 @@ spec:
     searchFilter: "(&(objectClass=inetOrgPerson)(uid=%s))"
     groups:
       memberOfAttribute: "memberOf"
+    attributes:
+      userId: "uid"
+      firstname: "givenName"
+      email: "mail"
     syncedAttributes:
       - "userId"
       - "firstname"
@@ -390,6 +394,11 @@ spec:
   ldap:
     url: "ldap://ldap.example.com:389"
     baseDn: "dc=example,dc=com"
+    groups:
+      memberOfAttribute: "memberOf"
+    attributes:
+      userId: "uid"
+      email: "mail"
     syncedAttributes:
       - "groups"
       - "userId"

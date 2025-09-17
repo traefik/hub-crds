@@ -47,7 +47,7 @@ type APIPortalAuthSpec struct {
 
 	// LDAP configures the LDAP authentication.
 	// +optional
-	LDAP *LDAPConfig `json:"ldap,omitempty"`
+	LDAP *PortalAuthLDAPConfig `json:"ldap,omitempty"`
 }
 
 // OIDCConfig configures OIDC authentication for an APIPortal.
@@ -101,8 +101,8 @@ type ClaimsSpec struct {
 	Company string `json:"company,omitempty"`
 }
 
-// LDAPConfig configures LDAP authentication for an APIPortal.
-type LDAPConfig struct {
+// LDAPConnectionConfig holds LDAP connection configuration.
+type LDAPConnectionConfig struct {
 	// URL is the URL of the LDAP server, including the protocol (ldap or ldaps) and the port.
 	// +kubebuilder:validation:XValidation:message="must be a valid LDAP URL",rule="isURL(self) && (self.startsWith('ldap://') || self.startsWith('ldaps://'))"
 	URL string `json:"url"`
@@ -145,13 +145,19 @@ type LDAPConfig struct {
 	// %s can be used as a placeholder for the username.
 	// +optional
 	SearchFilter string `json:"searchFilter,omitempty"`
+}
+
+// PortalAuthLDAPConfig holds LDAP configuration for portal authentication.
+type PortalAuthLDAPConfig struct {
+	LDAPConnectionConfig `json:",inline"`
 
 	// Groups configures group extraction.
 	// +optional
 	Groups *LDAPGroups `json:"groups,omitempty"`
 
 	// Attributes configures LDAP attribute mappings for user attributes.
-	Attributes LDAPAttributesSpec `json:"attributes"`
+	// +optional
+	Attributes *LDAPAttributesSpec `json:"attributes"`
 
 	// SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
 	// Each attribute must correspond to a configured claim field.
