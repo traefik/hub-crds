@@ -65,18 +65,17 @@ type OIDCConfig struct {
 	Scopes *[]string `json:"scopes,omitempty"`
 
 	// Claims configures JWT claim mappings for user attributes.
-	Claims ClaimsSpec `json:"claims"`
+	Claims Claims `json:"claims"`
 
-	// SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
-	// Each attribute must correspond to a configured claim field.
+	// SyncedAttributes are the user attributes to synchronize with Hub platform.
 	// +optional
 	// +kubebuilder:validation:MaxItems=6
 	// +kubebuilder:validation:items:Enum=groups;userId;firstname;lastname;email;company
 	SyncedAttributes []string `json:"syncedAttributes,omitempty"`
 }
 
-// ClaimsSpec configures JWT claim mappings for user attributes.
-type ClaimsSpec struct {
+// Claims configures JWT claim mappings for user attributes.
+type Claims struct {
 	// Groups is the JWT claim for user groups. This field is required for authorization.
 	Groups string `json:"groups"`
 
@@ -157,18 +156,17 @@ type PortalAuthLDAPConfig struct {
 
 	// Attributes configures LDAP attribute mappings for user attributes.
 	// +optional
-	Attributes *LDAPAttributesSpec `json:"attributes"`
+	Attributes *Attributes `json:"attributes"`
 
-	// SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
-	// Each attribute must correspond to a configured claim field.
+	// SyncedAttributes are the user attributes to synchronize with Hub platform.
 	// +optional
 	// +kubebuilder:validation:MaxItems=6
 	// +kubebuilder:validation:items:Enum=groups;userId;firstname;lastname;email;company
 	SyncedAttributes []string `json:"syncedAttributes,omitempty"`
 }
 
-// LDAPAttributesSpec configures LDAP attribute mappings for user attributes.
-type LDAPAttributesSpec struct {
+// Attributes configures LDAP attribute mappings for user attributes.
+type Attributes struct {
 	// UserID is the LDAP attribute for user ID mapping.
 	// +optional
 	UserID string `json:"userId,omitempty"`

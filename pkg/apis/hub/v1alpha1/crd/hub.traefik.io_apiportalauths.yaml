@@ -115,9 +115,8 @@ spec:
                       request when initializing the connection with the LDAP server.
                     type: boolean
                   syncedAttributes:
-                    description: |-
-                      SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
-                      Each attribute must correspond to a configured claim field.
+                    description: SyncedAttributes are the user attributes to synchronize
+                      with Hub platform.
                     items:
                       enum:
                       - groups
@@ -185,9 +184,8 @@ spec:
                     maxLength: 253
                     type: string
                   syncedAttributes:
-                    description: |-
-                      SyncedAttributes is a list of additional attributes to sync from the OIDC provider.
-                      Each attribute must correspond to a configured claim field.
+                    description: SyncedAttributes are the user attributes to synchronize
+                      with Hub platform.
                     items:
                       enum:
                       - groups
