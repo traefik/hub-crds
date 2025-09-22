@@ -54,9 +54,30 @@ spec:
   rateLimit:
     limit: 1
     period: 2s
+    bucket: application-api
   quota:
     limit: 1
-    period: 2s`),
+    period: 2s
+    bucket: subscription`),
+		},
+		{
+			desc: "valid: with application bucket",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPlan
+metadata:
+  name: my-plan
+  namespace: default
+spec:
+  title: my-plan
+  rateLimit:
+    limit: 10
+    period: 1s
+    bucket: application
+  quota:
+    limit: 100
+    period: 1h
+    bucket: application`),
 		},
 		{
 			desc: "missing resource namespace",
@@ -216,6 +237,38 @@ spec:
     limit: 1
     period: 0s`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.period", BadValue: "string", Detail: "must be between 1s and 1h"}},
+		},
+		{
+			desc: "invalid bucket value for rateLimit",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPlan
+metadata:
+  name: my-plan
+  namespace: default
+spec:
+  title: my-plan
+  rateLimit:
+    limit: 10
+    period: 1s
+    bucket: invalid-bucket`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.rateLimit.bucket", BadValue: "invalid-bucket", Detail: "supported values: \"subscription\", \"application-api\", \"application\""}},
+		},
+		{
+			desc: "invalid bucket value for quota",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPlan
+metadata:
+  name: my-plan
+  namespace: default
+spec:
+  title: my-plan
+  quota:
+    limit: 100
+    period: 1h
+    bucket: unknown`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.quota.bucket", BadValue: "unknown", Detail: "supported values: \"subscription\", \"application-api\", \"application\""}},
 		},
 	}
 

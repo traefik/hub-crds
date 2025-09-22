@@ -73,6 +73,12 @@ type RateLimit struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 1h",rule="self >= duration('1s') && self <= duration('1h')"
 	Period *Period `json:"period,omitempty"`
+
+	// Bucket defines the bucket strategy for the rate limit.
+	// +optional
+	// +kubebuilder:default="subscription"
+	// +kubebuilder:validation:Enum=subscription;application-api;application
+	Bucket Bucket `json:"bucket,omitempty"`
 }
 
 type Quota struct {
@@ -84,7 +90,28 @@ type Quota struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 9999h",rule="self >= duration('1s') && self <= duration('9999h')"
 	Period *Period `json:"period,omitempty"`
+
+	// Bucket defines the bucket strategy for the quota.
+	// +optional
+	// +kubebuilder:default="subscription"
+	// +kubebuilder:validation:Enum=subscription;application-api;application
+	Bucket Bucket `json:"bucket,omitempty"`
 }
+
+// Bucket is a bucket strategy.
+type Bucket string
+
+const (
+	// BucketSubscription shares the rate limit or quota across all APIs and applications
+	// within the same subscription, providing a global limit for the entire subscription.
+	BucketSubscription Bucket = "subscription"
+	// BucketApplicationAPI creates separate rate limit or quota buckets for each unique
+	// combination of application and API, allowing fine-grained control per app-API pair.
+	BucketApplicationAPI Bucket = "application-api"
+	// BucketApplication creates a single rate limit or quota bucket per application,
+	// shared across all APIs that the application calls.
+	BucketApplication Bucket = "application"
+)
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
