@@ -89,10 +89,7 @@ linters:
     rules:
       - linters:
           - maintidx
-        path: pkg/validation/v1alpha1/api_test.go
-      - linters:
-          - maintidx
-        path: pkg/validation/v1alpha1/version_test.go
+        path: 'pkg/validation/v1alpha1/(.+)_test\.go'
     paths:
       - hub/v1alpha1/generated/
       - third_party$
