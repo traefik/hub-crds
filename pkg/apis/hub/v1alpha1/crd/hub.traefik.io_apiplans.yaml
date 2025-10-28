@@ -46,7 +46,7 @@ spec:
                 description: Quota defines the quota policy.
                 properties:
                   bucket:
-                    default: application-api
+                    default: subscription
                     description: Bucket defines the bucket strategy for the quota.
                     enum:
                     - subscription
@@ -73,7 +73,7 @@ spec:
                 description: RateLimit defines the rate limit policy.
                 properties:
                   bucket:
-                    default: application-api
+                    default: subscription
                     description: Bucket defines the bucket strategy for the rate limit.
                     enum:
                     - subscription
