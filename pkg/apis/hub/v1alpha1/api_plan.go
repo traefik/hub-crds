@@ -60,8 +60,11 @@ type APIPlanSpec struct {
 type APIPlanStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
+
 	// Hash is a hash representing the APIPlan.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 type RateLimit struct {

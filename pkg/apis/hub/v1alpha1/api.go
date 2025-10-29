@@ -191,6 +191,8 @@ type APIStatus struct {
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 	// Hash is a hash representing the API.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

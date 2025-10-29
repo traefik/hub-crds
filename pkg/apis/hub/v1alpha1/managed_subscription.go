@@ -105,6 +105,8 @@ type ManagedSubscriptionStatus struct {
 
 	// Hash is a hash representing the ManagedSubscription.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // ApplicationReference references an Application.

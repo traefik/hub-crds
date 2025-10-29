@@ -85,8 +85,11 @@ type ManagedApplicationStatus struct {
 	Version        string            `json:"version,omitempty"`
 	APIKeyVersions map[string]string `json:"apiKeyVersions,omitempty"`
 	SyncedAt       *metav1.Time      `json:"syncedAt,omitempty"`
+
 	// Hash is a hash representing the ManagedApplication.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

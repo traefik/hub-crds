@@ -120,6 +120,8 @@ type APICatalogItemStatus struct {
 
 	// Hash is a hash representing the APICatalogItem.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
