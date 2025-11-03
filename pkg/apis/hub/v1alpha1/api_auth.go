@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIAuth defines the authentication configuration for APIs.
+// +kubebuilder:subresource:status
 type APIAuth struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

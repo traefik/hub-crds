@@ -26,6 +26,7 @@ import (
 
 // ManagedSubscription defines a Subscription managed by the API manager as the result of a pre-negotiation with its
 // API consumers. This subscription grant consuming access to a set of APIs to a set of Applications.
+// +kubebuilder:subresource:status
 type ManagedSubscription struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

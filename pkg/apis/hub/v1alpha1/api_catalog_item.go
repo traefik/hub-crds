@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APICatalogItem defines APIs that will be part of the API catalog on the portal.
+// +kubebuilder:subresource:status
 type APICatalogItem struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

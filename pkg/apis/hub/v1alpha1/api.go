@@ -27,6 +27,7 @@ import (
 // API defines an HTTP interface that is exposed to external clients. It specifies the supported versions
 // and provides instructions for accessing its documentation. Once instantiated, an API object is associated
 // with an Ingress, IngressRoute, or HTTPRoute resource, enabling the exposure of the described API to the outside world.
+// +kubebuilder:subresource:status
 type API struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

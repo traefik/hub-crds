@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIPlan defines API Plan policy.
+// +kubebuilder:subresource:status
 type APIPlan struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

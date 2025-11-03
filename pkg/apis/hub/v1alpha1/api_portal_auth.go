@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIPortalAuth defines the authentication configuration for an APIPortal.
+// +kubebuilder:subresource:status
 type APIPortalAuth struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

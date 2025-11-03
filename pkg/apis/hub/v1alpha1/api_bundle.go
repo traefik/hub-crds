@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIBundle defines a set of APIs.
+// +kubebuilder:subresource:status
 type APIBundle struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

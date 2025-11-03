@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIPortal defines a developer portal for accessing the documentation of APIs.
+// +kubebuilder:subresource:status
 type APIPortal struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

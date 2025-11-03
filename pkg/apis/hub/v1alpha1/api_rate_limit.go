@@ -31,6 +31,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIRateLimit defines how group of consumers are rate limited on a set of APIs.
+// +kubebuilder:subresource:status
 type APIRateLimit struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

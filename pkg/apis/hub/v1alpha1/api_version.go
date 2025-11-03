@@ -27,6 +27,7 @@ import (
 // APIVersion defines a version of an API.
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`
 // +kubebuilder:printcolumn:name="Release",type=string,JSONPath=`.spec.release`
+// +kubebuilder:subresource:status
 type APIVersion struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

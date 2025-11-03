@@ -25,6 +25,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // ManagedApplication represents a managed application.
+// +kubebuilder:subresource:status
 type ManagedApplication struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
