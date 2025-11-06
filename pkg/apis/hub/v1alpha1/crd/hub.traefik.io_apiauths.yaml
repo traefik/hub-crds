@@ -63,21 +63,28 @@ spec:
                       with the request.
                     type: object
                   jwksFile:
-                    description: JWKSFile contains the JWKS file content for JWT verification.
+                    description: |-
+                      JWKSFile contains the JWKS file content for JWT verification.
+                      Mutually exclusive with SigningSecretName, PublicKey, JWKSURL, and TrustedIssuers.
                     type: string
                   jwksUrl:
-                    description: JWKSURL is the URL to fetch the JWKS for JWT verification.
+                    description: |-
+                      JWKSURL is the URL to fetch the JWKS for JWT verification.
+                      Mutually exclusive with SigningSecretName, PublicKey, JWKSFile, and TrustedIssuers.
                     type: string
                     x-kubernetes-validations:
                     - message: must be a valid URL
                       rule: isURL(self)
                   publicKey:
-                    description: PublicKey is the PEM-encoded public key for JWT verification.
+                    description: |-
+                      PublicKey is the PEM-encoded public key for JWT verification.
+                      Mutually exclusive with SigningSecretName, JWKSFile, JWKSURL, and TrustedIssuers.
                     type: string
                   signingSecretName:
                     description: |-
                       SigningSecretName is the name of the Kubernetes Secret containing the signing secret.
                       The secret must be of type Opaque and contain a key named 'value'.
+                      Mutually exclusive with PublicKey, JWKSFile, JWKSURL, and TrustedIssuers.
                     maxLength: 253
                     type: string
                   stripAuthorizationHeader:
@@ -93,14 +100,39 @@ spec:
                     description: TokenQueryKey specifies the query parameter name
                       for the JWT token.
                     type: string
+                  trustedIssuers:
+                    description: |-
+                      TrustedIssuers defines multiple JWKS providers with optional issuer validation.
+                      Mutually exclusive with SigningSecretName, PublicKey, JWKSFile, and JWKSURL.
+                    items:
+                      description: TrustedIssuer defines a trusted JWT issuer and
+                        its JWKS endpoint.
+                      properties:
+                        issuer:
+                          description: |-
+                            Issuer is the expected value of the "iss" claim.
+                            If specified, tokens must have this exact issuer to be validated against this JWKS.
+                            If omitted, this JWKS acts as a fallback for any issuer.
+                          type: string
+                        jwksUrl:
+                          description: JWKSURL is the URL to fetch the JWKS from.
+                          type: string
+                          x-kubernetes-validations:
+                          - message: must be a valid URL
+                            rule: isURL(self)
+                      required:
+                      - jwksUrl
+                      type: object
+                    type: array
                 required:
                 - appIdClaim
                 type: object
                 x-kubernetes-validations:
                 - message: exactly one of signingSecretName, publicKey, jwksFile,
-                    or jwksUrl must be specified
+                    jwksUrl, or trustedIssuers must be specified
                   rule: '[has(self.signingSecretName), has(self.publicKey), has(self.jwksFile),
-                    has(self.jwksUrl)].filter(x, x).size() == 1'
+                    has(self.jwksUrl), has(self.trustedIssuers)].filter(x, x).size()
+                    == 1'
               ldap:
                 description: LDAP configures LDAP authentication.
                 properties:
