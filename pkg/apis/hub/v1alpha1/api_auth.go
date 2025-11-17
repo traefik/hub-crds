@@ -65,14 +65,15 @@ type APIAuthSpec struct {
 // which would generate an invalid OpenAPI schema without explicit properties.
 type APIKeyAuthSpec struct{}
 
-// TrustedIssuer defines a trusted JWT issuer and its JWKS endpoint.
+// TrustedIssuer represents a trusted JWT issuer with its associated JWKS endpoint for token verification.
 type TrustedIssuer struct {
 	// JWKSURL is the URL to fetch the JWKS from.
-	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
+	// +kubebuilder:validation:XValidation:message="must be a valid HTTPS URL",rule="isURL(self) && self.startsWith('https://')"
 	JWKSURL string `json:"jwksUrl"`
 
 	// Issuer is the expected value of the "iss" claim.
 	// If specified, tokens must have this exact issuer to be validated against this JWKS.
+	// The issuer value must match exactly, including trailing slashes and URL encoding.
 	// If omitted, this JWKS acts as a fallback for any issuer.
 	// +optional
 	Issuer string `json:"issuer,omitempty"`
@@ -80,6 +81,11 @@ type TrustedIssuer struct {
 
 // JWTAuthSpec configures JWT authentication.
 // +kubebuilder:validation:XValidation:message="exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified",rule="[has(self.signingSecretName), has(self.publicKey), has(self.jwksFile), has(self.jwksUrl), has(self.trustedIssuers)].filter(x, x).size() == 1"
+// +kubebuilder:validation:XValidation:message="trustedIssuers must not be empty when specified",rule="!has(self.trustedIssuers) || size(self.trustedIssuers) > 0"
+// +kubebuilder:validation:XValidation:message="only one entry in trustedIssuers may omit the issuer field",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, !has(x.issuer) || x.issuer == ”).size() <= 1"
+// +kubebuilder:validation:XValidation:message="trustedIssuers must have unique issuer values",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != ”).all(i, self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != ” && x.issuer == i.issuer).size() == 1)"
+//
+//nolint:gci,gofmt,gofumpt,goimports // CEL rules with empty string literals ('') trigger formatter quote-handling bugs
 type JWTAuthSpec struct {
 	// StripAuthorizationHeader determines whether to strip the Authorization header before forwarding the request.
 	// +optional
@@ -122,12 +128,14 @@ type JWTAuthSpec struct {
 	// JWKSURL is the URL to fetch the JWKS for JWT verification.
 	// Mutually exclusive with SigningSecretName, PublicKey, JWKSFile, and TrustedIssuers.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
+	// +kubebuilder:validation:XValidation:message="must be a valid HTTPS URL",rule="isURL(self) && self.startsWith('https://')"
 	JWKSURL string `json:"jwksUrl,omitempty"`
 
 	// TrustedIssuers defines multiple JWKS providers with optional issuer validation.
 	// Mutually exclusive with SigningSecretName, PublicKey, JWKSFile, and JWKSURL.
 	// +optional
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=100
 	TrustedIssuers []TrustedIssuer `json:"trustedIssuers,omitempty"`
 }
 
