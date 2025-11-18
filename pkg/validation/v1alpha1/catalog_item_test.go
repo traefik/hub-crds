@@ -38,13 +38,27 @@ metadata:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
-			desc: "valid: minimal",
+			desc: "valid: minimal with everyone true",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APICatalogItem
 metadata:
   name: my-catalog-items
-  namespace: default`),
+  namespace: default
+spec:
+  everyone: true`),
+		},
+		{
+			desc: "valid: minimal with groups",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  groups:
+    - my-group`),
 		},
 		{
 			desc: "valid: full",
@@ -67,6 +81,26 @@ spec:
   operationFilter:
     include:
       - my-filter`),
+		},
+		{
+			desc: "valid: plop",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  apiPlan:
+    name: my-plan
+  groups:
+    - my-group
+  apis:
+    - name: my-api
+  apiSelector:
+    matchExpressions:
+    - key: value
+      operator: Lol`),
 		},
 		{
 			desc: "invalid resource name",
@@ -107,6 +141,7 @@ metadata:
   name: my-catalog-items
   namespace: default
 spec:
+  everyone: true
   apiPlan:
     name: my-plan
   apis:
@@ -123,6 +158,7 @@ metadata:
   name: my-catalog-items
   namespace: default
 spec:
+  everyone: true
   apiPlan:
     name: my-plan
   apis:
@@ -139,6 +175,7 @@ metadata:
   name: my-catalog-items
   namespace: default
 spec:
+  everyone: true
   apiPlan:
     name: my-plan
   apiSelector:
@@ -163,6 +200,29 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
 		},
 		{
+			desc: "everyone is false and no groups",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: false`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups is required when everyone is false"}},
+		},
+		{
+			desc: "empty spec",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups is required when everyone is false"}},
+		},
+		{
 			desc: "missing apiPlan name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -171,6 +231,7 @@ metadata:
   name: my-catalog-items
   namespace: default
 spec:
+  everyone: true
   apiPlan: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
 		},

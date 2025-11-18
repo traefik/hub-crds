@@ -43,6 +43,8 @@ spec:
                 description: APIKeys references the API keys used to authenticate
                   the application when calling APIs.
                 items:
+                  description: APIKey describes an API key used to authenticate the
+                    application when calling APIs.
                   properties:
                     secretName:
                       description: SecretName references the name of the secret containing

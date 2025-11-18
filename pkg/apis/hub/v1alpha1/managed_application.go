@@ -62,6 +62,7 @@ type ManagedApplicationSpec struct {
 	APIKeys []APIKey `json:"apiKeys,omitempty"`
 }
 
+// APIKey describes an API key used to authenticate the application when calling APIs.
 // +kubebuilder:validation:XValidation:message="secretName and value are mutually exclusive",rule="[has(self.secretName), has(self.value)].filter(x, x).size() <= 1"
 type APIKey struct {
 	// SecretName references the name of the secret containing the API key.

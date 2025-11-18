@@ -169,6 +169,9 @@ spec:
             - message: groups and everyone are mutually exclusive
               rule: '(has(self.everyone) && has(self.groups)) ? !(self.everyone &&
                 self.groups.size() > 0) : true'
+            - message: groups is required when everyone is false
+              rule: (has(self.everyone) && self.everyone) || (has(self.groups) &&
+                self.groups.size() > 0)
           status:
             description: The current status of this APICatalogItem.
             properties:

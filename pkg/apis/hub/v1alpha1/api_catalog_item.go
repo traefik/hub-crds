@@ -33,6 +33,7 @@ type APICatalogItem struct {
 
 	// The desired behavior of this APICatalogItem.
 	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
+	// +kubebuilder:validation:XValidation:message="groups is required when everyone is false",rule="(has(self.everyone) && self.everyone) || (has(self.groups) && self.groups.size() > 0)"
 	Spec APICatalogItemSpec `json:"spec,omitempty"`
 
 	// The current status of this APICatalogItem.
