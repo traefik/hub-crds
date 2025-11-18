@@ -127,6 +127,7 @@ type JWTAuthSpec struct {
 
 	// JWKSURL is the URL to fetch the JWKS for JWT verification.
 	// Mutually exclusive with SigningSecretName, PublicKey, JWKSFile, and TrustedIssuers.
+	// Deprecated: Use TrustedIssuers instead for more flexible JWKS configuration with issuer validation.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be a valid HTTPS URL",rule="isURL(self) && self.startsWith('https://')"
 	JWKSURL string `json:"jwksUrl,omitempty"`
