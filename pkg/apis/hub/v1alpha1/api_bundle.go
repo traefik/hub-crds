@@ -70,7 +70,17 @@ type APIBundleStatus struct {
 	// Hash is a hash representing the APIBundle.
 	Hash string `json:"hash,omitempty"`
 
+	// Conditions is the list of status conditions.
+	// +optional
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
+
+	// ResolvedAPIs is the list of API names that were successfully resolved.
+	// +optional
+	ResolvedAPIs []string `json:"resolvedApis,omitempty"`
+
+	// UnresolvedAPIs is the list of API names that could not be resolved.
+	// +optional
+	UnresolvedAPIs []string `json:"unresolvedApis,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

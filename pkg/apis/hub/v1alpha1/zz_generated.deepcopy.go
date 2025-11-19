@@ -420,6 +420,16 @@ func (in *APIBundleStatus) DeepCopyInto(out *APIBundleStatus) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.ResolvedAPIs != nil {
+		in, out := &in.ResolvedAPIs, &out.ResolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.UnresolvedAPIs != nil {
+		in, out := &in.UnresolvedAPIs, &out.UnresolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
@@ -553,6 +563,16 @@ func (in *APICatalogItemStatus) DeepCopyInto(out *APICatalogItemStatus) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.ResolvedAPIs != nil {
+		in, out := &in.ResolvedAPIs, &out.ResolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.UnresolvedAPIs != nil {
+		in, out := &in.UnresolvedAPIs, &out.UnresolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }
@@ -2303,6 +2323,16 @@ func (in *ManagedSubscriptionStatus) DeepCopyInto(out *ManagedSubscriptionStatus
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.ResolvedAPIs != nil {
+		in, out := &in.ResolvedAPIs, &out.ResolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.UnresolvedAPIs != nil {
+		in, out := &in.UnresolvedAPIs, &out.UnresolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }

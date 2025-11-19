@@ -212,6 +212,7 @@ spec:
             description: The current status of this ManagedSubscription.
             properties:
               conditions:
+                description: Conditions is the list of status conditions.
                 items:
                   description: Condition contains details for one aspect of the current
                     state of this API Resource.
@@ -270,9 +271,21 @@ spec:
               hash:
                 description: Hash is a hash representing the ManagedSubscription.
                 type: string
+              resolvedApis:
+                description: ResolvedAPIs is the list of API names that were successfully
+                  resolved.
+                items:
+                  type: string
+                type: array
               syncedAt:
                 format: date-time
                 type: string
+              unresolvedApis:
+                description: UnresolvedAPIs is the list of API names that could not
+                  be resolved.
+                items:
+                  type: string
+                type: array
               version:
                 type: string
             type: object
