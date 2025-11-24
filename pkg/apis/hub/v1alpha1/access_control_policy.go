@@ -28,7 +28,6 @@ import (
 
 // AccessControlPolicy defines an access control policy.
 // +kubebuilder:resource:scope=Cluster
-// +kubebuilder:subresource:status
 type AccessControlPolicy struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional

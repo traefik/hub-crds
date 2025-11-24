@@ -69,11 +69,13 @@ type APIPlanStatus struct {
 }
 
 type RateLimit struct {
-	// Limit is the maximum number of token in the bucket.
+	// Limit is the number of requests per Period used to calculate the regeneration rate.
+	// Traffic will converge to this rate over time by delaying requests when possible, and dropping them when throttling alone is not enough.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Limit int `json:"limit"`
 
-	// Period is the unit of time for the Limit.
+	// Period is the time unit used to express the rate.
+	// Combined with Limit, it defines the rate at which request capacity regenerates (Limit ÷ Period).
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 1h",rule="self >= duration('1s') && self <= duration('1h')"
 	Period *Period `json:"period,omitempty"`
@@ -86,7 +88,7 @@ type RateLimit struct {
 }
 
 type Quota struct {
-	// Limit is the maximum number of token in the bucket.
+	// Limit is the maximum number of requests per sliding Period.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Limit int `json:"limit"`
 
