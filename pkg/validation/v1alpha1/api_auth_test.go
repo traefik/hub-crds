@@ -131,6 +131,74 @@ spec:
     signingSecretName: "jwt-secret"`),
 		},
 		{
+			desc: "valid: JWT with single trusted issuer with issuer specified",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"`),
+		},
+		{
+			desc: "valid: JWT with multiple trusted issuers with different issuers",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"
+      - jwksUrl: "https://tenant-b.example.com/jwks.json"
+        issuer: "https://tenant-b.example.com/"`),
+		},
+		{
+			desc: "valid: JWT with multiple trusted issuers with mix of specific and fallback",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"
+      - jwksUrl: "https://tenant-b.example.com/jwks.json"
+        issuer: "https://tenant-b.example.com/"
+      - jwksUrl: "https://fallback.example.com/jwks.json"`),
+		},
+		{
+			desc: "valid: JWT with trusted issuers fallback only (no issuer specified)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://fallback.example.com/jwks.json"`),
+		},
+		{
 			desc: "valid: not default",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -280,7 +348,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     jwksUrl: "not-a-url"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "string", Detail: "must be a valid URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "JWT missing verification method",
@@ -295,7 +363,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     stripAuthorizationHeader: true`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, or jwksUrl must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
 		},
 		{
 			desc: "JWT multiple verification methods",
@@ -311,7 +379,187 @@ spec:
     appIdClaim: "client_id"
     signingSecretName: "jwt-secret"
     publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, or jwksUrl must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+		},
+		{
+			desc: "JWT trustedIssuers with invalid JWKS URL",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "not-a-valid-url"
+        issuer: "https://tenant-a.example.com/"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+		},
+		{
+			desc: "JWT trustedIssuers combined with jwksUrl, mutual exclusivity",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    jwksUrl: "https://example.com/.well-known/jwks.json"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+		},
+		{
+			desc: "JWT trustedIssuers combined with publicKey, mutual exclusivity",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+		},
+		{
+			desc: "JWT trustedIssuers with empty array",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers: []`),
+			wantErrs: field.ErrorList{
+				{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers", BadValue: int64(0), Detail: "spec.jwt.trustedIssuers in body should have at least 1 items"},
+				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "trustedIssuers must not be empty when specified"},
+			},
+		},
+		{
+			desc: "JWT trustedIssuers with duplicate issuer values",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"
+      - jwksUrl: "https://tenant-a.example.com/different-jwks.json"
+        issuer: "https://tenant-a.example.com/"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "trustedIssuers must have unique issuer values"}},
+		},
+		{
+			desc: "JWT trustedIssuers with multiple fallback entries",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://fallback-1.example.com/jwks.json"
+      - jwksUrl: "https://fallback-2.example.com/jwks.json"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "only one entry in trustedIssuers may omit the issuer field"}},
+		},
+		{
+			desc: "JWT trustedIssuers with both duplicate issuers and multiple fallback entries",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"
+      - jwksUrl: "https://tenant-a-duplicate.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"
+      - jwksUrl: "https://fallback-1.example.com/jwks.json"
+      - jwksUrl: "https://fallback-2.example.com/jwks.json"`),
+			wantErrs: field.ErrorList{
+				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "only one entry in trustedIssuers may omit the issuer field"},
+				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "trustedIssuers must have unique issuer values"},
+			},
+		},
+		{
+			desc: "JWT trustedIssuers with empty jwksUrl",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: ""
+        issuer: "https://tenant-a.example.com/"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+		},
+		{
+			desc: "JWT trustedIssuers with HTTP URL (not HTTPS)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "http://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+		},
+		{
+			desc: "JWT jwksUrl with HTTP URL (not HTTPS)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    jwksUrl: "http://example.com/.well-known/jwks.json"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "LDAP missing required URL",
