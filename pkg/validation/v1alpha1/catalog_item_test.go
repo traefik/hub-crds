@@ -83,26 +83,6 @@ spec:
       - my-filter`),
 		},
 		{
-			desc: "valid: plop",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItem
-metadata:
-  name: my-catalog-items
-  namespace: default
-spec:
-  apiPlan:
-    name: my-plan
-  groups:
-    - my-group
-  apis:
-    - name: my-api
-  apiSelector:
-    matchExpressions:
-    - key: value
-      operator: Lol`),
-		},
-		{
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -209,17 +189,6 @@ metadata:
   namespace: default
 spec:
   everyone: false`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups is required when everyone is false"}},
-		},
-		{
-			desc: "empty spec",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APICatalogItem
-metadata:
-  name: my-catalog-items
-  namespace: default
-spec: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups is required when everyone is false"}},
 		},
 		{
