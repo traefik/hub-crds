@@ -27,6 +27,7 @@ import (
 // APIVersion defines a version of an API.
 // +kubebuilder:printcolumn:name="Title",type=string,JSONPath=`.spec.title`
 // +kubebuilder:printcolumn:name="Release",type=string,JSONPath=`.spec.release`
+// +kubebuilder:subresource:status
 type APIVersion struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -70,8 +71,11 @@ type APIVersionSpec struct {
 type APIVersionStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
+
 	// Hash is a hash representing the APIVersion.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

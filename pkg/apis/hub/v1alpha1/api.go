@@ -27,6 +27,7 @@ import (
 // API defines an HTTP interface that is exposed to external clients. It specifies the supported versions
 // and provides instructions for accessing its documentation. Once instantiated, an API object is associated
 // with an Ingress, IngressRoute, or HTTPRoute resource, enabling the exposure of the described API to the outside world.
+// +kubebuilder:subresource:status
 type API struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -191,6 +192,8 @@ type APIStatus struct {
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 	// Hash is a hash representing the API.
 	Hash string `json:"hash,omitempty"`
+
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

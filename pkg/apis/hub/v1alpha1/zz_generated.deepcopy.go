@@ -283,6 +283,13 @@ func (in *APIAuthStatus) DeepCopyInto(out *APIAuthStatus) {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
 	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 
@@ -405,6 +412,23 @@ func (in *APIBundleStatus) DeepCopyInto(out *APIBundleStatus) {
 	if in.SyncedAt != nil {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
+	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	if in.ResolvedAPIs != nil {
+		in, out := &in.ResolvedAPIs, &out.ResolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.UnresolvedAPIs != nil {
+		in, out := &in.UnresolvedAPIs, &out.UnresolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }
@@ -532,6 +556,23 @@ func (in *APICatalogItemStatus) DeepCopyInto(out *APICatalogItemStatus) {
 	if in.SyncedAt != nil {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
+	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	if in.ResolvedAPIs != nil {
+		in, out := &in.ResolvedAPIs, &out.ResolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.UnresolvedAPIs != nil {
+		in, out := &in.UnresolvedAPIs, &out.UnresolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }
@@ -721,6 +762,13 @@ func (in *APIPlanStatus) DeepCopyInto(out *APIPlanStatus) {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
 	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 
@@ -872,6 +920,13 @@ func (in *APIPortalAuthStatus) DeepCopyInto(out *APIPortalAuthStatus) {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
 	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 
@@ -960,6 +1015,13 @@ func (in *APIPortalStatus) DeepCopyInto(out *APIPortalStatus) {
 		in, out := &in.OIDC, &out.OIDC
 		*out = new(OIDCConfigStatus)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	return
 }
@@ -1145,6 +1207,13 @@ func (in *APIStatus) DeepCopyInto(out *APIStatus) {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
 	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 
@@ -1267,6 +1336,13 @@ func (in *APIVersionStatus) DeepCopyInto(out *APIVersionStatus) {
 	if in.SyncedAt != nil {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
+	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	return
 }
@@ -2106,6 +2182,13 @@ func (in *ManagedApplicationStatus) DeepCopyInto(out *ManagedApplicationStatus) 
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
 	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 
@@ -2233,6 +2316,23 @@ func (in *ManagedSubscriptionStatus) DeepCopyInto(out *ManagedSubscriptionStatus
 	if in.SyncedAt != nil {
 		in, out := &in.SyncedAt, &out.SyncedAt
 		*out = (*in).DeepCopy()
+	}
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]v1.Condition, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	if in.ResolvedAPIs != nil {
+		in, out := &in.ResolvedAPIs, &out.ResolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.UnresolvedAPIs != nil {
+		in, out := &in.UnresolvedAPIs, &out.UnresolvedAPIs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }
