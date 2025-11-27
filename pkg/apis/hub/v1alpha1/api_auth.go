@@ -82,10 +82,8 @@ type TrustedIssuer struct {
 // JWTAuthSpec configures JWT authentication.
 // +kubebuilder:validation:XValidation:message="exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified",rule="[has(self.signingSecretName), has(self.publicKey), has(self.jwksFile), has(self.jwksUrl), has(self.trustedIssuers)].filter(x, x).size() == 1"
 // +kubebuilder:validation:XValidation:message="trustedIssuers must not be empty when specified",rule="!has(self.trustedIssuers) || size(self.trustedIssuers) > 0"
-// +kubebuilder:validation:XValidation:message="only one entry in trustedIssuers may omit the issuer field",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, !has(x.issuer) || x.issuer == ”).size() <= 1"
-// +kubebuilder:validation:XValidation:message="trustedIssuers must have unique issuer values",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != ”).all(i, self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != ” && x.issuer == i.issuer).size() == 1)"
-//
-//nolint:gci,gofmt,gofumpt,goimports // CEL rules with empty string literals ('') trigger formatter quote-handling bugs
+// +kubebuilder:validation:XValidation:message="only one entry in trustedIssuers may omit the issuer field",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, !has(x.issuer) || x.issuer == \"\").size() <= 1"
+// +kubebuilder:validation:XValidation:message="trustedIssuers must have unique issuer values",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != \"\").all(i, self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != \"\" && x.issuer == i.issuer).size() == 1)"
 type JWTAuthSpec struct {
 	// StripAuthorizationHeader determines whether to strip the Authorization header before forwarding the request.
 	// +optional
