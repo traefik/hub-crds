@@ -25,7 +25,6 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APIPlan defines API Plan policy.
-// +kubebuilder:subresource:status
 type APIPlan struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -61,21 +60,16 @@ type APIPlanSpec struct {
 type APIPlanStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
-
 	// Hash is a hash representing the APIPlan.
 	Hash string `json:"hash,omitempty"`
-
-	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 type RateLimit struct {
-	// Limit is the number of requests per Period used to calculate the regeneration rate.
-	// Traffic will converge to this rate over time by delaying requests when possible, and dropping them when throttling alone is not enough.
+	// Limit is the maximum number of token in the bucket.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Limit int `json:"limit"`
 
-	// Period is the time unit used to express the rate.
-	// Combined with Limit, it defines the rate at which request capacity regenerates (Limit ÷ Period).
+	// Period is the unit of time for the Limit.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be between 1s and 1h",rule="self >= duration('1s') && self <= duration('1h')"
 	Period *Period `json:"period,omitempty"`
@@ -88,7 +82,7 @@ type RateLimit struct {
 }
 
 type Quota struct {
-	// Limit is the maximum number of requests per sliding Period.
+	// Limit is the maximum number of token in the bucket.
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Limit int `json:"limit"`
 

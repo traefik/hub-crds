@@ -25,7 +25,6 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // ManagedApplication represents a managed application.
-// +kubebuilder:subresource:status
 type ManagedApplication struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -62,7 +61,6 @@ type ManagedApplicationSpec struct {
 	APIKeys []APIKey `json:"apiKeys,omitempty"`
 }
 
-// APIKey describes an API key used to authenticate the application when calling APIs.
 // +kubebuilder:validation:XValidation:message="secretName and value are mutually exclusive",rule="[has(self.secretName), has(self.value)].filter(x, x).size() <= 1"
 type APIKey struct {
 	// SecretName references the name of the secret containing the API key.
@@ -87,11 +85,8 @@ type ManagedApplicationStatus struct {
 	Version        string            `json:"version,omitempty"`
 	APIKeyVersions map[string]string `json:"apiKeyVersions,omitempty"`
 	SyncedAt       *metav1.Time      `json:"syncedAt,omitempty"`
-
 	// Hash is a hash representing the ManagedApplication.
 	Hash string `json:"hash,omitempty"`
-
-	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

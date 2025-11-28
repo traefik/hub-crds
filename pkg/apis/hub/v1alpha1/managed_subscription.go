@@ -26,7 +26,6 @@ import (
 
 // ManagedSubscription defines a Subscription managed by the API manager as the result of a pre-negotiation with its
 // API consumers. This subscription grant consuming access to a set of APIs to a set of Applications.
-// +kubebuilder:subresource:status
 type ManagedSubscription struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -106,18 +105,6 @@ type ManagedSubscriptionStatus struct {
 
 	// Hash is a hash representing the ManagedSubscription.
 	Hash string `json:"hash,omitempty"`
-
-	// Conditions is the list of status conditions.
-	// +optional
-	Conditions []metav1.Condition `json:"conditions,omitempty"`
-
-	// ResolvedAPIs is the list of API names that were successfully resolved.
-	// +optional
-	ResolvedAPIs []string `json:"resolvedApis,omitempty"`
-
-	// UnresolvedAPIs is the list of API names that could not be resolved.
-	// +optional
-	UnresolvedAPIs []string `json:"unresolvedApis,omitempty"`
 }
 
 // ApplicationReference references an Application.

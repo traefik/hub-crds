@@ -25,7 +25,6 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // APICatalogItem defines APIs that will be part of the API catalog on the portal.
-// +kubebuilder:subresource:status
 type APICatalogItem struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -33,7 +32,6 @@ type APICatalogItem struct {
 
 	// The desired behavior of this APICatalogItem.
 	// +kubebuilder:validation:XValidation:message="groups and everyone are mutually exclusive",rule="(has(self.everyone) && has(self.groups)) ? !(self.everyone && self.groups.size() > 0) : true"
-	// +kubebuilder:validation:XValidation:message="groups is required when everyone is false",rule="(has(self.everyone) && self.everyone) || (has(self.groups) && self.groups.size() > 0)"
 	Spec APICatalogItemSpec `json:"spec,omitempty"`
 
 	// The current status of this APICatalogItem.
@@ -122,18 +120,6 @@ type APICatalogItemStatus struct {
 
 	// Hash is a hash representing the APICatalogItem.
 	Hash string `json:"hash,omitempty"`
-
-	// Conditions is the list of status conditions.
-	// +optional
-	Conditions []metav1.Condition `json:"conditions,omitempty"`
-
-	// ResolvedAPIs is the list of API names that were successfully resolved.
-	// +optional
-	ResolvedAPIs []string `json:"resolvedApis,omitempty"`
-
-	// UnresolvedAPIs is the list of API names that could not be resolved.
-	// +optional
-	UnresolvedAPIs []string `json:"unresolvedApis,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
