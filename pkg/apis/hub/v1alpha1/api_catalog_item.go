@@ -100,6 +100,12 @@ type APIReference struct {
 	Name string `json:"name"`
 }
 
+// ResolvedAPIReference references a resolved API.
+type ResolvedAPIReference struct {
+	// Name of the API.
+	Name string `json:"name"`
+}
+
 // APIBundleReference references an APIBundle.
 type APIBundleReference struct {
 	// Name of the APIBundle.
@@ -127,13 +133,13 @@ type APICatalogItemStatus struct {
 	// +optional
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
 
-	// ResolvedAPIs is the list of API names that were successfully resolved.
+	// ResolvedAPIs is the list of APIs that were successfully resolved.
 	// +optional
-	ResolvedAPIs []string `json:"resolvedApis,omitempty"`
+	ResolvedAPIs []ResolvedAPIReference `json:"resolvedApis,omitempty"`
 
-	// UnresolvedAPIs is the list of API names that could not be resolved.
+	// UnresolvedAPIs is the list of APIs that could not be resolved.
 	// +optional
-	UnresolvedAPIs []string `json:"unresolvedApis,omitempty"`
+	UnresolvedAPIs []ResolvedAPIReference `json:"unresolvedApis,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
