@@ -83,7 +83,6 @@ type TrustedIssuer struct {
 // +kubebuilder:validation:XValidation:message="exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified",rule="[has(self.signingSecretName), has(self.publicKey), has(self.jwksFile), has(self.jwksUrl), has(self.trustedIssuers)].filter(x, x).size() == 1"
 // +kubebuilder:validation:XValidation:message="trustedIssuers must not be empty when specified",rule="!has(self.trustedIssuers) || size(self.trustedIssuers) > 0"
 // +kubebuilder:validation:XValidation:message="only one entry in trustedIssuers may omit the issuer field",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, !has(x.issuer) || x.issuer == \"\").size() <= 1"
-// +kubebuilder:validation:XValidation:message="trustedIssuers must have unique issuer values",rule="!has(self.trustedIssuers) || self.trustedIssuers.filter(x, has(x.issuer) && x.issuer != \"\").map(x, x.issuer).all(x, self.trustedIssuers.exists_one(y, has(y.issuer) && y.issuer == x))"
 type JWTAuthSpec struct {
 	// StripAuthorizationHeader determines whether to strip the Authorization header before forwarding the request.
 	// +optional

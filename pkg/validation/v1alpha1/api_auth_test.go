@@ -453,25 +453,6 @@ spec:
 			},
 		},
 		{
-			desc: "JWT trustedIssuers with duplicate issuer values",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAuth
-metadata:
-  name: my-auth
-  namespace: default
-spec:
-  isDefault: true
-  jwt:
-    appIdClaim: "client_id"
-    trustedIssuers:
-      - jwksUrl: "https://tenant-a.example.com/jwks.json"
-        issuer: "https://tenant-a.example.com/"
-      - jwksUrl: "https://tenant-a.example.com/different-jwks.json"
-        issuer: "https://tenant-a.example.com/"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "trustedIssuers must have unique issuer values"}},
-		},
-		{
 			desc: "JWT trustedIssuers with multiple fallback entries",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -487,30 +468,6 @@ spec:
       - jwksUrl: "https://fallback-1.example.com/jwks.json"
       - jwksUrl: "https://fallback-2.example.com/jwks.json"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "only one entry in trustedIssuers may omit the issuer field"}},
-		},
-		{
-			desc: "JWT trustedIssuers with both duplicate issuers and multiple fallback entries",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: APIAuth
-metadata:
-  name: my-auth
-  namespace: default
-spec:
-  isDefault: true
-  jwt:
-    appIdClaim: "client_id"
-    trustedIssuers:
-      - jwksUrl: "https://tenant-a.example.com/jwks.json"
-        issuer: "https://tenant-a.example.com/"
-      - jwksUrl: "https://tenant-a-duplicate.example.com/jwks.json"
-        issuer: "https://tenant-a.example.com/"
-      - jwksUrl: "https://fallback-1.example.com/jwks.json"
-      - jwksUrl: "https://fallback-2.example.com/jwks.json"`),
-			wantErrs: field.ErrorList{
-				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "only one entry in trustedIssuers may omit the issuer field"},
-				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "trustedIssuers must have unique issuer values"},
-			},
 		},
 		{
 			desc: "JWT trustedIssuers with empty jwksUrl",
