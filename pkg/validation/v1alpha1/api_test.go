@@ -64,6 +64,7 @@ spec:
   openApiSpec:
     path: /openapi.json
     validateRequestMethodAndPath: true
+    validateRequestBodySchema: true
     operationSets:
     - name: my-operation-set
       matchers:

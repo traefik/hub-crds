@@ -132,6 +132,10 @@ type OpenAPISpec struct {
 	// ValidateRequestMethodAndPath validates that the path and method matches an operation defined in the OpenAPI specification.
 	// This option overrides the default behavior configured in the static configuration.
 	ValidateRequestMethodAndPath *bool `json:"validateRequestMethodAndPath,omitempty"`
+
+	// ValidateRequestBodySchema validates the request body against the OpenAPI specification.
+	// This option overrides the default behavior configured in the static configuration.
+	ValidateRequestBodySchema *bool `json:"validateRequestBodySchema,omitempty"`
 }
 
 type Override struct {

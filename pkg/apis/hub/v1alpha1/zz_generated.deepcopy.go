@@ -2518,6 +2518,11 @@ func (in *OpenAPISpec) DeepCopyInto(out *OpenAPISpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.ValidateRequestBodySchema != nil {
+		in, out := &in.ValidateRequestBodySchema, &out.ValidateRequestBodySchema
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
