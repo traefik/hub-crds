@@ -60,10 +60,32 @@ type APIAuthSpec struct {
 }
 
 // APIKeyAuthSpec configures API key authentication.
-// +kubebuilder:pruning:PreserveUnknownFields
-// PreserveUnknownFields annotation is needed because this is an empty struct,
-// which would generate an invalid OpenAPI schema without explicit properties.
-type APIKeyAuthSpec struct{}
+type APIKeyAuthSpec struct {
+	// KeySource defines where to extract the API key from requests.
+	// When not specified, defaults to "Authorization" header with "Bearer" scheme and "api_key" query parameter.
+	// When specified, it completely overrides defaults - fields left empty will disable that extraction method.
+	// +optional
+	KeySource *APIKeySource `json:"keySource,omitempty"`
+}
+
+// APIKeySource defines the source of an API key in HTTP requests.
+// +kubebuilder:validation:MinProperties=1
+// +kubebuilder:validation:XValidation:message="headerAuthScheme can only be used when header is 'Authorization'",rule="!has(self.headerAuthScheme) || self.header == 'Authorization'"
+type APIKeySource struct {
+	// Header is the name of the header containing the API key.
+	// +optional
+	Header string `json:"header,omitempty"`
+
+	// HeaderAuthScheme is the authentication scheme prefix in the header value.
+	// The scheme is used to parse headers in the format "<scheme> <token>".
+	// Only applies when header is "Authorization".
+	// +optional
+	HeaderAuthScheme string `json:"headerAuthScheme,omitempty"`
+
+	// Query is the name of the query parameter containing the API key.
+	// +optional
+	Query string `json:"query,omitempty"`
+}
 
 // TrustedIssuer represents a trusted JWT issuer with its associated JWKS endpoint for token verification.
 type TrustedIssuer struct {
