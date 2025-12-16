@@ -43,7 +43,7 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
-			desc: "valid: API key authentication",
+			desc: "valid: minimal API key authentication - will use default values",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIAuth
@@ -53,6 +53,52 @@ metadata:
 spec:
   isDefault: true
   apiKey: {}`),
+		},
+		{
+			desc: "valid: full API key authentication",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  apiKey:
+    keySource:
+      header: Authorization
+      headerAuthScheme: Auth-Scheme
+      query: key`),
+		},
+		{
+			desc: "invalid: API key with empty keySource",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  apiKey:
+    keySource: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKey.keySource", BadValue: int64(0), Detail: "spec.apiKey.keySource in body should have at least 1 properties"}},
+		},
+		{
+			desc: "invalid: API key with headerAuthScheme on non-Authorization header",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  apiKey:
+    keySource:
+      header: X-API-Key
+      headerAuthScheme: Bearer`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKey.keySource", BadValue: "object", Detail: "headerAuthScheme can only be used when header is 'Authorization'"}},
 		},
 		{
 			desc: "valid: JWT with signing secret",
