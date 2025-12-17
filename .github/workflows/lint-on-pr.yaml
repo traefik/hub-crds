@@ -12,7 +12,7 @@ env:
   golang_ci_lint_version: v2.7.2
 jobs:
   go-tests:
-    if: "!github.event.pull_request.draft"
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
