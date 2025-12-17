@@ -22,7 +22,6 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-          cache-dependency-path: artifact-cleaner/go.sum
 
       - name: check go deps
         run: |
