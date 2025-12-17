@@ -145,7 +145,7 @@ func (p *Period) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON unmarshals the buffer into a Period.
 func (p *Period) UnmarshalJSON(b []byte) error {
-	var rawValue interface{}
+	var rawValue any
 	if err := json.Unmarshal(b, &rawValue); err != nil {
 		return err
 	}

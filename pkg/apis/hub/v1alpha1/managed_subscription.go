@@ -44,7 +44,9 @@ type ManagedSubscription struct {
 type ManagedSubscriptionSpec struct {
 	// Applications references the Applications that will gain access to the specified APIs.
 	// Multiple ManagedSubscriptions can select the same AppID.
+	//
 	// Deprecated: Use ManagedApplications instead.
+	//
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	Applications []ApplicationReference `json:"applications,omitempty"`
