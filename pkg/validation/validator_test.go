@@ -78,19 +78,19 @@ func TestValidator_Validate(t *testing.T) {
 
 	tests := []struct {
 		desc     string
-		data     map[string]interface{}
+		data     map[string]any
 		wantErrs field.ErrorList
 	}{
 		{
 			desc: "valid manifest",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"kind":       "MyResource",
 				"apiVersion": "test/v1alpha1",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name":      "test",
 					"namespace": "default",
 				},
-				"spec": map[string]interface{}{
+				"spec": map[string]any{
 					"foo": "foo",
 					"bar": "bar",
 					"baz": "bazinga",
@@ -99,14 +99,14 @@ func TestValidator_Validate(t *testing.T) {
 		},
 		{
 			desc: "missing required field",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"kind":       "MyResource",
 				"apiVersion": "test/v1alpha1",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name":      "test",
 					"namespace": "default",
 				},
-				"spec": map[string]interface{}{
+				"spec": map[string]any{
 					"bar": "bar",
 					"baz": "bazinga",
 				},
@@ -115,14 +115,14 @@ func TestValidator_Validate(t *testing.T) {
 		},
 		{
 			desc: "invalid CEL rule",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"kind":       "MyResource",
 				"apiVersion": "test/v1alpha1",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name":      "test",
 					"namespace": "default",
 				},
-				"spec": map[string]interface{}{
+				"spec": map[string]any{
 					"foo": "foo",
 					"bar": "bar",
 					"baz": "foobar",
@@ -132,14 +132,14 @@ func TestValidator_Validate(t *testing.T) {
 		},
 		{
 			desc: "invalid field type",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"kind":       "MyResource",
 				"apiVersion": "test/v1alpha1",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name":      "test",
 					"namespace": "default",
 				},
-				"spec": map[string]interface{}{
+				"spec": map[string]any{
 					"foo": "foo",
 					"bar": 2,
 					"baz": "bazinga",
@@ -149,13 +149,13 @@ func TestValidator_Validate(t *testing.T) {
 		},
 		{
 			desc: "metadata validation",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"kind":       "MyResource",
 				"apiVersion": "test/v1alpha1",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"namespace": "default",
 				},
-				"spec": map[string]interface{}{
+				"spec": map[string]any{
 					"foo": "foo",
 					"bar": "bar",
 					"baz": "bazinga",
@@ -165,13 +165,13 @@ func TestValidator_Validate(t *testing.T) {
 		},
 		{
 			desc: "unknown resource",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"kind": "Something",
 			},
 		},
 		{
 			desc: "not a K8S resource",
-			data: map[string]interface{}{
+			data: map[string]any{
 				"hello": "world",
 			},
 		},
