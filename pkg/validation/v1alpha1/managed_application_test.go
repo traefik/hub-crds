@@ -28,6 +28,7 @@ func TestManagedApplication_Validation(t *testing.T) {
 	t.Parallel()
 
 	tooLongAPIKey := strings.Repeat("x", 4097)
+	tooLongNotes := strings.Repeat("x", 4097)
 
 	tests := []validationTestCase{
 		{
@@ -110,7 +111,7 @@ metadata:
   name: my-application
   namespace: default
 spec:
-  appId: Way Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long AppId
+  appId: WayToooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooLongAppId
   owner: "456"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.appId", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
@@ -172,6 +173,89 @@ spec:
     - secretName: secret
       value: value`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKeys[0]", BadValue: "object", Detail: "secretName and value are mutually exclusive"}},
+		},
+		{
+			desc: "valid: notes with allowed special characters",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: "Valid notes with allowed chars !#$%*+./?[]^_{|}~ -"`),
+		},
+		{
+			desc: "invalid: notes with disallowed characters (@)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: "Invalid notes with @ character"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: notes with disallowed characters (&)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: "Invalid & notes"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: notes with disallowed characters (parentheses)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: "Invalid (notes) with parentheses"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: notes with disallowed characters (comma)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: "Invalid, notes, with, commas"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "notes is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: ` + tooLongNotes),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.notes", BadValue: "<value omitted>", Detail: "may not be more than 4096 bytes"}},
 		},
 	}
 

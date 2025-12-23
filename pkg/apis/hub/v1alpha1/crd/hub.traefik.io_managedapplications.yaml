@@ -72,9 +72,18 @@ spec:
                   It should be unique.
                 maxLength: 253
                 type: string
+                x-kubernetes-validations:
+                - message: must contain only letters, numbers, and allowed special
+                    characters
+                  rule: self.matches(r"""^[A-Za-z0-9!#$%*+./?\[\]^_{|}~-]+$""")
               notes:
                 description: Notes contains notes about application.
+                maxLength: 4096
                 type: string
+                x-kubernetes-validations:
+                - message: must contain only letters, numbers, and allowed special
+                    characters
+                  rule: self.matches(r"""^[A-Za-z0-9!#$%*+./?\[\]^_{|}~ -]+$""")
               owner:
                 description: |-
                   Owner represents the owner of the ManagedApplication.
