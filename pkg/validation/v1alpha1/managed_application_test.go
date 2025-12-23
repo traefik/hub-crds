@@ -116,6 +116,83 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.appId", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
+			desc: "valid: appId with allowed special characters",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "ValidAppId!#$%*+./?[]^_{|}~-"
+  owner: "456"`),
+		},
+		{
+			desc: "invalid: appId with disallowed characters (@)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid@appid"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: appId with disallowed characters (space)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid app id"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: appId with disallowed characters (&)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid&appid"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: appId with disallowed characters (parentheses)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid(app)id"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "invalid: appId with disallowed characters (comma)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid,appid"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
 			desc: "owner is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
