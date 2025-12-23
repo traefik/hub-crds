@@ -276,7 +276,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid notes with @ character"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
 		},
 		{
 			desc: "invalid: notes with disallowed characters (&)",
@@ -290,7 +290,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid & notes"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
 		},
 		{
 			desc: "invalid: notes with disallowed characters (parentheses)",
@@ -304,7 +304,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid (notes) with parentheses"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
 		},
 		{
 			desc: "invalid: notes with disallowed characters (comma)",
@@ -318,7 +318,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid, notes, with, commas"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
 		},
 		{
 			desc: "notes is too long",

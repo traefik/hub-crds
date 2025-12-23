@@ -55,7 +55,7 @@ type ManagedApplicationSpec struct {
 
 	// Notes contains notes about application.
 	// +kubebuilder:validation:MaxLength=4096
-	// +kubebuilder:validation:XValidation:message="must contain only letters, numbers, and allowed special characters",rule="self.matches(r\"\"\"^[A-Za-z0-9!#$%*+./?\\[\\]^_{|}~ -]+$\"\"\")"
+	// +kubebuilder:validation:XValidation:message="must contain only letters, numbers, spaces, and allowed special characters",rule="self.matches(r\"\"\"^[A-Za-z0-9!#$%*+./?\\[\\]^_{|}~ -]+$\"\"\")"
 	// +optional
 	Notes string `json:"notes,omitempty"`
 

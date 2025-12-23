@@ -81,8 +81,8 @@ spec:
                 maxLength: 4096
                 type: string
                 x-kubernetes-validations:
-                - message: must contain only letters, numbers, and allowed special
-                    characters
+                - message: must contain only letters, numbers, spaces, and allowed
+                    special characters
                   rule: self.matches(r"""^[A-Za-z0-9!#$%*+./?\[\]^_{|}~ -]+$""")
               owner:
                 description: |-
