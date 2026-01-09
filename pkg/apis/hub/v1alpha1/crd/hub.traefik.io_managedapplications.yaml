@@ -71,19 +71,13 @@ spec:
                   AppID is the identifier of the ManagedApplication.
                   It should be unique.
                 maxLength: 253
+                pattern: ^[A-Za-z0-9][A-Za-z0-9._\-:@/+=]*$
                 type: string
-                x-kubernetes-validations:
-                - message: must contain only letters, numbers, and allowed special
-                    characters
-                  rule: self.matches(r"""^[A-Za-z0-9!#$%*+./?\[\]^_{|}~-]+$""")
               notes:
                 description: Notes contains notes about application.
                 maxLength: 4096
+                pattern: ^[A-Za-z0-9!#$%*+\-./?[\]^_{|}~ ]*$
                 type: string
-                x-kubernetes-validations:
-                - message: must contain only letters, numbers, spaces, and allowed
-                    special characters
-                  rule: self.matches(r"""^[A-Za-z0-9!#$%*+./?\[\]^_{|}~ -]+$""")
               owner:
                 description: |-
                   Owner represents the owner of the ManagedApplication.

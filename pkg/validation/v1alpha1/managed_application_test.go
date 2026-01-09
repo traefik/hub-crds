@@ -124,11 +124,11 @@ metadata:
   name: my-application
   namespace: default
 spec:
-  appId: "ValidAppId!#$%*+./?[]^_{|}~-"
+  appId: "ValidAppId._-:@/+="
   owner: "456"`),
 		},
 		{
-			desc: "invalid: appId with disallowed characters (@)",
+			desc: "valid: appId as ASCII username",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: ManagedApplication
@@ -136,9 +136,57 @@ metadata:
   name: my-application
   namespace: default
 spec:
-  appId: "invalid@appid"
+  appId: "john_doe-2024"
   owner: "456"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+		},
+		{
+			desc: "valid: appId as email address",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "user.name@example.com"
+  owner: "456"`),
+		},
+		{
+			desc: "valid: appId as UUID",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "550e8400-e29b-41d4-a716-446655440000"
+  owner: "456"`),
+		},
+		{
+			desc: "valid: appId as JWT token",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+  owner: "456"`),
+		},
+		{
+			desc: "invalid: appId with disallowed characters (!)",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid!appid"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "invalid!appid", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
 		},
 		{
 			desc: "invalid: appId with disallowed characters (space)",
@@ -151,7 +199,7 @@ metadata:
 spec:
   appId: "invalid app id"
   owner: "456"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "invalid app id", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
 		},
 		{
 			desc: "invalid: appId with disallowed characters (&)",
@@ -164,7 +212,7 @@ metadata:
 spec:
   appId: "invalid&appid"
   owner: "456"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "invalid&appid", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
 		},
 		{
 			desc: "invalid: appId with disallowed characters (parentheses)",
@@ -177,7 +225,7 @@ metadata:
 spec:
   appId: "invalid(app)id"
   owner: "456"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "invalid(app)id", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
 		},
 		{
 			desc: "invalid: appId with disallowed characters (comma)",
@@ -190,7 +238,7 @@ metadata:
 spec:
   appId: "invalid,appid"
   owner: "456"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "string", Detail: "must contain only letters, numbers, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "invalid,appid", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
 		},
 		{
 			desc: "owner is too long",
@@ -262,7 +310,7 @@ metadata:
 spec:
   appId: "123"
   owner: "456"
-  notes: "Valid notes with allowed chars !#$%*+./?[]^_{|}~ -"`),
+  notes: "Valid notes with spaces and special chars !#$%*+./?[]^_{|}~-"`),
 		},
 		{
 			desc: "invalid: notes with disallowed characters (@)",
@@ -276,7 +324,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid notes with @ character"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "Invalid notes with @ character", Detail: "spec.notes in body should match '^[A-Za-z0-9!#$%*+\\-./?[\\]^_{|}~ ]*$'"}},
 		},
 		{
 			desc: "invalid: notes with disallowed characters (&)",
@@ -290,7 +338,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid & notes"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "Invalid & notes", Detail: "spec.notes in body should match '^[A-Za-z0-9!#$%*+\\-./?[\\]^_{|}~ ]*$'"}},
 		},
 		{
 			desc: "invalid: notes with disallowed characters (parentheses)",
@@ -304,7 +352,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid (notes) with parentheses"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "Invalid (notes) with parentheses", Detail: "spec.notes in body should match '^[A-Za-z0-9!#$%*+\\-./?[\\]^_{|}~ ]*$'"}},
 		},
 		{
 			desc: "invalid: notes with disallowed characters (comma)",
@@ -318,7 +366,7 @@ spec:
   appId: "123"
   owner: "456"
   notes: "Invalid, notes, with, commas"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "string", Detail: "must contain only letters, numbers, spaces, and allowed special characters"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.notes", BadValue: "Invalid, notes, with, commas", Detail: "spec.notes in body should match '^[A-Za-z0-9!#$%*+\\-./?[\\]^_{|}~ ]*$'"}},
 		},
 		{
 			desc: "notes is too long",
