@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout target repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           repository: ${{ inputs.TARGET_REPO }}
           ref: ${{ inputs.TARGET_BRANCH }}
           token: ${{ secrets.GH_TOKEN }}
       - name: set up Go 1.x
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
         with:
           go-version-file: 'go.mod'
       - name: setup proxy credentials
@@ -38,7 +38,7 @@ jobs:
           sed -i -e "s|github.com/traefik/hub-crds .*|github.com/traefik/hub-crds ${{ inputs.CRDS_VERSION }}|g" go.mod
           go mod tidy
       - name: create PR
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
           token: ${{ secrets.GH_TOKEN }}
           commit-message: "chore: update CRDs to ${{ inputs.CRDS_VERSION }}"

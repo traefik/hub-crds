@@ -18,13 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           repository: traefik/hub-crds
           path: ${{ github.workspace }}/hub-crds
           ref: ${{ env.GIT_TAG }}
       - name: checkout traefik-helm-chart repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           repository: traefik/traefik-helm-chart
           ref: master
@@ -35,7 +35,7 @@ jobs:
       - name: copy on optional CRDs Chart
         run: rsync -crv --delete --exclude='kustomization.yaml' --exclude='gateway-standard-install.yaml' --exclude='traefik.io_*.yaml' --exclude='*.go' ${{ github.workspace }}/hub-crds/pkg/apis/hub/v1alpha1/crd/ ${{ github.workspace }}/traefik-helm-chart/traefik-crds/crds-files/hub/
       - name: create PR
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
           token: ${{ secrets.GH_TOKEN }}
           path: traefik-helm-chart
