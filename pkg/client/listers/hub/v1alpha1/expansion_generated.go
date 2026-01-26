@@ -120,3 +120,11 @@ type ManagedSubscriptionListerExpansion interface{}
 // ManagedSubscriptionNamespaceListerExpansion allows custom methods to be added to
 // ManagedSubscriptionNamespaceLister.
 type ManagedSubscriptionNamespaceListerExpansion interface{}
+
+// UplinkListerExpansion allows custom methods to be added to
+// UplinkLister.
+type UplinkListerExpansion interface{}
+
+// UplinkNamespaceListerExpansion allows custom methods to be added to
+// UplinkNamespaceLister.
+type UplinkNamespaceListerExpansion interface{}

@@ -83,6 +83,10 @@ func (c *FakeHubV1alpha1) ManagedSubscriptions(namespace string) v1alpha1.Manage
 	return &FakeManagedSubscriptions{c, namespace}
 }
 
+func (c *FakeHubV1alpha1) Uplinks(namespace string) v1alpha1.UplinkInterface {
+	return &FakeUplinks{c, namespace}
+}
+
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakeHubV1alpha1) RESTClient() rest.Interface {

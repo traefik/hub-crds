@@ -46,3 +46,5 @@ type AccessControlPolicyExpansion interface{}
 type ManagedApplicationExpansion interface{}
 
 type ManagedSubscriptionExpansion interface{}
+
+type UplinkExpansion interface{}

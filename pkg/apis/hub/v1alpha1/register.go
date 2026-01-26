@@ -70,6 +70,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APICatalogItemList{},
 		&AIService{},
 		&AIServiceList{},
+		&Uplink{},
+		&UplinkList{},
 	)
 
 	metav1.AddToGroupVersion(
