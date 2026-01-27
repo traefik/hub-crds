@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2022-2025 Traefik Labs
+Copyright (C) 2022-2026 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -70,6 +70,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&APICatalogItemList{},
 		&AIService{},
 		&AIServiceList{},
+		&Uplink{},
+		&UplinkList{},
 	)
 
 	metav1.AddToGroupVersion(

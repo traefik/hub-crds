@@ -1,7 +1,7 @@
 /*
 The GNU AFFERO GENERAL PUBLIC LICENSE
 
-Copyright (c) 2020-2025 Traefik Labs
+Copyright (c) 2020-2026 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -120,3 +120,11 @@ type ManagedSubscriptionListerExpansion interface{}
 // ManagedSubscriptionNamespaceListerExpansion allows custom methods to be added to
 // ManagedSubscriptionNamespaceLister.
 type ManagedSubscriptionNamespaceListerExpansion interface{}
+
+// UplinkListerExpansion allows custom methods to be added to
+// UplinkLister.
+type UplinkListerExpansion interface{}
+
+// UplinkNamespaceListerExpansion allows custom methods to be added to
+// UplinkNamespaceLister.
+type UplinkNamespaceListerExpansion interface{}

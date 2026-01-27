@@ -35,58 +35,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// AccessControlPolicyInformer provides access to a shared informer and lister for
-// AccessControlPolicies.
-type AccessControlPolicyInformer interface {
+// UplinkInformer provides access to a shared informer and lister for
+// Uplinks.
+type UplinkInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.AccessControlPolicyLister
+	Lister() v1alpha1.UplinkLister
 }
 
-type accessControlPolicyInformer struct {
+type uplinkInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
-// NewAccessControlPolicyInformer constructs a new informer for AccessControlPolicy type.
+// NewUplinkInformer constructs a new informer for Uplink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewAccessControlPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAccessControlPolicyInformer(client, resyncPeriod, indexers, nil)
+func NewUplinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredUplinkInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredAccessControlPolicyInformer constructs a new informer for AccessControlPolicy type.
+// NewFilteredUplinkInformer constructs a new informer for Uplink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredAccessControlPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredUplinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().AccessControlPolicies().List(context.TODO(), options)
+				return client.HubV1alpha1().Uplinks(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().AccessControlPolicies().Watch(context.TODO(), options)
+				return client.HubV1alpha1().Uplinks(namespace).Watch(context.TODO(), options)
 			},
 		},
-		&hubv1alpha1.AccessControlPolicy{},
+		&hubv1alpha1.Uplink{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *accessControlPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAccessControlPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *uplinkInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredUplinkInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *accessControlPolicyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.AccessControlPolicy{}, f.defaultInformer)
+func (f *uplinkInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&hubv1alpha1.Uplink{}, f.defaultInformer)
 }
 
-func (f *accessControlPolicyInformer) Lister() v1alpha1.AccessControlPolicyLister {
-	return v1alpha1.NewAccessControlPolicyLister(f.Informer().GetIndexer())
+func (f *uplinkInformer) Lister() v1alpha1.UplinkLister {
+	return v1alpha1.NewUplinkLister(f.Informer().GetIndexer())
 }

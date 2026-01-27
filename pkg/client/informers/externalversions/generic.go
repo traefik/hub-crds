@@ -1,7 +1,7 @@
 /*
 The GNU AFFERO GENERAL PUBLIC LICENSE
 
-Copyright (c) 2020-2025 Traefik Labs
+Copyright (c) 2020-2026 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -82,6 +82,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().ManagedApplications().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("managedsubscriptions"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().ManagedSubscriptions().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("uplinks"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Hub().V1alpha1().Uplinks().Informer()}, nil
 
 	}
 

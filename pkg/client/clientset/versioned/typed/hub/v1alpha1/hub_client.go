@@ -1,7 +1,7 @@
 /*
 The GNU AFFERO GENERAL PUBLIC LICENSE
 
-Copyright (c) 2020-2025 Traefik Labs
+Copyright (c) 2020-2026 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -44,6 +44,7 @@ type HubV1alpha1Interface interface {
 	AccessControlPoliciesGetter
 	ManagedApplicationsGetter
 	ManagedSubscriptionsGetter
+	UplinksGetter
 }
 
 // HubV1alpha1Client is used to interact with features provided by the hub.traefik.io group.
@@ -101,6 +102,10 @@ func (c *HubV1alpha1Client) ManagedApplications(namespace string) ManagedApplica
 
 func (c *HubV1alpha1Client) ManagedSubscriptions(namespace string) ManagedSubscriptionInterface {
 	return newManagedSubscriptions(c, namespace)
+}
+
+func (c *HubV1alpha1Client) Uplinks(namespace string) UplinkInterface {
+	return newUplinks(c, namespace)
 }
 
 // NewForConfig creates a new HubV1alpha1Client for the given config.

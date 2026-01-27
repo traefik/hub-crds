@@ -1,7 +1,7 @@
 /*
 The GNU AFFERO GENERAL PUBLIC LICENSE
 
-Copyright (c) 2020-2025 Traefik Labs
+Copyright (c) 2020-2026 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -53,6 +53,8 @@ type Interface interface {
 	ManagedApplications() ManagedApplicationInformer
 	// ManagedSubscriptions returns a ManagedSubscriptionInformer.
 	ManagedSubscriptions() ManagedSubscriptionInformer
+	// Uplinks returns a UplinkInformer.
+	Uplinks() UplinkInformer
 }
 
 type version struct {
@@ -129,4 +131,9 @@ func (v *version) ManagedApplications() ManagedApplicationInformer {
 // ManagedSubscriptions returns a ManagedSubscriptionInformer.
 func (v *version) ManagedSubscriptions() ManagedSubscriptionInformer {
 	return &managedSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Uplinks returns a UplinkInformer.
+func (v *version) Uplinks() UplinkInformer {
+	return &uplinkInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

@@ -1,7 +1,7 @@
 /*
 The GNU AFFERO GENERAL PUBLIC LICENSE
 
-Copyright (c) 2020-2025 Traefik Labs
+Copyright (c) 2020-2026 Traefik Labs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -81,6 +81,10 @@ func (c *FakeHubV1alpha1) ManagedApplications(namespace string) v1alpha1.Managed
 
 func (c *FakeHubV1alpha1) ManagedSubscriptions(namespace string) v1alpha1.ManagedSubscriptionInterface {
 	return &FakeManagedSubscriptions{c, namespace}
+}
+
+func (c *FakeHubV1alpha1) Uplinks(namespace string) v1alpha1.UplinkInterface {
+	return &FakeUplinks{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate
