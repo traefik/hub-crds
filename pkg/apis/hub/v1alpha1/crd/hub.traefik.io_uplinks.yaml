@@ -41,8 +41,8 @@ spec:
           spec:
             description: UplinkSpec describes the Uplink.
             properties:
-              entrypoints:
-                description: Entrypoints references uplinkEntrypoints. When omitted,
+              entryPoints:
+                description: EntryPoints references uplinkEntryPoints. When omitted,
                   uses default uplinkEntrypoints.
                 items:
                   type: string
