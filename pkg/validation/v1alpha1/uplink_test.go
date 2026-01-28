@@ -45,7 +45,7 @@ metadata:
   name: my-uplink
   namespace: default
 spec:
-  entrypoints:
+  entryPoints:
     - multi-cluster
   weight: 10`),
 		},
@@ -58,7 +58,7 @@ metadata:
   name: my-uplink
   namespace: default
 spec:
-  entrypoints:
+  entryPoints:
     - multi-cluster
     - another-entrypoint`),
 		},
