@@ -39,9 +39,9 @@ type Uplink struct {
 
 // UplinkSpec describes the Uplink.
 type UplinkSpec struct {
-	// Entrypoints references uplinkEntrypoints. When omitted, uses default uplinkEntrypoints.
+	// EntryPoints references uplinkEntryPoints. When omitted, uses default uplinkEntrypoints.
 	// +optional
-	Entrypoints []string `json:"entrypoints,omitempty"`
+	EntryPoints []string `json:"entryPoints,omitempty"`
 
 	// Weight for WRR on the parent.
 	// +optional
