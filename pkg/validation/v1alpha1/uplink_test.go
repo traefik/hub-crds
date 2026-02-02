@@ -45,9 +45,21 @@ metadata:
   name: my-uplink
   namespace: default
 spec:
+  exposeName: my-custom-name
   entryPoints:
     - multi-cluster
   weight: 10`),
+		},
+		{
+			desc: "valid: with exposeName",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  exposeName: default-my-uplink`),
 		},
 		{
 			desc: "valid: multiple entrypoints",
