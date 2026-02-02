@@ -39,6 +39,11 @@ type Uplink struct {
 
 // UplinkSpec describes the Uplink.
 type UplinkSpec struct {
+	// ExposeName is the name of the service to expose.
+	// By default it uses <namespace>-<name>.
+	// +optional
+	ExposeName string `json:"exposeName,omitempty"`
+
 	// EntryPoints references uplinkEntryPoints. When omitted, uses default uplinkEntrypoints.
 	// +optional
 	EntryPoints []string `json:"entryPoints,omitempty"`

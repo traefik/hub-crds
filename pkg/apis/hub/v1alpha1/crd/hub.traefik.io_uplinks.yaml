@@ -47,6 +47,11 @@ spec:
                 items:
                   type: string
                 type: array
+              exposeName:
+                description: |-
+                  ExposeName is the name of the service to expose.
+                  By default it uses <namespace>-<name>.
+                type: string
               weight:
                 description: Weight for WRR on the parent.
                 type: integer
