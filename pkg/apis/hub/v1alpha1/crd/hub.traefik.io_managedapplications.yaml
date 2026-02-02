@@ -71,9 +71,12 @@ spec:
                   AppID is the identifier of the ManagedApplication.
                   It should be unique.
                 maxLength: 253
+                pattern: ^[A-Za-z0-9][A-Za-z0-9._\-:@/+=]*$
                 type: string
               notes:
                 description: Notes contains notes about application.
+                maxLength: 4096
+                pattern: ^[A-Za-z0-9!#$%*+\-./?[\]^_{|}~ ]*$
                 type: string
               owner:
                 description: |-
