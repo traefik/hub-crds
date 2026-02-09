@@ -39,5 +39,14 @@ jobs:
       - name: make build
         run: make build
 
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n $(git status --porcelain -- **/crd/*.yaml) ]]; then
+            echo "::error::Please commit generated CRDs files"
+            git status --porcelain -- **/crd/*.yaml
+            exit 1
+          fi
+        shell: bash
+
       - name: make test
         run: make test
