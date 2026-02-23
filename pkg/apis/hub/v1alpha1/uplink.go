@@ -52,6 +52,84 @@ type UplinkSpec struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Weight *int `json:"weight,omitempty"`
+
+	// HealthCheck configures the active health check on the parent cluster for this uplink's load balancer.
+	// +optional
+	HealthCheck *UplinkHealthCheck `json:"healthcheck,omitempty"`
+
+	// PassiveHealthCheck configures the passive health check on the parent cluster for this uplink's load balancer.
+	// +optional
+	PassiveHealthCheck *UplinkPassiveHealthCheck `json:"passiveHealthCheck,omitempty"`
+
+	// Sticky configures cookie-based session affinity on the parent cluster for this uplink's services.
+	// +optional
+	Sticky *UplinkSticky `json:"sticky,omitempty"`
+}
+
+// UplinkHealthCheck mirrors Traefik's ServerHealthCheck.
+// Based-On: https://github.com/traefik/traefik/blob/master/pkg/config/dynamic/http_config.go
+type UplinkHealthCheck struct {
+	// +optional
+	Scheme string `json:"scheme,omitempty"`
+	// +optional
+	Mode string `json:"mode,omitempty"`
+	// +optional
+	Path string `json:"path,omitempty"`
+	// +optional
+	Method string `json:"method,omitempty"`
+	// +optional
+	Status int `json:"status,omitempty"`
+	// +optional
+	Port int `json:"port,omitempty"`
+	// +optional
+	Interval *Period `json:"interval,omitempty"`
+	// +optional
+	UnhealthyInterval *Period `json:"unhealthyInterval,omitempty"`
+	// +optional
+	Timeout *Period `json:"timeout,omitempty"`
+	// +optional
+	Hostname string `json:"hostname,omitempty"`
+	// +optional
+	FollowRedirects *bool `json:"followRedirects,omitempty"`
+	// +optional
+	Headers map[string]string `json:"headers,omitempty"`
+}
+
+// UplinkPassiveHealthCheck mirrors Traefik's PassiveServerHealthCheck.
+// Based-On: https://github.com/traefik/traefik/blob/master/pkg/config/dynamic/http_config.go
+type UplinkPassiveHealthCheck struct {
+	// +optional
+	FailureWindow *Period `json:"failureWindow,omitempty"`
+	// +optional
+	MaxFailedAttempts int `json:"maxFailedAttempts,omitempty"`
+}
+
+// UplinkSticky mirrors Traefik's Sticky.
+// Based-On: https://github.com/traefik/traefik/blob/master/pkg/config/dynamic/http_config.go
+type UplinkSticky struct {
+	// +optional
+	Cookie *UplinkCookie `json:"cookie,omitempty"`
+}
+
+// UplinkCookie mirrors Traefik's Cookie.
+// Based-On: https://github.com/traefik/traefik/blob/master/pkg/config/dynamic/http_config.go
+// Same as Traefik type apart from Expires which is `json:"-"`.
+type UplinkCookie struct {
+	// +optional
+	Name string `json:"name,omitempty"`
+	// +optional
+	Secure bool `json:"secure,omitempty"`
+	// +optional
+	HTTPOnly bool `json:"httpOnly,omitempty"`
+	// +kubebuilder:validation:Enum=none;lax;strict
+	// +optional
+	SameSite string `json:"sameSite,omitempty"`
+	// +optional
+	MaxAge int `json:"maxAge,omitempty"`
+	// +optional
+	Path *string `json:"path,omitempty"`
+	// +optional
+	Domain string `json:"domain,omitempty"`
 }
 
 // UplinkStatus is the status of the Uplink.

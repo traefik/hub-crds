@@ -136,6 +136,79 @@ spec:
   weight: -1`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.weight", BadValue: "integer", Detail: "must be a positive number"}},
 		},
+		{
+			desc: "valid: with healthcheck",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  healthcheck:
+    path: /healthz
+    interval: 10s
+    timeout: 3s`),
+		},
+		{
+			desc: "valid: with passiveHealthCheck",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  passiveHealthCheck:
+    failureWindow: 30s
+    maxFailedAttempts: 3`),
+		},
+		{
+			desc: "valid: with sticky",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  sticky:
+    cookie:
+      name: my-cookie
+      secure: true
+      httpOnly: true`),
+		},
+		{
+			desc: "valid: full spec",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  exposeName: my-custom-name
+  entryPoints:
+    - multi-cluster
+  weight: 10
+  healthcheck:
+    scheme: https
+    path: /healthz
+    interval: 10s
+    timeout: 3s
+    followRedirects: true
+    headers:
+      X-Custom: value
+  passiveHealthCheck:
+    failureWindow: 30s
+    maxFailedAttempts: 3
+  sticky:
+    cookie:
+      name: my-cookie
+      secure: true
+      httpOnly: true
+      sameSite: lax`),
+		},
 	}
 
 	for _, test := range tests {

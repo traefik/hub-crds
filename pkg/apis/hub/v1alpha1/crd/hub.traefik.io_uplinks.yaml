@@ -52,6 +52,80 @@ spec:
                   ExposeName is the name of the service to expose.
                   By default it uses <namespace>-<name>.
                 type: string
+              healthcheck:
+                description: HealthCheck configures the active health check on the
+                  parent cluster for this uplink's load balancer.
+                properties:
+                  followRedirects:
+                    type: boolean
+                  headers:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  hostname:
+                    type: string
+                  interval:
+                    format: duration
+                    type: string
+                  method:
+                    type: string
+                  mode:
+                    type: string
+                  path:
+                    type: string
+                  port:
+                    type: integer
+                  scheme:
+                    type: string
+                  status:
+                    type: integer
+                  timeout:
+                    format: duration
+                    type: string
+                  unhealthyInterval:
+                    format: duration
+                    type: string
+                type: object
+              passiveHealthCheck:
+                description: PassiveHealthCheck configures the passive health check
+                  on the parent cluster for this uplink's load balancer.
+                properties:
+                  failureWindow:
+                    format: duration
+                    type: string
+                  maxFailedAttempts:
+                    type: integer
+                type: object
+              sticky:
+                description: Sticky configures cookie-based session affinity on the
+                  parent cluster for this uplink's services.
+                properties:
+                  cookie:
+                    description: |-
+                      UplinkCookie mirrors Traefik's Cookie.
+                      Based-On: https://github.com/traefik/traefik/blob/master/pkg/config/dynamic/http_config.go
+                      Same as Traefik type apart from Expires which is `json:"-"`.
+                    properties:
+                      domain:
+                        type: string
+                      httpOnly:
+                        type: boolean
+                      maxAge:
+                        type: integer
+                      name:
+                        type: string
+                      path:
+                        type: string
+                      sameSite:
+                        enum:
+                        - none
+                        - lax
+                        - strict
+                        type: string
+                      secure:
+                        type: boolean
+                    type: object
+                type: object
               weight:
                 description: Weight for WRR on the parent.
                 type: integer
