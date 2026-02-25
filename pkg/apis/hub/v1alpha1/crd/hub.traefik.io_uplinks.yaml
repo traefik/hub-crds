@@ -57,43 +57,88 @@ spec:
                   parent cluster for this uplink's load balancer.
                 properties:
                   followRedirects:
+                    description: |-
+                      FollowRedirects defines whether redirects should be followed during the health check calls.
+                      Default: true
                     type: boolean
                   headers:
                     additionalProperties:
                       type: string
+                    description: Headers defines custom headers to be sent to the
+                      health check endpoint.
                     type: object
                   hostname:
+                    description: Hostname defines the value of hostname in the Host
+                      header of the health check request.
                     type: string
                   interval:
-                    format: duration
-                    type: string
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    description: |-
+                      Interval defines the frequency of the health check calls for healthy targets.
+                      Default: 30s
+                    x-kubernetes-int-or-string: true
                   method:
+                    description: Method defines the healthcheck method.
                     type: string
                   mode:
+                    description: |-
+                      Mode defines the health check mode.
+                      If defined to grpc, will use the gRPC health check protocol to probe the server.
+                      Default: http
                     type: string
                   path:
+                    description: Path defines the server URL path for the health check
+                      endpoint.
                     type: string
                   port:
+                    description: Port defines the server URL port for the health check
+                      endpoint.
                     type: integer
                   scheme:
+                    description: Scheme replaces the server URL scheme for the health
+                      check endpoint.
                     type: string
                   status:
+                    description: Status defines the expected HTTP status code of the
+                      response to the health check request.
                     type: integer
                   timeout:
-                    format: duration
-                    type: string
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    description: |-
+                      Timeout defines the maximum duration Traefik will wait for a health check request before considering the server unhealthy.
+                      Default: 5s
+                    x-kubernetes-int-or-string: true
                   unhealthyInterval:
-                    format: duration
-                    type: string
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    description: |-
+                      UnhealthyInterval defines the frequency of the health check calls for unhealthy targets.
+                      When UnhealthyInterval is not defined, it defaults to the Interval value.
+                      Default: 30s
+                    x-kubernetes-int-or-string: true
                 type: object
               passiveHealthCheck:
                 description: PassiveHealthCheck configures the passive health check
                   on the parent cluster for this uplink's load balancer.
                 properties:
                   failureWindow:
-                    format: duration
-                    type: string
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    description: FailureWindow defines the time window during which
+                      the failed attempts must occur for the server to be marked as
+                      unhealthy. It also defines for how long the server will be considered
+                      unhealthy.
+                    x-kubernetes-int-or-string: true
                   maxFailedAttempts:
+                    description: MaxFailedAttempts is the number of consecutive failed
+                      attempts allowed within the failure window before marking the
+                      server as unhealthy.
                     type: integer
                 type: object
               sticky:
@@ -103,26 +148,44 @@ spec:
                   cookie:
                     description: |-
                       UplinkCookie mirrors Traefik's Cookie.
-                      Based-On: https://github.com/traefik/traefik/blob/master/pkg/config/dynamic/http_config.go
                       Same as Traefik type apart from Expires which is `json:"-"`.
                     properties:
                       domain:
+                        description: |-
+                          Domain defines the host to which the cookie will be sent.
+                          More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#domaindomain-value
                         type: string
                       httpOnly:
+                        description: HTTPOnly defines whether the cookie can be accessed
+                          by client-side APIs, such as JavaScript.
                         type: boolean
                       maxAge:
+                        description: |-
+                          MaxAge defines the number of seconds until the cookie expires.
+                          When set to a negative number, the cookie expires immediately.
+                          When set to zero, the cookie never expires.
                         type: integer
                       name:
+                        description: Name defines the Cookie name.
                         type: string
                       path:
+                        description: |-
+                          Path defines the path that must exist in the requested URL for the browser to send the Cookie header.
+                          When not provided the cookie will be sent on every request to the domain.
+                          More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#pathpath-value
                         type: string
                       sameSite:
+                        description: |-
+                          SameSite defines the same site policy.
+                          More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
                         enum:
                         - none
                         - lax
                         - strict
                         type: string
                       secure:
+                        description: Secure defines whether the cookie can only be
+                          transmitted over an encrypted connection (i.e. HTTPS).
                         type: boolean
                     type: object
                 type: object
