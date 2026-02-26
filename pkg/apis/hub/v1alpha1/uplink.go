@@ -149,33 +149,33 @@ type UplinkSticky struct {
 type UplinkCookie struct {
 	// +optional
 	// Name defines the Cookie name.
-	Name string `json:"name,omitempty" toml:"name,omitempty" yaml:"name,omitempty" export:"true"`
+	Name string `export:"true" json:"name,omitempty" toml:"name,omitempty" yaml:"name,omitempty"`
 
 	// +optional
 	// Secure defines whether the cookie can only be transmitted over an encrypted connection (i.e. HTTPS).
-	Secure bool `json:"secure,omitempty" toml:"secure,omitempty" yaml:"secure,omitempty" export:"true"`
+	Secure bool `export:"true" json:"secure,omitempty" toml:"secure,omitempty" yaml:"secure,omitempty"`
 
 	// +optional
 	// HTTPOnly defines whether the cookie can be accessed by client-side APIs, such as JavaScript.
-	HTTPOnly bool `json:"httpOnly,omitempty" toml:"httpOnly,omitempty" yaml:"httpOnly,omitempty" export:"true"`
+	HTTPOnly bool `export:"true" json:"httpOnly,omitempty" toml:"httpOnly,omitempty" yaml:"httpOnly,omitempty"`
 
 	// +optional
 	// SameSite defines the same site policy.
 	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
 	// +kubebuilder:validation:Enum=none;lax;strict
-	SameSite string `json:"sameSite,omitempty" toml:"sameSite,omitempty" yaml:"sameSite,omitempty" export:"true"`
+	SameSite string `export:"true" json:"sameSite,omitempty" toml:"sameSite,omitempty" yaml:"sameSite,omitempty"`
 
 	// +optional
 	// MaxAge defines the number of seconds until the cookie expires.
 	// When set to a negative number, the cookie expires immediately.
 	// When set to zero, the cookie never expires.
-	MaxAge int `json:"maxAge,omitempty" toml:"maxAge,omitempty" yaml:"maxAge,omitempty" export:"true"`
+	MaxAge int `export:"true" json:"maxAge,omitempty" toml:"maxAge,omitempty" yaml:"maxAge,omitempty"`
 
 	// +optional
 	// Path defines the path that must exist in the requested URL for the browser to send the Cookie header.
 	// When not provided the cookie will be sent on every request to the domain.
 	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#pathpath-value
-	Path *string `json:"path,omitempty" toml:"path,omitempty" yaml:"path,omitempty" export:"true"`
+	Path *string `export:"true" json:"path,omitempty" toml:"path,omitempty" yaml:"path,omitempty"`
 
 	// +optional
 	// Domain defines the host to which the cookie will be sent.

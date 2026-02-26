@@ -38,6 +38,7 @@ linters:
             - k8s.io/apimachinery/pkg/api/meta
             - k8s.io/apimachinery/pkg/api/validation
             - k8s.io/apimachinery/pkg/apis/meta/v1
+            - k8s.io/apimachinery/pkg/util/intstr
             - k8s.io/apimachinery/pkg/util/validation
             - k8s.io/apimachinery/pkg/util/yaml
             - k8s.io/apimachinery/pkg/runtime
