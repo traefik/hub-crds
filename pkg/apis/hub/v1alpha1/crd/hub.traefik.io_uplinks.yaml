@@ -52,7 +52,7 @@ spec:
                   ExposeName is the name of the service to expose.
                   By default it uses <namespace>-<name>.
                 type: string
-              healthcheck:
+              healthCheck:
                 description: HealthCheck configures the active health check on the
                   parent cluster for this uplink's load balancer.
                 properties:
