@@ -49,7 +49,7 @@ spec:
   entryPoints:
     - multi-cluster
   weight: 10
-  healthcheck:
+  healthCheck:
     scheme: https
     mode: http
     path: /healthz
@@ -171,7 +171,7 @@ metadata:
   name: my-uplink
   namespace: default
 spec:
-  healthcheck:
+  healthCheck:
     path: /healthz
     interval: 10s
     timeout: 3s`),

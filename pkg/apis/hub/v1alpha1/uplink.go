@@ -58,7 +58,7 @@ type UplinkSpec struct {
 
 	// HealthCheck configures the active health check on the parent cluster for this uplink's load balancer.
 	// +optional
-	HealthCheck *UplinkHealthCheck `json:"healthcheck,omitempty"`
+	HealthCheck *UplinkHealthCheck `json:"healthCheck,omitempty"`
 
 	// PassiveHealthCheck configures the passive health check on the parent cluster for this uplink's load balancer.
 	// +optional
@@ -71,6 +71,9 @@ type UplinkSpec struct {
 
 // UplinkHealthCheck mirrors Traefik's ServerHealthCheck.
 type UplinkHealthCheck struct {
+	// Path defines the server URL path for the health check endpoint.
+	Path string `json:"path,omitempty"`
+
 	// +optional
 	// Scheme replaces the server URL scheme for the health check endpoint.
 	Scheme string `json:"scheme,omitempty"`
@@ -80,10 +83,6 @@ type UplinkHealthCheck struct {
 	// If defined to grpc, will use the gRPC health check protocol to probe the server.
 	// Default: http
 	Mode string `json:"mode,omitempty"`
-
-	// +optional
-	// Path defines the server URL path for the health check endpoint.
-	Path string `json:"path,omitempty"`
 
 	// +optional
 	// Method defines the healthcheck method.
@@ -100,7 +99,7 @@ type UplinkHealthCheck struct {
 	// +optional
 	// Interval defines the frequency of the health check calls for healthy targets.
 	// Default: 30s
-	Interval *intstr.IntOrString `json:"interval,omitempty"`
+	Interval intstr.IntOrString `json:"interval,omitempty"`
 
 	// +optional
 	// UnhealthyInterval defines the frequency of the health check calls for unhealthy targets.
@@ -111,7 +110,7 @@ type UplinkHealthCheck struct {
 	// +optional
 	// Timeout defines the maximum duration Traefik will wait for a health check request before considering the server unhealthy.
 	// Default: 5s
-	Timeout *intstr.IntOrString `json:"timeout,omitempty"`
+	Timeout intstr.IntOrString `json:"timeout,omitempty"`
 
 	// +optional
 	// Hostname defines the value of hostname in the Host header of the health check request.
@@ -131,11 +130,11 @@ type UplinkHealthCheck struct {
 type UplinkPassiveHealthCheck struct {
 	// +optional
 	// FailureWindow defines the time window during which the failed attempts must occur for the server to be marked as unhealthy. It also defines for how long the server will be considered unhealthy.
-	FailureWindow *intstr.IntOrString `json:"failureWindow,omitempty"`
+	FailureWindow intstr.IntOrString `json:"failureWindow,omitempty"`
 
 	// +optional
 	// MaxFailedAttempts is the number of consecutive failed attempts allowed within the failure window before marking the server as unhealthy.
-	MaxFailedAttempts *int `json:"maxFailedAttempts,omitempty"`
+	MaxFailedAttempts int `json:"maxFailedAttempts,omitempty"`
 }
 
 // UplinkSticky mirrors Traefik's Sticky.
@@ -149,38 +148,38 @@ type UplinkSticky struct {
 type UplinkCookie struct {
 	// +optional
 	// Name defines the Cookie name.
-	Name string `export:"true" json:"name,omitempty" toml:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 
 	// +optional
 	// Secure defines whether the cookie can only be transmitted over an encrypted connection (i.e. HTTPS).
-	Secure bool `export:"true" json:"secure,omitempty" toml:"secure,omitempty" yaml:"secure,omitempty"`
+	Secure bool `json:"secure,omitempty"`
 
 	// +optional
 	// HTTPOnly defines whether the cookie can be accessed by client-side APIs, such as JavaScript.
-	HTTPOnly bool `export:"true" json:"httpOnly,omitempty" toml:"httpOnly,omitempty" yaml:"httpOnly,omitempty"`
+	HTTPOnly bool `json:"httpOnly,omitempty"`
 
 	// +optional
 	// SameSite defines the same site policy.
 	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
 	// +kubebuilder:validation:Enum=none;lax;strict
-	SameSite string `export:"true" json:"sameSite,omitempty" toml:"sameSite,omitempty" yaml:"sameSite,omitempty"`
+	SameSite string `json:"sameSite,omitempty"`
 
 	// +optional
 	// MaxAge defines the number of seconds until the cookie expires.
 	// When set to a negative number, the cookie expires immediately.
 	// When set to zero, the cookie never expires.
-	MaxAge int `export:"true" json:"maxAge,omitempty" toml:"maxAge,omitempty" yaml:"maxAge,omitempty"`
+	MaxAge int `json:"maxAge,omitempty"`
 
 	// +optional
 	// Path defines the path that must exist in the requested URL for the browser to send the Cookie header.
 	// When not provided the cookie will be sent on every request to the domain.
 	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#pathpath-value
-	Path *string `export:"true" json:"path,omitempty" toml:"path,omitempty" yaml:"path,omitempty"`
+	Path *string `json:"path,omitempty"`
 
 	// +optional
 	// Domain defines the host to which the cookie will be sent.
 	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#domaindomain-value
-	Domain string `json:"domain,omitempty" toml:"domain,omitempty" yaml:"domain,omitempty"`
+	Domain string `json:"domain,omitempty"`
 }
 
 // UplinkStatus is the status of the Uplink.
