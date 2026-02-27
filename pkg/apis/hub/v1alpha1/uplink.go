@@ -17,7 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 package v1alpha1
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+)
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -52,6 +55,131 @@ type UplinkSpec struct {
 	// +optional
 	// +kubebuilder:validation:XValidation:message="must be a positive number",rule="self >= 0"
 	Weight *int `json:"weight,omitempty"`
+
+	// HealthCheck configures the active health check on the parent cluster for this uplink's load balancer.
+	// +optional
+	HealthCheck *UplinkHealthCheck `json:"healthCheck,omitempty"`
+
+	// PassiveHealthCheck configures the passive health check on the parent cluster for this uplink's load balancer.
+	// +optional
+	PassiveHealthCheck *UplinkPassiveHealthCheck `json:"passiveHealthCheck,omitempty"`
+
+	// Sticky configures cookie-based session affinity on the parent cluster for this uplink's services.
+	// +optional
+	Sticky *UplinkSticky `json:"sticky,omitempty"`
+}
+
+// UplinkHealthCheck mirrors Traefik's ServerHealthCheck.
+type UplinkHealthCheck struct {
+	// Path defines the server URL path for the health check endpoint.
+	Path string `json:"path,omitempty"`
+
+	// +optional
+	// Scheme replaces the server URL scheme for the health check endpoint.
+	Scheme string `json:"scheme,omitempty"`
+
+	// +optional
+	// Mode defines the health check mode.
+	// If defined to grpc, will use the gRPC health check protocol to probe the server.
+	// Default: http
+	Mode string `json:"mode,omitempty"`
+
+	// +optional
+	// Method defines the healthcheck method.
+	Method string `json:"method,omitempty"`
+
+	// +optional
+	// Status defines the expected HTTP status code of the response to the health check request.
+	Status int `json:"status,omitempty"`
+
+	// +optional
+	// Port defines the server URL port for the health check endpoint.
+	Port int `json:"port,omitempty"`
+
+	// +optional
+	// Interval defines the frequency of the health check calls for healthy targets.
+	// Default: 30s
+	Interval intstr.IntOrString `json:"interval,omitempty"`
+
+	// +optional
+	// UnhealthyInterval defines the frequency of the health check calls for unhealthy targets.
+	// When UnhealthyInterval is not defined, it defaults to the Interval value.
+	// Default: 30s
+	UnhealthyInterval *intstr.IntOrString `json:"unhealthyInterval,omitempty"`
+
+	// +optional
+	// Timeout defines the maximum duration Traefik will wait for a health check request before considering the server unhealthy.
+	// Default: 5s
+	Timeout intstr.IntOrString `json:"timeout,omitempty"`
+
+	// +optional
+	// Hostname defines the value of hostname in the Host header of the health check request.
+	Hostname string `json:"hostname,omitempty"`
+
+	// +optional
+	// FollowRedirects defines whether redirects should be followed during the health check calls.
+	// Default: true
+	FollowRedirects *bool `json:"followRedirects,omitempty"`
+
+	// +optional
+	// Headers defines custom headers to be sent to the health check endpoint.
+	Headers map[string]string `json:"headers,omitempty"`
+}
+
+// UplinkPassiveHealthCheck mirrors Traefik's PassiveServerHealthCheck.
+type UplinkPassiveHealthCheck struct {
+	// +optional
+	// FailureWindow defines the time window during which the failed attempts must occur for the server to be marked as unhealthy. It also defines for how long the server will be considered unhealthy.
+	FailureWindow intstr.IntOrString `json:"failureWindow,omitempty"`
+
+	// +optional
+	// MaxFailedAttempts is the number of consecutive failed attempts allowed within the failure window before marking the server as unhealthy.
+	MaxFailedAttempts int `json:"maxFailedAttempts,omitempty"`
+}
+
+// UplinkSticky mirrors Traefik's Sticky.
+type UplinkSticky struct {
+	// +optional
+	Cookie *UplinkCookie `json:"cookie,omitempty"`
+}
+
+// UplinkCookie mirrors Traefik's Cookie.
+// Same as Traefik type apart from Expires which is `json:"-"`.
+type UplinkCookie struct {
+	// +optional
+	// Name defines the Cookie name.
+	Name string `json:"name,omitempty"`
+
+	// +optional
+	// Secure defines whether the cookie can only be transmitted over an encrypted connection (i.e. HTTPS).
+	Secure bool `json:"secure,omitempty"`
+
+	// +optional
+	// HTTPOnly defines whether the cookie can be accessed by client-side APIs, such as JavaScript.
+	HTTPOnly bool `json:"httpOnly,omitempty"`
+
+	// +optional
+	// SameSite defines the same site policy.
+	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+	// +kubebuilder:validation:Enum=none;lax;strict
+	SameSite string `json:"sameSite,omitempty"`
+
+	// +optional
+	// MaxAge defines the number of seconds until the cookie expires.
+	// When set to a negative number, the cookie expires immediately.
+	// When set to zero, the cookie never expires.
+	MaxAge int `json:"maxAge,omitempty"`
+
+	// +optional
+	// Path defines the path that must exist in the requested URL for the browser to send the Cookie header.
+	// When not provided the cookie will be sent on every request to the domain.
+	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#pathpath-value
+	Path *string `json:"path,omitempty"`
+
+	// +optional
+	// Domain defines the host to which the cookie will be sent.
+	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#domaindomain-value
+	Domain string `json:"domain,omitempty"`
 }
 
 // UplinkStatus is the status of the Uplink.

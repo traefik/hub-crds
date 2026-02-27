@@ -48,7 +48,33 @@ spec:
   exposeName: my-custom-name
   entryPoints:
     - multi-cluster
-  weight: 10`),
+  weight: 10
+  healthCheck:
+    scheme: https
+    mode: http
+    path: /healthz
+    method: GET
+    status: 200
+    port: 8080
+    interval: 10s
+    unhealthyInterval: 30s
+    timeout: 3s
+    hostname: my-host
+    followRedirects: true
+    headers:
+      X-Custom: value
+  passiveHealthCheck:
+    failureWindow: 30s
+    maxFailedAttempts: 3
+  sticky:
+    cookie:
+      name: my-cookie
+      secure: true
+      httpOnly: true
+      sameSite: lax
+      maxAge: 3600
+      path: /
+      domain: example.com`),
 		},
 		{
 			desc: "valid: with exposeName",
@@ -135,6 +161,48 @@ metadata:
 spec:
   weight: -1`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.weight", BadValue: "integer", Detail: "must be a positive number"}},
+		},
+		{
+			desc: "valid: with healthcheck",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  healthCheck:
+    path: /healthz
+    interval: 10s
+    timeout: 3s`),
+		},
+		{
+			desc: "valid: with passiveHealthCheck",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  passiveHealthCheck:
+    failureWindow: 30s
+    maxFailedAttempts: 3`),
+		},
+		{
+			desc: "valid: with sticky",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Uplink
+metadata:
+  name: my-uplink
+  namespace: default
+spec:
+  sticky:
+    cookie:
+      name: my-cookie
+      secure: true
+      httpOnly: true`),
 		},
 	}
 
