@@ -31,23 +31,7 @@ func TestContent_Validation(t *testing.T) {
 
 	tests := []validationTestCase{
 		{
-			desc: "missing resource namespace",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: Content
-metadata:
-  name: "my-content"
-spec:
-  title: My Content
-  order: 0
-  parentRef:
-    kind: API
-    name: my-api
-  content: "# Hello World"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
-		},
-		{
-			desc: "valid: minimal with content",
+			desc: "valid: with content",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: Content
@@ -63,7 +47,7 @@ spec:
   content: "# Hello World"`),
 		},
 		{
-			desc: "valid: minimal with link",
+			desc: "valid: with link",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: Content
@@ -80,20 +64,20 @@ spec:
     href: https://example.com`),
 		},
 		{
-			desc: "valid: full",
+			desc: "missing resource namespace",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: Content
 metadata:
-  name: my-content
-  namespace: default
+  name: "my-content"
 spec:
-  title: My Content Title
-  order: 42
+  title: My Content
+  order: 0
   parentRef:
-    kind: APIVersion
-    name: my-api-version
-  content: "# Full Content\n\nThis is the full content."`),
+    kind: API
+    name: my-api
+  content: "# Hello World"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "metadata.namespace", BadValue: ""}},
 		},
 		{
 			desc: "invalid resource name",
