@@ -24,7 +24,7 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// Content defines a define additional documentation for given resource.
+// Content defines additional documentation for given resource.
 // +kubebuilder:subresource:status
 type Content struct {
 	metav1.TypeMeta `json:",inline"`
@@ -78,7 +78,7 @@ type ContentStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 
-	// Hash is a hash representing the APIPortal.
+	// Hash is a hash representing the Content.
 	Hash string `json:"hash,omitempty"`
 
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
