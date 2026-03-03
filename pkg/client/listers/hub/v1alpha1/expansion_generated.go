@@ -105,13 +105,13 @@ type APIVersionNamespaceListerExpansion interface{}
 // AccessControlPolicyLister.
 type AccessControlPolicyListerExpansion interface{}
 
-// ContentListerExpansion allows custom methods to be added to
-// ContentLister.
-type ContentListerExpansion interface{}
+// ContentItemListerExpansion allows custom methods to be added to
+// ContentItemLister.
+type ContentItemListerExpansion interface{}
 
-// ContentNamespaceListerExpansion allows custom methods to be added to
-// ContentNamespaceLister.
-type ContentNamespaceListerExpansion interface{}
+// ContentItemNamespaceListerExpansion allows custom methods to be added to
+// ContentItemNamespaceLister.
+type ContentItemNamespaceListerExpansion interface{}
 
 // ManagedApplicationListerExpansion allows custom methods to be added to
 // ManagedApplicationLister.

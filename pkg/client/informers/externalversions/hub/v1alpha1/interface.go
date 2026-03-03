@@ -49,8 +49,8 @@ type Interface interface {
 	APIVersions() APIVersionInformer
 	// AccessControlPolicies returns a AccessControlPolicyInformer.
 	AccessControlPolicies() AccessControlPolicyInformer
-	// Contents returns a ContentInformer.
-	Contents() ContentInformer
+	// ContentItems returns a ContentItemInformer.
+	ContentItems() ContentItemInformer
 	// ManagedApplications returns a ManagedApplicationInformer.
 	ManagedApplications() ManagedApplicationInformer
 	// ManagedSubscriptions returns a ManagedSubscriptionInformer.
@@ -125,9 +125,9 @@ func (v *version) AccessControlPolicies() AccessControlPolicyInformer {
 	return &accessControlPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
-// Contents returns a ContentInformer.
-func (v *version) Contents() ContentInformer {
-	return &contentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+// ContentItems returns a ContentItemInformer.
+func (v *version) ContentItems() ContentItemInformer {
+	return &contentItemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ManagedApplications returns a ManagedApplicationInformer.

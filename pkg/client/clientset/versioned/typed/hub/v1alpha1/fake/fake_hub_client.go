@@ -75,8 +75,8 @@ func (c *FakeHubV1alpha1) AccessControlPolicies() v1alpha1.AccessControlPolicyIn
 	return &FakeAccessControlPolicies{c}
 }
 
-func (c *FakeHubV1alpha1) Contents(namespace string) v1alpha1.ContentInterface {
-	return &FakeContents{c, namespace}
+func (c *FakeHubV1alpha1) ContentItems(namespace string) v1alpha1.ContentItemInterface {
+	return &FakeContentItems{c, namespace}
 }
 
 func (c *FakeHubV1alpha1) ManagedApplications(namespace string) v1alpha1.ManagedApplicationInterface {
