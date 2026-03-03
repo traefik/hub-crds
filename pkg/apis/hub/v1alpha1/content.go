@@ -48,7 +48,7 @@ type ContentSpec struct {
 	Title string `json:"title"`
 	// Order defines the order of the content in the UI.
 	// +kubebuilder:validation:Minimum=0
-	Order int64 `json:"order"`
+	Order int32 `json:"order"`
 	// ParentRef is the reference to the resource that this content belongs to.
 	ParentRef ContentParentRef `json:"parentRef"`
 	// Link is the link to the content.
