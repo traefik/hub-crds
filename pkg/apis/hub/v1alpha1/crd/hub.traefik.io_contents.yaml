@@ -17,7 +17,7 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Content defines a define additional documentation for given resource.
+        description: Content defines additional documentation for given resource.
         properties:
           apiVersion:
             description: |-
@@ -37,7 +37,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: The desired behavior of this Content.
+            description: Defines the documentation to attach to the referenced resource.
             properties:
               content:
                 description: Content is the valid markdown content.
@@ -57,7 +57,8 @@ spec:
                 type: object
               order:
                 description: Order defines the order of the content in the UI.
-                format: int32
+                format: int64
+                minimum: 0
                 type: integer
               parentRef:
                 description: ParentRef is the reference to the resource that this
@@ -66,7 +67,10 @@ spec:
                   kind:
                     description: Kind is the kind of the resource that this content
                       belongs to.
-                    maxLength: 253
+                    enum:
+                    - APIPortal
+                    - API
+                    - APIBundle
                     type: string
                   name:
                     description: Name is the name of the resource that this content
@@ -80,6 +84,7 @@ spec:
               title:
                 description: Title is the public-facing name of the Content.
                 maxLength: 253
+                minLength: 1
                 type: string
             required:
             - order
@@ -149,7 +154,7 @@ spec:
                   type: object
                 type: array
               hash:
-                description: Hash is a hash representing the APIPortal.
+                description: Hash is a hash representing the Content.
                 type: string
               syncedAt:
                 format: date-time

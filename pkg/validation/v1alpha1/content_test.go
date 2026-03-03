@@ -64,6 +64,38 @@ spec:
     href: https://example.com`),
 		},
 		{
+			desc: "valid: parentRef kind APIBundle",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Content
+metadata:
+  name: my-content
+  namespace: default
+spec:
+  title: My Content
+  order: 0
+  parentRef:
+    kind: APIBundle
+    name: my-bundle
+  content: "# Hello World"`),
+		},
+		{
+			desc: "valid: parentRef kind APIPortal",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Content
+metadata:
+  name: my-content
+  namespace: default
+spec:
+  title: My Content
+  order: 0
+  parentRef:
+    kind: APIPortal
+    name: my-portal
+  content: "# Hello World"`),
+		},
+		{
 			desc: "missing resource namespace",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -110,6 +142,23 @@ metadata:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "metadata.name", BadValue: "content-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name", Detail: "must be no more than 63 characters"}},
 		},
 		{
+			desc: "title is empty",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Content
+metadata:
+  name: my-content
+  namespace: default
+spec:
+  title: ""
+  order: 0
+  parentRef:
+    kind: API
+    name: my-api
+  content: "# Hello World"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.title", BadValue: "", Detail: "spec.title in body should be at least 1 chars long"}},
+		},
+		{
 			desc: "title is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -127,7 +176,7 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.title", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
-			desc: "parentRef kind is too long",
+			desc: "invalid parentRef kind",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: Content
@@ -138,10 +187,10 @@ spec:
   title: My Content
   order: 0
   parentRef:
-    kind: "` + tooLongName + `"
+    kind: APIVersion
     name: my-api
   content: "# Hello World"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.parentRef.kind", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.parentRef.kind", BadValue: "APIVersion", Detail: "supported values: \"APIPortal\", \"API\", \"APIBundle\""}},
 		},
 		{
 			desc: "parentRef name is too long",
@@ -212,6 +261,23 @@ spec:
   link:
     href: not-a-valid-url`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.link.href", BadValue: "string", Detail: "must be a valid URL"}},
+		},
+		{
+			desc: "invalid order",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: Content
+metadata:
+  name: my-content
+  namespace: default
+spec:
+  title: My Content
+  order: -1
+  parentRef:
+    kind: API
+    name: my-api
+  content: "# Hello World"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.order", BadValue: int64(-1), Detail: "spec.order in body should be greater than or equal to 0"}},
 		},
 	}
 
