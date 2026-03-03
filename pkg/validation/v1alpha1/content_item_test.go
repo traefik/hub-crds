@@ -24,7 +24,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func TestContent_Validation(t *testing.T) {
+func TestContentItem_Validation(t *testing.T) {
 	t.Parallel()
 
 	tooLongName := strings.Repeat("x", 254)
@@ -34,7 +34,7 @@ func TestContent_Validation(t *testing.T) {
 			desc: "valid: with content",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -50,7 +50,7 @@ spec:
 			desc: "valid: with link",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -67,7 +67,7 @@ spec:
 			desc: "valid: parentRef kind APIBundle",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -83,7 +83,7 @@ spec:
 			desc: "valid: parentRef kind APIPortal",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -99,7 +99,7 @@ spec:
 			desc: "missing resource namespace",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: "my-content"
 spec:
@@ -115,7 +115,7 @@ spec:
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: .non-dns-compliant-content
   namespace: default`),
@@ -125,7 +125,7 @@ metadata:
 			desc: "missing resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: ""
   namespace: default`),
@@ -135,7 +135,7 @@ metadata:
 			desc: "resource name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: content-with-a-way-toooooooooooooooooooooooooooooooooooooo-long-name
   namespace: default`),
@@ -145,7 +145,7 @@ metadata:
 			desc: "title is empty",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -162,7 +162,7 @@ spec:
 			desc: "title is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -179,7 +179,7 @@ spec:
 			desc: "invalid parentRef kind",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -196,7 +196,7 @@ spec:
 			desc: "parentRef name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -213,7 +213,7 @@ spec:
 			desc: "both content and link specified",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -232,7 +232,7 @@ spec:
 			desc: "neither content nor link specified",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -248,7 +248,7 @@ spec:
 			desc: "invalid link href",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default
@@ -266,7 +266,7 @@ spec:
 			desc: "invalid order",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
-kind: Content
+kind: ContentItem
 metadata:
   name: my-content
   namespace: default

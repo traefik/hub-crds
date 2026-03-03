@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.17.1
-  name: contents.hub.traefik.io
+  name: contentitems.hub.traefik.io
 spec:
   group: hub.traefik.io
   names:
-    kind: Content
-    listKind: ContentList
-    plural: contents
-    singular: content
+    kind: ContentItem
+    listKind: ContentItemList
+    plural: contentitems
+    singular: contentitem
   scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Content defines additional documentation for given resource.
+        description: ContentItem defines additional documentation for given resource.
         properties:
           apiVersion:
             description: |-
@@ -82,7 +82,7 @@ spec:
                 - name
                 type: object
               title:
-                description: Title is the public-facing name of the Content.
+                description: Title is the public-facing name of the ContentItem.
                 maxLength: 253
                 minLength: 1
                 type: string
@@ -95,7 +95,7 @@ spec:
             - message: exactly one of content or link must be specified
               rule: '[has(self.content), has(self.link)].filter(x, x).size() == 1'
           status:
-            description: The current status of this Content.
+            description: The current status of this ContentItem.
             properties:
               conditions:
                 items:
@@ -154,7 +154,7 @@ spec:
                   type: object
                 type: array
               hash:
-                description: Hash is a hash representing the Content.
+                description: Hash is a hash representing the ContentItem.
                 type: string
               syncedAt:
                 format: date-time

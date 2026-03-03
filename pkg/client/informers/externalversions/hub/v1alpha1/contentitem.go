@@ -35,59 +35,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// ContentInformer provides access to a shared informer and lister for
-// Contents.
-type ContentInformer interface {
+// ContentItemInformer provides access to a shared informer and lister for
+// ContentItems.
+type ContentItemInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ContentLister
+	Lister() v1alpha1.ContentItemLister
 }
 
-type contentInformer struct {
+type contentItemInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewContentInformer constructs a new informer for Content type.
+// NewContentItemInformer constructs a new informer for ContentItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewContentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredContentInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewContentItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredContentItemInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredContentInformer constructs a new informer for Content type.
+// NewFilteredContentItemInformer constructs a new informer for ContentItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredContentInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredContentItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().Contents(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().ContentItems(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.HubV1alpha1().Contents(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().ContentItems(namespace).Watch(context.TODO(), options)
 			},
 		},
-		&hubv1alpha1.Content{},
+		&hubv1alpha1.ContentItem{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *contentInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredContentInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *contentItemInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredContentItemInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *contentInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.Content{}, f.defaultInformer)
+func (f *contentItemInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&hubv1alpha1.ContentItem{}, f.defaultInformer)
 }
 
-func (f *contentInformer) Lister() v1alpha1.ContentLister {
-	return v1alpha1.NewContentLister(f.Informer().GetIndexer())
+func (f *contentItemInformer) Lister() v1alpha1.ContentItemLister {
+	return v1alpha1.NewContentItemLister(f.Informer().GetIndexer())
 }

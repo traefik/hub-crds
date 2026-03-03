@@ -24,25 +24,25 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// Content defines additional documentation for given resource.
+// ContentItem defines additional documentation for given resource.
 // +kubebuilder:subresource:status
-type Content struct {
+type ContentItem struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Defines the documentation to attach to the referenced resource.
-	Spec ContentSpec `json:"spec,omitempty"`
+	Spec ContentItemSpec `json:"spec,omitempty"`
 
-	// The current status of this Content.
+	// The current status of this ContentItem.
 	// +optional
-	Status ContentStatus `json:"status,omitempty"`
+	Status ContentItemStatus `json:"status,omitempty"`
 }
 
-// ContentSpec configures a Content.
+// ContentItemSpec configures a ContentItem.
 // +kubebuilder:validation:XValidation:message="exactly one of content or link must be specified",rule="[has(self.content), has(self.link)].filter(x, x).size() == 1"
-type ContentSpec struct {
-	// Title is the public-facing name of the Content.
+type ContentItemSpec struct {
+	// Title is the public-facing name of the ContentItem.
 	// +kubebuilder:validation:MaxLength=253
 	// +kubebuilder:validation:MinLength=1
 	Title string `json:"title"`
@@ -50,7 +50,7 @@ type ContentSpec struct {
 	// +kubebuilder:validation:Minimum=0
 	Order int32 `json:"order"`
 	// ParentRef is the reference to the resource that this content belongs to.
-	ParentRef ContentParentRef `json:"parentRef"`
+	ParentRef ContentItemParentRef `json:"parentRef"`
 	// Link is the link to the content.
 	// +optional
 	Link *LinkDetails `json:"link,omitempty"`
@@ -60,8 +60,8 @@ type ContentSpec struct {
 	Content string `json:"content,omitempty"`
 }
 
-// ContentParentRef references the resource to which Content belongs.
-type ContentParentRef struct {
+// ContentItemParentRef references the resource to which ContentItem belongs.
+type ContentItemParentRef struct {
 	// Kind is the kind of the resource that this content belongs to.
 	// +kubebuilder:validation:Enum=APIPortal;API;APIBundle
 	Kind string `json:"kind"`
@@ -77,12 +77,12 @@ type LinkDetails struct {
 	Href string `json:"href"`
 }
 
-// ContentStatus is the status of a Content.
-type ContentStatus struct {
+// ContentItemStatus is the status of a ContentItem.
+type ContentItemStatus struct {
 	Version  string       `json:"version,omitempty"`
 	SyncedAt *metav1.Time `json:"syncedAt,omitempty"`
 
-	// Hash is a hash representing the Content.
+	// Hash is a hash representing the ContentItem.
 	Hash string `json:"hash,omitempty"`
 
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
@@ -90,11 +90,11 @@ type ContentStatus struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// ContentList defines a list of Content.
-type ContentList struct {
+// ContentItemList defines a list of ContentItem.
+type ContentItemList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []Content `json:"items"`
+	Items []ContentItem `json:"items"`
 }
