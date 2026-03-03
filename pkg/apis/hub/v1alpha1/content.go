@@ -31,7 +31,7 @@ type Content struct {
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// The desired behavior of this Content.
+	// Defines the documentation to attach to the referenced resource.
 	Spec ContentSpec `json:"spec,omitempty"`
 
 	// The current status of this Content.
@@ -44,9 +44,11 @@ type Content struct {
 type ContentSpec struct {
 	// Title is the public-facing name of the Content.
 	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:MinLength=1
 	Title string `json:"title"`
 	// Order defines the order of the content in the UI.
-	Order uint32 `json:"order"`
+	// +kubebuilder:validation:Minimum=0
+	Order int64 `json:"order"`
 	// ParentRef is the reference to the resource that this content belongs to.
 	ParentRef ContentParentRef `json:"parentRef"`
 	// Link is the link to the content.
@@ -58,15 +60,17 @@ type ContentSpec struct {
 	Content string `json:"content,omitempty"`
 }
 
+// ContentParentRef references the resource to which Content belongs.
 type ContentParentRef struct {
 	// Kind is the kind of the resource that this content belongs to.
-	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:Enum=APIPortal;API;APIBundle
 	Kind string `json:"kind"`
 	// Name is the name of the resource that this content belongs to.
 	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
 }
 
+// LinkDetails accepts URL for configuring Content Data.
 type LinkDetails struct {
 	// Href is the public URL of the content.
 	// +kubebuilder:validation:XValidation:message="must be a valid URL",rule="isURL(self)"
