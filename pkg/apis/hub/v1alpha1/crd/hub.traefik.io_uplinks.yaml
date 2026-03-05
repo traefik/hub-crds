@@ -141,54 +141,6 @@ spec:
                       server as unhealthy.
                     type: integer
                 type: object
-              sticky:
-                description: Sticky configures cookie-based session affinity on the
-                  parent cluster for this uplink's services.
-                properties:
-                  cookie:
-                    description: |-
-                      UplinkCookie mirrors Traefik's Cookie.
-                      Same as Traefik type apart from Expires which is `json:"-"`.
-                    properties:
-                      domain:
-                        description: |-
-                          Domain defines the host to which the cookie will be sent.
-                          More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#domaindomain-value
-                        type: string
-                      httpOnly:
-                        description: HTTPOnly defines whether the cookie can be accessed
-                          by client-side APIs, such as JavaScript.
-                        type: boolean
-                      maxAge:
-                        description: |-
-                          MaxAge defines the number of seconds until the cookie expires.
-                          When set to a negative number, the cookie expires immediately.
-                          When set to zero, the cookie never expires.
-                        type: integer
-                      name:
-                        description: Name defines the Cookie name.
-                        type: string
-                      path:
-                        description: |-
-                          Path defines the path that must exist in the requested URL for the browser to send the Cookie header.
-                          When not provided the cookie will be sent on every request to the domain.
-                          More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#pathpath-value
-                        type: string
-                      sameSite:
-                        description: |-
-                          SameSite defines the same site policy.
-                          More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-                        enum:
-                        - none
-                        - lax
-                        - strict
-                        type: string
-                      secure:
-                        description: Secure defines whether the cookie can only be
-                          transmitted over an encrypted connection (i.e. HTTPS).
-                        type: boolean
-                    type: object
-                type: object
               weight:
                 description: Weight for WRR on the parent.
                 type: integer
