@@ -63,10 +63,6 @@ type UplinkSpec struct {
 	// PassiveHealthCheck configures the passive health check on the parent cluster for this uplink's load balancer.
 	// +optional
 	PassiveHealthCheck *UplinkPassiveHealthCheck `json:"passiveHealthCheck,omitempty"`
-
-	// Sticky configures cookie-based session affinity on the parent cluster for this uplink's services.
-	// +optional
-	Sticky *UplinkSticky `json:"sticky,omitempty"`
 }
 
 // UplinkHealthCheck mirrors Traefik's ServerHealthCheck.
@@ -135,51 +131,6 @@ type UplinkPassiveHealthCheck struct {
 	// +optional
 	// MaxFailedAttempts is the number of consecutive failed attempts allowed within the failure window before marking the server as unhealthy.
 	MaxFailedAttempts int `json:"maxFailedAttempts,omitempty"`
-}
-
-// UplinkSticky mirrors Traefik's Sticky.
-type UplinkSticky struct {
-	// +optional
-	Cookie *UplinkCookie `json:"cookie,omitempty"`
-}
-
-// UplinkCookie mirrors Traefik's Cookie.
-// Same as Traefik type apart from Expires which is `json:"-"`.
-type UplinkCookie struct {
-	// +optional
-	// Name defines the Cookie name.
-	Name string `json:"name,omitempty"`
-
-	// +optional
-	// Secure defines whether the cookie can only be transmitted over an encrypted connection (i.e. HTTPS).
-	Secure bool `json:"secure,omitempty"`
-
-	// +optional
-	// HTTPOnly defines whether the cookie can be accessed by client-side APIs, such as JavaScript.
-	HTTPOnly bool `json:"httpOnly,omitempty"`
-
-	// +optional
-	// SameSite defines the same site policy.
-	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-	// +kubebuilder:validation:Enum=none;lax;strict
-	SameSite string `json:"sameSite,omitempty"`
-
-	// +optional
-	// MaxAge defines the number of seconds until the cookie expires.
-	// When set to a negative number, the cookie expires immediately.
-	// When set to zero, the cookie never expires.
-	MaxAge int `json:"maxAge,omitempty"`
-
-	// +optional
-	// Path defines the path that must exist in the requested URL for the browser to send the Cookie header.
-	// When not provided the cookie will be sent on every request to the domain.
-	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#pathpath-value
-	Path *string `json:"path,omitempty"`
-
-	// +optional
-	// Domain defines the host to which the cookie will be sent.
-	// More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#domaindomain-value
-	Domain string `json:"domain,omitempty"`
 }
 
 // UplinkStatus is the status of the Uplink.
