@@ -43,6 +43,8 @@ type APIVersionExpansion interface{}
 
 type AccessControlPolicyExpansion interface{}
 
+type ContentItemExpansion interface{}
+
 type ManagedApplicationExpansion interface{}
 
 type ManagedSubscriptionExpansion interface{}
