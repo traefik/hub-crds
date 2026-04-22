@@ -136,6 +136,10 @@ type OpenAPISpec struct {
 	// ValidateRequestBodySchema validates the request body against the OpenAPI specification.
 	// This option overrides the default behavior configured in the static configuration.
 	ValidateRequestBodySchema *bool `json:"validateRequestBodySchema,omitempty"`
+
+	// RefreshInterval defines the rate at which the OpenAPI specification is refreshed.
+	// +optional
+	RefreshInterval *Period `json:"refreshInterval,omitempty"`
 }
 
 type Override struct {
