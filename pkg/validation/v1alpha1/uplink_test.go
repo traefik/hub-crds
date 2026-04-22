@@ -65,16 +65,7 @@ spec:
       X-Custom: value
   passiveHealthCheck:
     failureWindow: 30s
-    maxFailedAttempts: 3
-  sticky:
-    cookie:
-      name: my-cookie
-      secure: true
-      httpOnly: true
-      sameSite: lax
-      maxAge: 3600
-      path: /
-      domain: example.com`),
+    maxFailedAttempts: 3`),
 		},
 		{
 			desc: "valid: with exposeName",
@@ -188,21 +179,6 @@ spec:
   passiveHealthCheck:
     failureWindow: 30s
     maxFailedAttempts: 3`),
-		},
-		{
-			desc: "valid: with sticky",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: Uplink
-metadata:
-  name: my-uplink
-  namespace: default
-spec:
-  sticky:
-    cookie:
-      name: my-cookie
-      secure: true
-      httpOnly: true`),
 		},
 	}
 
