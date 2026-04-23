@@ -71,7 +71,8 @@ spec:
         - path: /foo
           methods:
             - GET
-            - OPTION`),
+            - OPTION
+    refreshInterval: 3m`),
 		},
 		{
 			desc: "missing resource namespace",
@@ -522,19 +523,6 @@ metadata:
 spec:
   versions: []`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.versions", BadValue: int64(0), Detail: "spec.versions in body should have at least 1 items"}},
-		},
-		{
-			desc: "valid: openApiSpec with refreshInterval",
-			manifest: []byte(`
-apiVersion: hub.traefik.io/v1alpha1
-kind: API
-metadata:
-  name: my-api
-  namespace: my-ns
-spec:
-  openApiSpec:
-    path: /openapi.json
-    refreshInterval: 30s`),
 		},
 	}
 
