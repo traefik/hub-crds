@@ -71,7 +71,8 @@ spec:
         - path: /foo
           methods:
             - GET
-            - OPTION`),
+            - OPTION
+    refreshInterval: 3m`),
 		},
 		{
 			desc: "missing resource namespace",

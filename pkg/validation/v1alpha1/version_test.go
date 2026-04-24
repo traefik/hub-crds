@@ -600,6 +600,20 @@ spec:
   openApiSpec:
     path: /api`),
 		},
+		{
+			desc: "valid: openApiSpec with refreshInterval",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIVersion
+metadata:
+  name: my-api-v1
+  namespace: my-ns
+spec:
+  release: v1.0.0
+  openApiSpec:
+    path: /openapi.json
+    refreshInterval: 30s`),
+		},
 	}
 
 	for _, test := range tests {

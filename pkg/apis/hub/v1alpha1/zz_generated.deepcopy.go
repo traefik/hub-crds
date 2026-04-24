@@ -2666,6 +2666,11 @@ func (in *OpenAPISpec) DeepCopyInto(out *OpenAPISpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.RefreshInterval != nil {
+		in, out := &in.RefreshInterval, &out.RefreshInterval
+		*out = new(Period)
+		**out = **in
+	}
 	return
 }
 
