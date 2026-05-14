@@ -176,21 +176,21 @@ type AccessControlOAuthIntroClientConfig struct {
 
 // HTTPClientConfig configures HTTP clients.
 type HTTPClientConfig struct {
-	// TLS configures TLS communication with the Authorization Server.
+	// TLS configures TLS for the HTTP client.
 	TLS *HTTPClientConfigTLS `json:"tls,omitempty"`
 	// TimeoutSeconds configures the maximum amount of seconds to wait before giving up on requests.
 	// +kubebuilder:default:=5
 	TimeoutSeconds int `json:"timeoutSeconds,omitempty"`
-	// MaxRetries defines the number of retries for introspection requests.
+	// MaxRetries defines the maximum number of retry attempts for failed requests.
 	// +kubebuilder:default:=3
 	MaxRetries int `json:"maxRetries,omitempty"`
 }
 
 // HTTPClientConfigTLS configures TLS for HTTP clients.
 type HTTPClientConfigTLS struct {
-	// CA sets the CA bundle used to sign the Authorization Server certificate.
+	// CA sets the CA bundle used to verify the server certificate.
 	CA string `json:"ca,omitempty"`
-	// InsecureSkipVerify skips the Authorization Server certificate validation.
+	// InsecureSkipVerify skips the server certificate validation.
 	// For testing purposes only, do not use in production.
 	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
 }

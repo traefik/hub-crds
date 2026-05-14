@@ -159,6 +159,10 @@ type JWTAuthSpec struct {
 	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:MaxItems=100
 	TrustedIssuers []TrustedIssuer `json:"trustedIssuers,omitempty"`
+
+	// ClientConfig configures the HTTP client used to fetch the JWKS from the JWKS URL or the trusted issuers.
+	// +optional
+	ClientConfig *HTTPClientConfig `json:"clientConfig,omitempty"`
 }
 
 // APIAuthStatus is the status of an APIAuth.
