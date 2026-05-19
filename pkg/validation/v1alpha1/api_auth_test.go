@@ -230,6 +230,54 @@ spec:
       - jwksUrl: "https://fallback.example.com/jwks.json"`),
 		},
 		{
+			desc: "valid: JWT with clientConfig",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    jwksUrl: "https://example.com/.well-known/jwks.json"
+    clientConfig:
+      timeoutSeconds: 10
+      maxRetries: 5
+      tls:
+        ca: |
+          -----BEGIN CERTIFICATE-----
+          MIIBCzCBsqADAgECAhBaooOsws+BLdvtfqQ1ggx5MAoGCCqGSM49BAMCMBIxEDAO
+          BgNVBAoTB0V4YW1wbGUwHhcNMjQwMTAxMDAwMDAwWhcNMjUwMTAxMDAwMDAwWjAS
+          MRAwDgYDVQQKEwdFeGFtcGxlMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEKNho
+          zEli5D+VsLgKJcgT0rp+MnYGJ4PjN8qgXfQx1F5JhtVBVnH8qWmza2XwJvVZAgUg
+          WijH8vDvBJU8su1w16MdMBswDgYDVR0PAQH/BAQDAgWgMAkGA1UdEwQCMAAwCgYI
+          KoZIzj0EAwIDSAAwRQIgcu4/UZKPaUPCAB2jjqKbW8XqBp8fv1F8D5FO5hL1DqwC
+          IQDB3g0Lhx4QbM3Kw6bk0gvvVVLkb/TXe2Nvl4dH8gOCEw==
+          -----END CERTIFICATE-----
+        insecureSkipVerify: false`),
+		},
+		{
+			desc: "valid: JWT trustedIssuers with clientConfig",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    trustedIssuers:
+      - jwksUrl: "https://tenant-a.example.com/jwks.json"
+        issuer: "https://tenant-a.example.com/"
+    clientConfig:
+      timeoutSeconds: 15
+      maxRetries: 2`),
+		},
+		{
 			desc: "valid: JWT with trusted issuers fallback only (no issuer specified)",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1

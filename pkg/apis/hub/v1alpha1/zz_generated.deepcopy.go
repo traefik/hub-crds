@@ -2178,6 +2178,11 @@ func (in *JWTAuthSpec) DeepCopyInto(out *JWTAuthSpec) {
 		*out = make([]TrustedIssuer, len(*in))
 		copy(*out, *in)
 	}
+	if in.ClientConfig != nil {
+		in, out := &in.ClientConfig, &out.ClientConfig
+		*out = new(HTTPClientConfig)
+		(*in).DeepCopyInto(*out)
+	}
 	return
 }
 
@@ -2559,6 +2564,11 @@ func (in *OIDCConfig) DeepCopyInto(out *OIDCConfig) {
 		in, out := &in.SyncedAttributes, &out.SyncedAttributes
 		*out = make([]string, len(*in))
 		copy(*out, *in)
+	}
+	if in.ClientConfig != nil {
+		in, out := &in.ClientConfig, &out.ClientConfig
+		*out = new(HTTPClientConfig)
+		(*in).DeepCopyInto(*out)
 	}
 	return
 }

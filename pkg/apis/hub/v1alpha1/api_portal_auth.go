@@ -73,6 +73,10 @@ type OIDCConfig struct {
 	// +kubebuilder:validation:MaxItems=6
 	// +kubebuilder:validation:items:Enum=groups;userId;firstname;lastname;email;company
 	SyncedAttributes []string `json:"syncedAttributes,omitempty"`
+
+	// ClientConfig configures the HTTP client used to communicate with the OIDC provider.
+	// +optional
+	ClientConfig *HTTPClientConfig `json:"clientConfig,omitempty"`
 }
 
 // Claims configures JWT claim mappings for user attributes.
