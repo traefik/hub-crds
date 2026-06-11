@@ -139,6 +139,7 @@ type OpenAPISpec struct {
 
 	// RefreshInterval defines the rate at which the OpenAPI specification is refreshed.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="must be at least 1m",rule="self >= duration('1m')"
 	RefreshInterval *Period `json:"refreshInterval,omitempty"`
 }
 
