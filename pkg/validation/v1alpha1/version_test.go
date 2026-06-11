@@ -75,6 +75,7 @@ spec:
             methods:
               - GET
               - OPTION
+    refreshInterval: 3m
   release: v1.0.0`),
 		},
 		{
@@ -601,7 +602,7 @@ spec:
     path: /api`),
 		},
 		{
-			desc: "valid: openApiSpec with refreshInterval",
+			desc: "invalid: openApiSpec with refreshInterval less than 1m",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIVersion
@@ -613,6 +614,7 @@ spec:
   openApiSpec:
     path: /openapi.json
     refreshInterval: 30s`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.refreshInterval", BadValue: "string", Detail: "must be at least 1m"}},
 		},
 	}
 
