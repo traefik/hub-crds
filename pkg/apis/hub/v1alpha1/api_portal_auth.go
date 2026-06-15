@@ -103,6 +103,14 @@ type Claims struct {
 	// Company is the JWT claim for user company.
 	// +optional
 	Company string `json:"company,omitempty"`
+
+	// OrganizationID is the identifier of the organization the user belongs to.
+	// +optional
+	OrganizationID string `json:"organizationId,omitempty"`
+
+	// OrganizationName is the name of the organization the user belongs to.
+	// +optional
+	OrganizationName string `json:"organizationName,omitempty"`
 }
 
 // LDAPConnectionConfig holds LDAP connection configuration.
