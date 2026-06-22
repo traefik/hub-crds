@@ -45,6 +45,8 @@ type UplinkSpec struct {
 	// ExposeName is the name of the service to expose.
 	// By default it uses <namespace>-<name>.
 	// +optional
+	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:Pattern=`^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$`
 	ExposeName string `json:"exposeName,omitempty"`
 
 	// EntryPoints references uplinkEntryPoints. When omitted, uses default uplinkEntrypoints.
