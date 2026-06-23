@@ -2450,8 +2450,8 @@ func (in *ManagedSubscriptionSpec) DeepCopyInto(out *ManagedSubscriptionSpec) {
 		*out = make([]ManagedApplicationReference, len(*in))
 		copy(*out, *in)
 	}
-	if in.ManagedApplicationsSelector != nil {
-		in, out := &in.ManagedApplicationsSelector, &out.ManagedApplicationsSelector
+	if in.ManagedApplicationSelector != nil {
+		in, out := &in.ManagedApplicationSelector, &out.ManagedApplicationSelector
 		*out = new(v1.LabelSelector)
 		(*in).DeepCopyInto(*out)
 	}

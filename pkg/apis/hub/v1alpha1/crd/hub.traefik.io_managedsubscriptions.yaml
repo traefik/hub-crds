@@ -164,31 +164,12 @@ spec:
                 description: Claims specifies an expression that validate claims in
                   order to authorize the request.
                 type: string
-              managedApplications:
+              managedApplicationSelector:
                 description: |-
-                  ManagedApplications references the ManagedApplications that will gain access to the specified APIs.
-                  Multiple ManagedSubscriptions can select the same ManagedApplication.
-                items:
-                  description: ManagedApplicationReference references a ManagedApplication.
-                  properties:
-                    name:
-                      description: Name is the name of the ManagedApplication.
-                      maxLength: 253
-                      type: string
-                  required:
-                  - name
-                  type: object
-                maxItems: 100
-                type: array
-                x-kubernetes-validations:
-                - message: duplicated managed applications
-                  rule: self.all(x, self.exists_one(y, x.name == y.name))
-              managedApplicationsSelector:
-                description: |-
-                  ManagedApplicationsSelector selects the ManagedApplications that will gain access to the specified APIs.
+                  ManagedApplicationSelector selects the ManagedApplications that will gain access to the specified APIs.
                   Multiple ManagedSubscriptions can select the same ManagedApplication.
                   This field is optional and follows standard label selector semantics.
-                  An empty ManagedApplicationsSelector matches any ManagedApplication.
+                  An empty ManagedApplicationSelector matches any ManagedApplication.
                 properties:
                   matchExpressions:
                     description: matchExpressions is a list of label selector requirements.
@@ -233,6 +214,25 @@ spec:
                     type: object
                 type: object
                 x-kubernetes-map-type: atomic
+              managedApplications:
+                description: |-
+                  ManagedApplications references the ManagedApplications that will gain access to the specified APIs.
+                  Multiple ManagedSubscriptions can select the same ManagedApplication.
+                items:
+                  description: ManagedApplicationReference references a ManagedApplication.
+                  properties:
+                    name:
+                      description: Name is the name of the ManagedApplication.
+                      maxLength: 253
+                      type: string
+                  required:
+                  - name
+                  type: object
+                maxItems: 100
+                type: array
+                x-kubernetes-validations:
+                - message: duplicated managed applications
+                  rule: self.all(x, self.exists_one(y, x.name == y.name))
               operationFilter:
                 description: |-
                   OperationFilter specifies the allowed operations on APIs and APIVersions.

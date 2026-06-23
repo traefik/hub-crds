@@ -58,12 +58,12 @@ type ManagedSubscriptionSpec struct {
 	// +kubebuilder:validation:XValidation:message="duplicated managed applications",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	ManagedApplications []ManagedApplicationReference `json:"managedApplications,omitempty"`
 
-	// ManagedApplicationsSelector selects the ManagedApplications that will gain access to the specified APIs.
+	// ManagedApplicationSelector selects the ManagedApplications that will gain access to the specified APIs.
 	// Multiple ManagedSubscriptions can select the same ManagedApplication.
 	// This field is optional and follows standard label selector semantics.
-	// An empty ManagedApplicationsSelector matches any ManagedApplication.
+	// An empty ManagedApplicationSelector matches any ManagedApplication.
 	// +optional
-	ManagedApplicationsSelector *metav1.LabelSelector `json:"managedApplicationsSelector,omitempty"`
+	ManagedApplicationSelector *metav1.LabelSelector `json:"managedApplicationSelector,omitempty"`
 
 	// APIBundles defines a set of APIBundle that will be accessible.
 	// Multiple ManagedSubscriptions can select the same APIBundles.

@@ -72,7 +72,7 @@ spec:
   apiSelector:
     matchLabels:
       key: value
-  managedApplicationsSelector:
+  managedApplicationSelector:
     matchLabels:
       key: value
   operationFilter:
@@ -90,10 +90,10 @@ metadata:
 spec:
   apiPlan:
     name: my-plan
-  managedApplicationsSelector:
+  managedApplicationSelector:
     matchExpressions:
       - key: value`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.managedApplicationsSelector.matchExpressions[0].operator", BadValue: ""}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.managedApplicationSelector.matchExpressions[0].operator", BadValue: ""}},
 		},
 		{
 			desc: "invalid resource name",
