@@ -96,10 +96,61 @@ spec:
       email: "email"
       groups: "groups"
       company: "organization"
+      organizationId: "org_id"
+      organizationName: "org_name"
     syncedAttributes:
       - "userId"
       - "firstname"
       - "company"`),
+		},
+		{
+			desc: "valid: OIDC with organization claims",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+      organizationId: "org_id"
+      organizationName: "org_name"`),
+		},
+		{
+			desc: "valid: OIDC with only organizationId claim",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+      organizationId: "org_id"`),
+		},
+		{
+			desc: "valid: OIDC with only organizationName claim",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+      organizationName: "org_name"`),
 		},
 		{
 			desc: "valid: OIDC with clientConfig",
