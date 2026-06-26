@@ -104,11 +104,11 @@ type Claims struct {
 	// +optional
 	Company string `json:"company,omitempty"`
 
-	// OrganizationID is the identifier of the organization the user belongs to.
+	// OrganizationID is the JWT claim for the ID of the organization the user belongs to.
 	// +optional
 	OrganizationID string `json:"organizationId,omitempty"`
 
-	// OrganizationName is the name of the organization the user belongs to.
+	// OrganizationName is the JWT claim for the name of the organization the user belongs to.
 	// +optional
 	OrganizationName string `json:"organizationName,omitempty"`
 }
