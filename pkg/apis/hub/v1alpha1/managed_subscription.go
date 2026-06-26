@@ -58,6 +58,13 @@ type ManagedSubscriptionSpec struct {
 	// +kubebuilder:validation:XValidation:message="duplicated managed applications",rule="self.all(x, self.exists_one(y, x.name == y.name))"
 	ManagedApplications []ManagedApplicationReference `json:"managedApplications,omitempty"`
 
+	// ManagedApplicationSelector selects the ManagedApplications that will gain access to the specified APIs.
+	// Multiple ManagedSubscriptions can select the same ManagedApplication.
+	// This field is optional and follows standard label selector semantics.
+	// An empty ManagedApplicationSelector matches any ManagedApplication.
+	// +optional
+	ManagedApplicationSelector *metav1.LabelSelector `json:"managedApplicationSelector,omitempty"`
+
 	// APIBundles defines a set of APIBundle that will be accessible.
 	// Multiple ManagedSubscriptions can select the same APIBundles.
 	// +optional
@@ -120,6 +127,14 @@ type ManagedSubscriptionStatus struct {
 	// UnresolvedAPIs is the list of APIs that could not be resolved.
 	// +optional
 	UnresolvedAPIs []ResolvedAPIReference `json:"unresolvedApis,omitempty"`
+
+	// ResolvedManagedApplications is the list of ManagedApplications that were successfully resolved.
+	// +optional
+	ResolvedManagedApplications []ResolvedManagedApplicationReference `json:"resolvedManagedApplications,omitempty"`
+
+	// UnresolvedManagedApplications is the list of ManagedApplications that could not be resolved.
+	// +optional
+	UnresolvedManagedApplications []ResolvedManagedApplicationReference `json:"unresolvedManagedApplications,omitempty"`
 }
 
 // ApplicationReference references an Application.
@@ -134,6 +149,12 @@ type ApplicationReference struct {
 type ManagedApplicationReference struct {
 	// Name is the name of the ManagedApplication.
 	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+}
+
+// ResolvedManagedApplicationReference references a resolved ManagedApplication.
+type ResolvedManagedApplicationReference struct {
+	// Name of the ManagedApplication.
 	Name string `json:"name"`
 }
 

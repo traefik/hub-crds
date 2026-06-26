@@ -72,9 +72,28 @@ spec:
   apiSelector:
     matchLabels:
       key: value
+  managedApplicationSelector:
+    matchLabels:
+      key: value
   operationFilter:
     include:
       - my-filter`),
+		},
+		{
+			desc: "invalid managed applications selector",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedSubscription
+metadata:
+  name: my-managed-subscription
+  namespace: default
+spec:
+  apiPlan:
+    name: my-plan
+  managedApplicationSelector:
+    matchExpressions:
+      - key: value`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.managedApplicationSelector.matchExpressions[0].operator", BadValue: ""}},
 		},
 		{
 			desc: "invalid resource name",
