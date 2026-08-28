@@ -127,7 +127,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "duplicated API: implicit default",
@@ -144,7 +144,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "invalid API selector",
@@ -177,7 +177,7 @@ spec:
   everyone: true
   groups:
     - my-group`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "groups and everyone are mutually exclusive"}},
 		},
 		{
 			desc: "everyone is false and no groups",
@@ -189,7 +189,7 @@ metadata:
   namespace: default
 spec:
   everyone: false`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups is required when everyone is false"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "groups is required when everyone is false"}},
 		},
 		{
 			desc: "missing apiPlan name",

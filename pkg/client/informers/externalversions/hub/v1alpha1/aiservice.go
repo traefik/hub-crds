@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // AIServiceInformer provides access to a shared informer and lister for
-// AIServices.
+// AIServices. Prefer using the type-safe variant (see [TypedAIServiceInformer]).
 type AIServiceInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.AIServiceLister
+	Lister() hubv1alpha1.AIServiceLister
 }
+
+// TypedAIServiceInformer provides access to a shared informer and lister for
+// AIServices, including the type-safe TypedInformer variant.
+// It is a superset of AIServiceInformer.
+type TypedAIServiceInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() AIServiceIndexInformer
+	Lister() hubv1alpha1.AIServiceLister
+}
+
+// AIServiceIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type AIServiceIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.AIService]
+
+// AIServiceHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for AIService.
+type AIServiceHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.AIService]
+
+// AIServiceDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for AIService.
+type AIServiceDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.AIService]
+
+// AIServiceFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for AIService.
+type AIServiceFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.AIService]
+
+// AIServiceIndexers is a specialization of [cache.TypedIndexers] for AIService.
+type AIServiceIndexers = cache.TypedIndexers[*apishubv1alpha1.AIService]
+
+// DeletedAIService is a specialization of [cache.DeletedObject] for AIService.
+type DeletedAIService = cache.DeletedObject[*apishubv1alpha1.AIService]
 
 type aIServiceInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aIServiceInformer struct {
 // NewAIServiceInformer constructs a new informer for AIService type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAIServiceInformer]).
 func NewAIServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAIServiceInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAIServiceInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAIServiceInformer constructs a new informer for AIService type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAIServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers AIServiceIndexers) AIServiceIndexInformer {
+	return NewTypedAIServiceInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAIServiceInformer constructs a new informer for AIService type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAIServiceInformer]).
 func NewFilteredAIServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAIServiceInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAIServiceInformer constructs a new informer for AIService type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAIServiceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers AIServiceIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) AIServiceIndexInformer {
+	return NewTypedAIServiceInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAIServiceInformerWithOptions constructs a new informer for AIService type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAIServiceInformerWithOptions]).
+func NewAIServiceInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAIServiceInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAIServiceInformerWithOptions constructs a new informer for AIService type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAIServiceInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) AIServiceIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "aiservices"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AIService](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().AIServices(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().AIServices(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().AIServices(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().AIServices(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().AIServices(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().AIServices(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.AIService{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.AIService{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aIServiceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAIServiceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAIServiceInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aIServiceInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.AIService{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aIServiceInformer) Lister() v1alpha1.AIServiceLister {
-	return v1alpha1.NewAIServiceLister(f.Informer().GetIndexer())
+func (f *aIServiceInformer) TypedInformer() AIServiceIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AIService](f.factory.InformerFor(&apishubv1alpha1.AIService{}, f.defaultInformer))
+}
+
+func (f *aIServiceInformer) Lister() hubv1alpha1.AIServiceLister {
+	return hubv1alpha1.NewAIServiceLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAIServiceInformer converts an untyped informer into a TypedAIServiceInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *AIService. If that is not the case, calling type-safe methods of the returned
+// TypedAIServiceInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAIServiceInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAIServiceInformer(informer AIServiceInformer) TypedAIServiceInformer {
+	if informer, ok := informer.(TypedAIServiceInformer); ok {
+		return informer
+	}
+	return &aIServiceTypedInformerAdapter{informer}
+}
+
+type aIServiceTypedInformerAdapter struct {
+	AIServiceInformer
+}
+
+func (a *aIServiceTypedInformerAdapter) TypedInformer() AIServiceIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AIService](a.Informer())
+}
+
+// ToAIServiceIndexInformer converts an untyped informer into a AIServiceIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *AIService. If that is not the case, calling type-safe methods of the returned
+// AIServiceIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a AIServiceIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAIServiceIndexInformer(informer cache.SharedIndexInformer) AIServiceIndexInformer {
+	if informer, ok := informer.(AIServiceIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AIService](informer)
 }

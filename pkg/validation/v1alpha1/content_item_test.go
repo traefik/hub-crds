@@ -226,7 +226,7 @@ spec:
   content: "# Hello World"
   link:
     href: https://example.com`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of content or link must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one of content or link must be specified"}},
 		},
 		{
 			desc: "neither content nor link specified",
@@ -242,7 +242,7 @@ spec:
   parentRef:
     kind: API
     name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of content or link must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one of content or link must be specified"}},
 		},
 		{
 			desc: "invalid link href",
@@ -260,7 +260,7 @@ spec:
     name: my-api
   link:
     href: not-a-valid-url`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.link.href", BadValue: "string", Detail: "must be a valid URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.link.href", BadValue: "not-a-valid-url", Detail: "must be a valid URL"}},
 		},
 		{
 			desc: "invalid order",

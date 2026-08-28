@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIAuthLister helps list APIAuths.
@@ -33,7 +33,7 @@ import (
 type APIAuthLister interface {
 	// List lists all APIAuths in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIAuth, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIAuth, err error)
 	// APIAuths returns an object that can list and get APIAuths.
 	APIAuths(namespace string) APIAuthNamespaceLister
 	APIAuthListerExpansion
@@ -41,25 +41,17 @@ type APIAuthLister interface {
 
 // aPIAuthLister implements the APIAuthLister interface.
 type aPIAuthLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.APIAuth]
 }
 
 // NewAPIAuthLister returns a new APIAuthLister.
 func NewAPIAuthLister(indexer cache.Indexer) APIAuthLister {
-	return &aPIAuthLister{indexer: indexer}
-}
-
-// List lists all APIAuths in the indexer.
-func (s *aPIAuthLister) List(selector labels.Selector) (ret []*v1alpha1.APIAuth, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIAuth))
-	})
-	return ret, err
+	return &aPIAuthLister{listers.New[*hubv1alpha1.APIAuth](indexer, hubv1alpha1.Resource("apiauth"))}
 }
 
 // APIAuths returns an object that can list and get APIAuths.
 func (s *aPIAuthLister) APIAuths(namespace string) APIAuthNamespaceLister {
-	return aPIAuthNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return aPIAuthNamespaceLister{listers.NewNamespaced[*hubv1alpha1.APIAuth](s.ResourceIndexer, namespace)}
 }
 
 // APIAuthNamespaceLister helps list and get APIAuths.
@@ -67,36 +59,15 @@ func (s *aPIAuthLister) APIAuths(namespace string) APIAuthNamespaceLister {
 type APIAuthNamespaceLister interface {
 	// List lists all APIAuths in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIAuth, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIAuth, err error)
 	// Get retrieves the APIAuth from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APIAuth, error)
+	Get(name string) (*hubv1alpha1.APIAuth, error)
 	APIAuthNamespaceListerExpansion
 }
 
 // aPIAuthNamespaceLister implements the APIAuthNamespaceLister
 // interface.
 type aPIAuthNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all APIAuths in the indexer for a given namespace.
-func (s aPIAuthNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APIAuth, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIAuth))
-	})
-	return ret, err
-}
-
-// Get retrieves the APIAuth from the indexer for a given namespace and name.
-func (s aPIAuthNamespaceLister) Get(name string) (*v1alpha1.APIAuth, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("apiauth"), name)
-	}
-	return obj.(*v1alpha1.APIAuth), nil
+	listers.ResourceIndexer[*hubv1alpha1.APIAuth]
 }

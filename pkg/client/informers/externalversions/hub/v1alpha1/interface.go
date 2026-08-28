@@ -28,35 +28,35 @@ import (
 // Interface provides access to all the informers in this group version.
 type Interface interface {
 	// AIServices returns a AIServiceInformer.
-	AIServices() AIServiceInformer
+	AIServices() TypedAIServiceInformer
 	// APIs returns a APIInformer.
-	APIs() APIInformer
+	APIs() TypedAPIInformer
 	// APIAuths returns a APIAuthInformer.
-	APIAuths() APIAuthInformer
+	APIAuths() TypedAPIAuthInformer
 	// APIBundles returns a APIBundleInformer.
-	APIBundles() APIBundleInformer
+	APIBundles() TypedAPIBundleInformer
 	// APICatalogItems returns a APICatalogItemInformer.
-	APICatalogItems() APICatalogItemInformer
+	APICatalogItems() TypedAPICatalogItemInformer
 	// APIPlans returns a APIPlanInformer.
-	APIPlans() APIPlanInformer
+	APIPlans() TypedAPIPlanInformer
 	// APIPortals returns a APIPortalInformer.
-	APIPortals() APIPortalInformer
+	APIPortals() TypedAPIPortalInformer
 	// APIPortalAuths returns a APIPortalAuthInformer.
-	APIPortalAuths() APIPortalAuthInformer
+	APIPortalAuths() TypedAPIPortalAuthInformer
 	// APIRateLimits returns a APIRateLimitInformer.
-	APIRateLimits() APIRateLimitInformer
+	APIRateLimits() TypedAPIRateLimitInformer
 	// APIVersions returns a APIVersionInformer.
-	APIVersions() APIVersionInformer
+	APIVersions() TypedAPIVersionInformer
 	// AccessControlPolicies returns a AccessControlPolicyInformer.
-	AccessControlPolicies() AccessControlPolicyInformer
+	AccessControlPolicies() TypedAccessControlPolicyInformer
 	// ContentItems returns a ContentItemInformer.
-	ContentItems() ContentItemInformer
+	ContentItems() TypedContentItemInformer
 	// ManagedApplications returns a ManagedApplicationInformer.
-	ManagedApplications() ManagedApplicationInformer
+	ManagedApplications() TypedManagedApplicationInformer
 	// ManagedSubscriptions returns a ManagedSubscriptionInformer.
-	ManagedSubscriptions() ManagedSubscriptionInformer
+	ManagedSubscriptions() TypedManagedSubscriptionInformer
 	// Uplinks returns a UplinkInformer.
-	Uplinks() UplinkInformer
+	Uplinks() TypedUplinkInformer
 }
 
 type version struct {
@@ -70,77 +70,77 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
 }
 
-// AIServices returns a AIServiceInformer.
-func (v *version) AIServices() AIServiceInformer {
+// AIServices returns a TypedAIServiceInformer.
+func (v *version) AIServices() TypedAIServiceInformer {
 	return &aIServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIs returns a APIInformer.
-func (v *version) APIs() APIInformer {
+// APIs returns a TypedAPIInformer.
+func (v *version) APIs() TypedAPIInformer {
 	return &aPIInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIAuths returns a APIAuthInformer.
-func (v *version) APIAuths() APIAuthInformer {
+// APIAuths returns a TypedAPIAuthInformer.
+func (v *version) APIAuths() TypedAPIAuthInformer {
 	return &aPIAuthInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIBundles returns a APIBundleInformer.
-func (v *version) APIBundles() APIBundleInformer {
+// APIBundles returns a TypedAPIBundleInformer.
+func (v *version) APIBundles() TypedAPIBundleInformer {
 	return &aPIBundleInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APICatalogItems returns a APICatalogItemInformer.
-func (v *version) APICatalogItems() APICatalogItemInformer {
+// APICatalogItems returns a TypedAPICatalogItemInformer.
+func (v *version) APICatalogItems() TypedAPICatalogItemInformer {
 	return &aPICatalogItemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIPlans returns a APIPlanInformer.
-func (v *version) APIPlans() APIPlanInformer {
+// APIPlans returns a TypedAPIPlanInformer.
+func (v *version) APIPlans() TypedAPIPlanInformer {
 	return &aPIPlanInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIPortals returns a APIPortalInformer.
-func (v *version) APIPortals() APIPortalInformer {
+// APIPortals returns a TypedAPIPortalInformer.
+func (v *version) APIPortals() TypedAPIPortalInformer {
 	return &aPIPortalInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIPortalAuths returns a APIPortalAuthInformer.
-func (v *version) APIPortalAuths() APIPortalAuthInformer {
+// APIPortalAuths returns a TypedAPIPortalAuthInformer.
+func (v *version) APIPortalAuths() TypedAPIPortalAuthInformer {
 	return &aPIPortalAuthInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIRateLimits returns a APIRateLimitInformer.
-func (v *version) APIRateLimits() APIRateLimitInformer {
+// APIRateLimits returns a TypedAPIRateLimitInformer.
+func (v *version) APIRateLimits() TypedAPIRateLimitInformer {
 	return &aPIRateLimitInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// APIVersions returns a APIVersionInformer.
-func (v *version) APIVersions() APIVersionInformer {
+// APIVersions returns a TypedAPIVersionInformer.
+func (v *version) APIVersions() TypedAPIVersionInformer {
 	return &aPIVersionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// AccessControlPolicies returns a AccessControlPolicyInformer.
-func (v *version) AccessControlPolicies() AccessControlPolicyInformer {
+// AccessControlPolicies returns a TypedAccessControlPolicyInformer.
+func (v *version) AccessControlPolicies() TypedAccessControlPolicyInformer {
 	return &accessControlPolicyInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
-// ContentItems returns a ContentItemInformer.
-func (v *version) ContentItems() ContentItemInformer {
+// ContentItems returns a TypedContentItemInformer.
+func (v *version) ContentItems() TypedContentItemInformer {
 	return &contentItemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ManagedApplications returns a ManagedApplicationInformer.
-func (v *version) ManagedApplications() ManagedApplicationInformer {
+// ManagedApplications returns a TypedManagedApplicationInformer.
+func (v *version) ManagedApplications() TypedManagedApplicationInformer {
 	return &managedApplicationInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// ManagedSubscriptions returns a ManagedSubscriptionInformer.
-func (v *version) ManagedSubscriptions() ManagedSubscriptionInformer {
+// ManagedSubscriptions returns a TypedManagedSubscriptionInformer.
+func (v *version) ManagedSubscriptions() TypedManagedSubscriptionInformer {
 	return &managedSubscriptionInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// Uplinks returns a UplinkInformer.
-func (v *version) Uplinks() UplinkInformer {
+// Uplinks returns a TypedUplinkInformer.
+func (v *version) Uplinks() TypedUplinkInformer {
 	return &uplinkInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

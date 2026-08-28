@@ -22,123 +22,34 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeAPICatalogItems implements APICatalogItemInterface
-type FakeAPICatalogItems struct {
+// fakeAPICatalogItems implements APICatalogItemInterface
+type fakeAPICatalogItems struct {
+	*gentype.FakeClientWithList[*v1alpha1.APICatalogItem, *v1alpha1.APICatalogItemList]
 	Fake *FakeHubV1alpha1
-	ns   string
 }
 
-var apicatalogitemsResource = v1alpha1.SchemeGroupVersion.WithResource("apicatalogitems")
-
-var apicatalogitemsKind = v1alpha1.SchemeGroupVersion.WithKind("APICatalogItem")
-
-// Get takes name of the aPICatalogItem, and returns the corresponding aPICatalogItem object, and an error if there is any.
-func (c *FakeAPICatalogItems) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APICatalogItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(apicatalogitemsResource, c.ns, name), &v1alpha1.APICatalogItem{})
-
-	if obj == nil {
-		return nil, err
+func newFakeAPICatalogItems(fake *FakeHubV1alpha1, namespace string) hubv1alpha1.APICatalogItemInterface {
+	return &fakeAPICatalogItems{
+		gentype.NewFakeClientWithList[*v1alpha1.APICatalogItem, *v1alpha1.APICatalogItemList](
+			fake.Fake,
+			namespace,
+			v1alpha1.SchemeGroupVersion.WithResource("apicatalogitems"),
+			v1alpha1.SchemeGroupVersion.WithKind("APICatalogItem"),
+			func() *v1alpha1.APICatalogItem { return &v1alpha1.APICatalogItem{} },
+			func() *v1alpha1.APICatalogItemList { return &v1alpha1.APICatalogItemList{} },
+			func(dst, src *v1alpha1.APICatalogItemList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.APICatalogItemList) []*v1alpha1.APICatalogItem {
+				return gentype.ToPointerSlice(list.Items)
+			},
+			func(list *v1alpha1.APICatalogItemList, items []*v1alpha1.APICatalogItem) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.APICatalogItem), err
-}
-
-// List takes label and field selectors, and returns the list of APICatalogItems that match those selectors.
-func (c *FakeAPICatalogItems) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.APICatalogItemList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewListAction(apicatalogitemsResource, apicatalogitemsKind, c.ns, opts), &v1alpha1.APICatalogItemList{})
-
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.APICatalogItemList{ListMeta: obj.(*v1alpha1.APICatalogItemList).ListMeta}
-	for _, item := range obj.(*v1alpha1.APICatalogItemList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested aPICatalogItems.
-func (c *FakeAPICatalogItems) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(apicatalogitemsResource, c.ns, opts))
-
-}
-
-// Create takes the representation of a aPICatalogItem and creates it.  Returns the server's representation of the aPICatalogItem, and an error, if there is any.
-func (c *FakeAPICatalogItems) Create(ctx context.Context, aPICatalogItem *v1alpha1.APICatalogItem, opts v1.CreateOptions) (result *v1alpha1.APICatalogItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(apicatalogitemsResource, c.ns, aPICatalogItem), &v1alpha1.APICatalogItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APICatalogItem), err
-}
-
-// Update takes the representation of a aPICatalogItem and updates it. Returns the server's representation of the aPICatalogItem, and an error, if there is any.
-func (c *FakeAPICatalogItems) Update(ctx context.Context, aPICatalogItem *v1alpha1.APICatalogItem, opts v1.UpdateOptions) (result *v1alpha1.APICatalogItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(apicatalogitemsResource, c.ns, aPICatalogItem), &v1alpha1.APICatalogItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APICatalogItem), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeAPICatalogItems) UpdateStatus(ctx context.Context, aPICatalogItem *v1alpha1.APICatalogItem, opts v1.UpdateOptions) (*v1alpha1.APICatalogItem, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(apicatalogitemsResource, "status", c.ns, aPICatalogItem), &v1alpha1.APICatalogItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APICatalogItem), err
-}
-
-// Delete takes name of the aPICatalogItem and deletes it. Returns an error if one occurs.
-func (c *FakeAPICatalogItems) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(apicatalogitemsResource, c.ns, name, opts), &v1alpha1.APICatalogItem{})
-
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeAPICatalogItems) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(apicatalogitemsResource, c.ns, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.APICatalogItemList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched aPICatalogItem.
-func (c *FakeAPICatalogItems) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APICatalogItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(apicatalogitemsResource, c.ns, name, pt, data, subresources...), &v1alpha1.APICatalogItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APICatalogItem), err
 }

@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // ManagedApplicationInformer provides access to a shared informer and lister for
-// ManagedApplications.
+// ManagedApplications. Prefer using the type-safe variant (see [TypedManagedApplicationInformer]).
 type ManagedApplicationInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ManagedApplicationLister
+	Lister() hubv1alpha1.ManagedApplicationLister
 }
+
+// TypedManagedApplicationInformer provides access to a shared informer and lister for
+// ManagedApplications, including the type-safe TypedInformer variant.
+// It is a superset of ManagedApplicationInformer.
+type TypedManagedApplicationInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() ManagedApplicationIndexInformer
+	Lister() hubv1alpha1.ManagedApplicationLister
+}
+
+// ManagedApplicationIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type ManagedApplicationIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.ManagedApplication]
+
+// ManagedApplicationHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for ManagedApplication.
+type ManagedApplicationHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.ManagedApplication]
+
+// ManagedApplicationDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for ManagedApplication.
+type ManagedApplicationDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.ManagedApplication]
+
+// ManagedApplicationFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for ManagedApplication.
+type ManagedApplicationFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.ManagedApplication]
+
+// ManagedApplicationIndexers is a specialization of [cache.TypedIndexers] for ManagedApplication.
+type ManagedApplicationIndexers = cache.TypedIndexers[*apishubv1alpha1.ManagedApplication]
+
+// DeletedManagedApplication is a specialization of [cache.DeletedObject] for ManagedApplication.
+type DeletedManagedApplication = cache.DeletedObject[*apishubv1alpha1.ManagedApplication]
 
 type managedApplicationInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type managedApplicationInformer struct {
 // NewManagedApplicationInformer constructs a new informer for ManagedApplication type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedManagedApplicationInformer]).
 func NewManagedApplicationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredManagedApplicationInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewManagedApplicationInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedManagedApplicationInformer constructs a new informer for ManagedApplication type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedManagedApplicationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers ManagedApplicationIndexers) ManagedApplicationIndexInformer {
+	return NewTypedManagedApplicationInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredManagedApplicationInformer constructs a new informer for ManagedApplication type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredManagedApplicationInformer]).
 func NewFilteredManagedApplicationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedManagedApplicationInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredManagedApplicationInformer constructs a new informer for ManagedApplication type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredManagedApplicationInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers ManagedApplicationIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) ManagedApplicationIndexInformer {
+	return NewTypedManagedApplicationInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewManagedApplicationInformerWithOptions constructs a new informer for ManagedApplication type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedManagedApplicationInformerWithOptions]).
+func NewManagedApplicationInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedManagedApplicationInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedManagedApplicationInformerWithOptions constructs a new informer for ManagedApplication type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedManagedApplicationInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) ManagedApplicationIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "managedapplications"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ManagedApplication](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().ManagedApplications(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().ManagedApplications(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().ManagedApplications(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().ManagedApplications(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().ManagedApplications(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().ManagedApplications(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.ManagedApplication{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.ManagedApplication{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *managedApplicationInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredManagedApplicationInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedManagedApplicationInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *managedApplicationInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.ManagedApplication{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *managedApplicationInformer) Lister() v1alpha1.ManagedApplicationLister {
-	return v1alpha1.NewManagedApplicationLister(f.Informer().GetIndexer())
+func (f *managedApplicationInformer) TypedInformer() ManagedApplicationIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ManagedApplication](f.factory.InformerFor(&apishubv1alpha1.ManagedApplication{}, f.defaultInformer))
+}
+
+func (f *managedApplicationInformer) Lister() hubv1alpha1.ManagedApplicationLister {
+	return hubv1alpha1.NewManagedApplicationLister(f.Informer().GetIndexer())
+}
+
+// ToTypedManagedApplicationInformer converts an untyped informer into a TypedManagedApplicationInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *ManagedApplication. If that is not the case, calling type-safe methods of the returned
+// TypedManagedApplicationInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedManagedApplicationInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedManagedApplicationInformer(informer ManagedApplicationInformer) TypedManagedApplicationInformer {
+	if informer, ok := informer.(TypedManagedApplicationInformer); ok {
+		return informer
+	}
+	return &managedApplicationTypedInformerAdapter{informer}
+}
+
+type managedApplicationTypedInformerAdapter struct {
+	ManagedApplicationInformer
+}
+
+func (a *managedApplicationTypedInformerAdapter) TypedInformer() ManagedApplicationIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ManagedApplication](a.Informer())
+}
+
+// ToManagedApplicationIndexInformer converts an untyped informer into a ManagedApplicationIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *ManagedApplication. If that is not the case, calling type-safe methods of the returned
+// ManagedApplicationIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a ManagedApplicationIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToManagedApplicationIndexInformer(informer cache.SharedIndexInformer) ManagedApplicationIndexInformer {
+	if informer, ok := informer.(ManagedApplicationIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ManagedApplication](informer)
 }

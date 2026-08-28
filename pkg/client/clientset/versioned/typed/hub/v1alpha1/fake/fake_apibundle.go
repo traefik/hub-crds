@@ -22,123 +22,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeAPIBundles implements APIBundleInterface
-type FakeAPIBundles struct {
+// fakeAPIBundles implements APIBundleInterface
+type fakeAPIBundles struct {
+	*gentype.FakeClientWithList[*v1alpha1.APIBundle, *v1alpha1.APIBundleList]
 	Fake *FakeHubV1alpha1
-	ns   string
 }
 
-var apibundlesResource = v1alpha1.SchemeGroupVersion.WithResource("apibundles")
-
-var apibundlesKind = v1alpha1.SchemeGroupVersion.WithKind("APIBundle")
-
-// Get takes name of the aPIBundle, and returns the corresponding aPIBundle object, and an error if there is any.
-func (c *FakeAPIBundles) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIBundle, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(apibundlesResource, c.ns, name), &v1alpha1.APIBundle{})
-
-	if obj == nil {
-		return nil, err
+func newFakeAPIBundles(fake *FakeHubV1alpha1, namespace string) hubv1alpha1.APIBundleInterface {
+	return &fakeAPIBundles{
+		gentype.NewFakeClientWithList[*v1alpha1.APIBundle, *v1alpha1.APIBundleList](
+			fake.Fake,
+			namespace,
+			v1alpha1.SchemeGroupVersion.WithResource("apibundles"),
+			v1alpha1.SchemeGroupVersion.WithKind("APIBundle"),
+			func() *v1alpha1.APIBundle { return &v1alpha1.APIBundle{} },
+			func() *v1alpha1.APIBundleList { return &v1alpha1.APIBundleList{} },
+			func(dst, src *v1alpha1.APIBundleList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.APIBundleList) []*v1alpha1.APIBundle { return gentype.ToPointerSlice(list.Items) },
+			func(list *v1alpha1.APIBundleList, items []*v1alpha1.APIBundle) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.APIBundle), err
-}
-
-// List takes label and field selectors, and returns the list of APIBundles that match those selectors.
-func (c *FakeAPIBundles) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.APIBundleList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewListAction(apibundlesResource, apibundlesKind, c.ns, opts), &v1alpha1.APIBundleList{})
-
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.APIBundleList{ListMeta: obj.(*v1alpha1.APIBundleList).ListMeta}
-	for _, item := range obj.(*v1alpha1.APIBundleList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested aPIBundles.
-func (c *FakeAPIBundles) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(apibundlesResource, c.ns, opts))
-
-}
-
-// Create takes the representation of a aPIBundle and creates it.  Returns the server's representation of the aPIBundle, and an error, if there is any.
-func (c *FakeAPIBundles) Create(ctx context.Context, aPIBundle *v1alpha1.APIBundle, opts v1.CreateOptions) (result *v1alpha1.APIBundle, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(apibundlesResource, c.ns, aPIBundle), &v1alpha1.APIBundle{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIBundle), err
-}
-
-// Update takes the representation of a aPIBundle and updates it. Returns the server's representation of the aPIBundle, and an error, if there is any.
-func (c *FakeAPIBundles) Update(ctx context.Context, aPIBundle *v1alpha1.APIBundle, opts v1.UpdateOptions) (result *v1alpha1.APIBundle, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(apibundlesResource, c.ns, aPIBundle), &v1alpha1.APIBundle{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIBundle), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeAPIBundles) UpdateStatus(ctx context.Context, aPIBundle *v1alpha1.APIBundle, opts v1.UpdateOptions) (*v1alpha1.APIBundle, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(apibundlesResource, "status", c.ns, aPIBundle), &v1alpha1.APIBundle{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIBundle), err
-}
-
-// Delete takes name of the aPIBundle and deletes it. Returns an error if one occurs.
-func (c *FakeAPIBundles) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(apibundlesResource, c.ns, name, opts), &v1alpha1.APIBundle{})
-
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeAPIBundles) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(apibundlesResource, c.ns, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.APIBundleList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched aPIBundle.
-func (c *FakeAPIBundles) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIBundle, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(apibundlesResource, c.ns, name, pt, data, subresources...), &v1alpha1.APIBundle{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIBundle), err
 }

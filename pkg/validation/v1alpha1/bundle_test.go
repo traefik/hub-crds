@@ -121,7 +121,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "duplicated API: implicit default",
@@ -135,7 +135,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "invalid API selector",

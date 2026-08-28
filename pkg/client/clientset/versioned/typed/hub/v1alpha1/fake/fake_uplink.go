@@ -22,123 +22,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeUplinks implements UplinkInterface
-type FakeUplinks struct {
+// fakeUplinks implements UplinkInterface
+type fakeUplinks struct {
+	*gentype.FakeClientWithList[*v1alpha1.Uplink, *v1alpha1.UplinkList]
 	Fake *FakeHubV1alpha1
-	ns   string
 }
 
-var uplinksResource = v1alpha1.SchemeGroupVersion.WithResource("uplinks")
-
-var uplinksKind = v1alpha1.SchemeGroupVersion.WithKind("Uplink")
-
-// Get takes name of the uplink, and returns the corresponding uplink object, and an error if there is any.
-func (c *FakeUplinks) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Uplink, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(uplinksResource, c.ns, name), &v1alpha1.Uplink{})
-
-	if obj == nil {
-		return nil, err
+func newFakeUplinks(fake *FakeHubV1alpha1, namespace string) hubv1alpha1.UplinkInterface {
+	return &fakeUplinks{
+		gentype.NewFakeClientWithList[*v1alpha1.Uplink, *v1alpha1.UplinkList](
+			fake.Fake,
+			namespace,
+			v1alpha1.SchemeGroupVersion.WithResource("uplinks"),
+			v1alpha1.SchemeGroupVersion.WithKind("Uplink"),
+			func() *v1alpha1.Uplink { return &v1alpha1.Uplink{} },
+			func() *v1alpha1.UplinkList { return &v1alpha1.UplinkList{} },
+			func(dst, src *v1alpha1.UplinkList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.UplinkList) []*v1alpha1.Uplink { return gentype.ToPointerSlice(list.Items) },
+			func(list *v1alpha1.UplinkList, items []*v1alpha1.Uplink) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.Uplink), err
-}
-
-// List takes label and field selectors, and returns the list of Uplinks that match those selectors.
-func (c *FakeUplinks) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.UplinkList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewListAction(uplinksResource, uplinksKind, c.ns, opts), &v1alpha1.UplinkList{})
-
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.UplinkList{ListMeta: obj.(*v1alpha1.UplinkList).ListMeta}
-	for _, item := range obj.(*v1alpha1.UplinkList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested uplinks.
-func (c *FakeUplinks) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(uplinksResource, c.ns, opts))
-
-}
-
-// Create takes the representation of a uplink and creates it.  Returns the server's representation of the uplink, and an error, if there is any.
-func (c *FakeUplinks) Create(ctx context.Context, uplink *v1alpha1.Uplink, opts v1.CreateOptions) (result *v1alpha1.Uplink, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(uplinksResource, c.ns, uplink), &v1alpha1.Uplink{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.Uplink), err
-}
-
-// Update takes the representation of a uplink and updates it. Returns the server's representation of the uplink, and an error, if there is any.
-func (c *FakeUplinks) Update(ctx context.Context, uplink *v1alpha1.Uplink, opts v1.UpdateOptions) (result *v1alpha1.Uplink, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(uplinksResource, c.ns, uplink), &v1alpha1.Uplink{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.Uplink), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeUplinks) UpdateStatus(ctx context.Context, uplink *v1alpha1.Uplink, opts v1.UpdateOptions) (*v1alpha1.Uplink, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(uplinksResource, "status", c.ns, uplink), &v1alpha1.Uplink{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.Uplink), err
-}
-
-// Delete takes name of the uplink and deletes it. Returns an error if one occurs.
-func (c *FakeUplinks) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(uplinksResource, c.ns, name, opts), &v1alpha1.Uplink{})
-
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeUplinks) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(uplinksResource, c.ns, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.UplinkList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched uplink.
-func (c *FakeUplinks) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Uplink, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(uplinksResource, c.ns, name, pt, data, subresources...), &v1alpha1.Uplink{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.Uplink), err
 }

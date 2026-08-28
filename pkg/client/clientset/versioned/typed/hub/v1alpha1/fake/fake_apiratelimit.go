@@ -22,123 +22,34 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeAPIRateLimits implements APIRateLimitInterface
-type FakeAPIRateLimits struct {
+// fakeAPIRateLimits implements APIRateLimitInterface
+type fakeAPIRateLimits struct {
+	*gentype.FakeClientWithList[*v1alpha1.APIRateLimit, *v1alpha1.APIRateLimitList]
 	Fake *FakeHubV1alpha1
-	ns   string
 }
 
-var apiratelimitsResource = v1alpha1.SchemeGroupVersion.WithResource("apiratelimits")
-
-var apiratelimitsKind = v1alpha1.SchemeGroupVersion.WithKind("APIRateLimit")
-
-// Get takes name of the aPIRateLimit, and returns the corresponding aPIRateLimit object, and an error if there is any.
-func (c *FakeAPIRateLimits) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIRateLimit, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(apiratelimitsResource, c.ns, name), &v1alpha1.APIRateLimit{})
-
-	if obj == nil {
-		return nil, err
+func newFakeAPIRateLimits(fake *FakeHubV1alpha1, namespace string) hubv1alpha1.APIRateLimitInterface {
+	return &fakeAPIRateLimits{
+		gentype.NewFakeClientWithList[*v1alpha1.APIRateLimit, *v1alpha1.APIRateLimitList](
+			fake.Fake,
+			namespace,
+			v1alpha1.SchemeGroupVersion.WithResource("apiratelimits"),
+			v1alpha1.SchemeGroupVersion.WithKind("APIRateLimit"),
+			func() *v1alpha1.APIRateLimit { return &v1alpha1.APIRateLimit{} },
+			func() *v1alpha1.APIRateLimitList { return &v1alpha1.APIRateLimitList{} },
+			func(dst, src *v1alpha1.APIRateLimitList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.APIRateLimitList) []*v1alpha1.APIRateLimit {
+				return gentype.ToPointerSlice(list.Items)
+			},
+			func(list *v1alpha1.APIRateLimitList, items []*v1alpha1.APIRateLimit) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.APIRateLimit), err
-}
-
-// List takes label and field selectors, and returns the list of APIRateLimits that match those selectors.
-func (c *FakeAPIRateLimits) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.APIRateLimitList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewListAction(apiratelimitsResource, apiratelimitsKind, c.ns, opts), &v1alpha1.APIRateLimitList{})
-
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.APIRateLimitList{ListMeta: obj.(*v1alpha1.APIRateLimitList).ListMeta}
-	for _, item := range obj.(*v1alpha1.APIRateLimitList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested aPIRateLimits.
-func (c *FakeAPIRateLimits) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(apiratelimitsResource, c.ns, opts))
-
-}
-
-// Create takes the representation of a aPIRateLimit and creates it.  Returns the server's representation of the aPIRateLimit, and an error, if there is any.
-func (c *FakeAPIRateLimits) Create(ctx context.Context, aPIRateLimit *v1alpha1.APIRateLimit, opts v1.CreateOptions) (result *v1alpha1.APIRateLimit, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(apiratelimitsResource, c.ns, aPIRateLimit), &v1alpha1.APIRateLimit{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIRateLimit), err
-}
-
-// Update takes the representation of a aPIRateLimit and updates it. Returns the server's representation of the aPIRateLimit, and an error, if there is any.
-func (c *FakeAPIRateLimits) Update(ctx context.Context, aPIRateLimit *v1alpha1.APIRateLimit, opts v1.UpdateOptions) (result *v1alpha1.APIRateLimit, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(apiratelimitsResource, c.ns, aPIRateLimit), &v1alpha1.APIRateLimit{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIRateLimit), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeAPIRateLimits) UpdateStatus(ctx context.Context, aPIRateLimit *v1alpha1.APIRateLimit, opts v1.UpdateOptions) (*v1alpha1.APIRateLimit, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(apiratelimitsResource, "status", c.ns, aPIRateLimit), &v1alpha1.APIRateLimit{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIRateLimit), err
-}
-
-// Delete takes name of the aPIRateLimit and deletes it. Returns an error if one occurs.
-func (c *FakeAPIRateLimits) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(apiratelimitsResource, c.ns, name, opts), &v1alpha1.APIRateLimit{})
-
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeAPIRateLimits) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(apiratelimitsResource, c.ns, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.APIRateLimitList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched aPIRateLimit.
-func (c *FakeAPIRateLimits) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIRateLimit, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(apiratelimitsResource, c.ns, name, pt, data, subresources...), &v1alpha1.APIRateLimit{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIRateLimit), err
 }

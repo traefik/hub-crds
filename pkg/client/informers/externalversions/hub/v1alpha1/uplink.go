@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // UplinkInformer provides access to a shared informer and lister for
-// Uplinks.
+// Uplinks. Prefer using the type-safe variant (see [TypedUplinkInformer]).
 type UplinkInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.UplinkLister
+	Lister() hubv1alpha1.UplinkLister
 }
+
+// TypedUplinkInformer provides access to a shared informer and lister for
+// Uplinks, including the type-safe TypedInformer variant.
+// It is a superset of UplinkInformer.
+type TypedUplinkInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() UplinkIndexInformer
+	Lister() hubv1alpha1.UplinkLister
+}
+
+// UplinkIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type UplinkIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.Uplink]
+
+// UplinkHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for Uplink.
+type UplinkHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.Uplink]
+
+// UplinkDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for Uplink.
+type UplinkDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.Uplink]
+
+// UplinkFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for Uplink.
+type UplinkFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.Uplink]
+
+// UplinkIndexers is a specialization of [cache.TypedIndexers] for Uplink.
+type UplinkIndexers = cache.TypedIndexers[*apishubv1alpha1.Uplink]
+
+// DeletedUplink is a specialization of [cache.DeletedObject] for Uplink.
+type DeletedUplink = cache.DeletedObject[*apishubv1alpha1.Uplink]
 
 type uplinkInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type uplinkInformer struct {
 // NewUplinkInformer constructs a new informer for Uplink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedUplinkInformer]).
 func NewUplinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredUplinkInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewUplinkInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedUplinkInformer constructs a new informer for Uplink type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedUplinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers UplinkIndexers) UplinkIndexInformer {
+	return NewTypedUplinkInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredUplinkInformer constructs a new informer for Uplink type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredUplinkInformer]).
 func NewFilteredUplinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedUplinkInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredUplinkInformer constructs a new informer for Uplink type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredUplinkInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers UplinkIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) UplinkIndexInformer {
+	return NewTypedUplinkInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewUplinkInformerWithOptions constructs a new informer for Uplink type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedUplinkInformerWithOptions]).
+func NewUplinkInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedUplinkInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedUplinkInformerWithOptions constructs a new informer for Uplink type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedUplinkInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) UplinkIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "uplinks"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.Uplink](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().Uplinks(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().Uplinks(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().Uplinks(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().Uplinks(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().Uplinks(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().Uplinks(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.Uplink{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.Uplink{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *uplinkInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredUplinkInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedUplinkInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *uplinkInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.Uplink{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *uplinkInformer) Lister() v1alpha1.UplinkLister {
-	return v1alpha1.NewUplinkLister(f.Informer().GetIndexer())
+func (f *uplinkInformer) TypedInformer() UplinkIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.Uplink](f.factory.InformerFor(&apishubv1alpha1.Uplink{}, f.defaultInformer))
+}
+
+func (f *uplinkInformer) Lister() hubv1alpha1.UplinkLister {
+	return hubv1alpha1.NewUplinkLister(f.Informer().GetIndexer())
+}
+
+// ToTypedUplinkInformer converts an untyped informer into a TypedUplinkInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *Uplink. If that is not the case, calling type-safe methods of the returned
+// TypedUplinkInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedUplinkInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedUplinkInformer(informer UplinkInformer) TypedUplinkInformer {
+	if informer, ok := informer.(TypedUplinkInformer); ok {
+		return informer
+	}
+	return &uplinkTypedInformerAdapter{informer}
+}
+
+type uplinkTypedInformerAdapter struct {
+	UplinkInformer
+}
+
+func (a *uplinkTypedInformerAdapter) TypedInformer() UplinkIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.Uplink](a.Informer())
+}
+
+// ToUplinkIndexInformer converts an untyped informer into a UplinkIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *Uplink. If that is not the case, calling type-safe methods of the returned
+// UplinkIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a UplinkIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToUplinkIndexInformer(informer cache.SharedIndexInformer) UplinkIndexInformer {
+	if informer, ok := informer.(UplinkIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.Uplink](informer)
 }

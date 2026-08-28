@@ -151,7 +151,7 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com", https://another.example.com]`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.trustedUrls", BadValue: 2, Detail: "must have at most 1 items"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.trustedUrls", BadValue: 2, Detail: "must have at most 1 item"}},
 		},
 		{
 			desc: "auth name too long",

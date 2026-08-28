@@ -171,7 +171,7 @@ spec:
   apiKeys:
     - secretName: secret
       value: value`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKeys[0]", BadValue: "object", Detail: "secretName and value are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKeys[0]", BadValue: field.OmitValueType{}, Detail: "secretName and value are mutually exclusive"}},
 		},
 	}
 

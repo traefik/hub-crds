@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIPortalAuthLister helps list APIPortalAuths.
@@ -33,7 +33,7 @@ import (
 type APIPortalAuthLister interface {
 	// List lists all APIPortalAuths in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIPortalAuth, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIPortalAuth, err error)
 	// APIPortalAuths returns an object that can list and get APIPortalAuths.
 	APIPortalAuths(namespace string) APIPortalAuthNamespaceLister
 	APIPortalAuthListerExpansion
@@ -41,25 +41,17 @@ type APIPortalAuthLister interface {
 
 // aPIPortalAuthLister implements the APIPortalAuthLister interface.
 type aPIPortalAuthLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.APIPortalAuth]
 }
 
 // NewAPIPortalAuthLister returns a new APIPortalAuthLister.
 func NewAPIPortalAuthLister(indexer cache.Indexer) APIPortalAuthLister {
-	return &aPIPortalAuthLister{indexer: indexer}
-}
-
-// List lists all APIPortalAuths in the indexer.
-func (s *aPIPortalAuthLister) List(selector labels.Selector) (ret []*v1alpha1.APIPortalAuth, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIPortalAuth))
-	})
-	return ret, err
+	return &aPIPortalAuthLister{listers.New[*hubv1alpha1.APIPortalAuth](indexer, hubv1alpha1.Resource("apiportalauth"))}
 }
 
 // APIPortalAuths returns an object that can list and get APIPortalAuths.
 func (s *aPIPortalAuthLister) APIPortalAuths(namespace string) APIPortalAuthNamespaceLister {
-	return aPIPortalAuthNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return aPIPortalAuthNamespaceLister{listers.NewNamespaced[*hubv1alpha1.APIPortalAuth](s.ResourceIndexer, namespace)}
 }
 
 // APIPortalAuthNamespaceLister helps list and get APIPortalAuths.
@@ -67,36 +59,15 @@ func (s *aPIPortalAuthLister) APIPortalAuths(namespace string) APIPortalAuthName
 type APIPortalAuthNamespaceLister interface {
 	// List lists all APIPortalAuths in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIPortalAuth, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIPortalAuth, err error)
 	// Get retrieves the APIPortalAuth from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APIPortalAuth, error)
+	Get(name string) (*hubv1alpha1.APIPortalAuth, error)
 	APIPortalAuthNamespaceListerExpansion
 }
 
 // aPIPortalAuthNamespaceLister implements the APIPortalAuthNamespaceLister
 // interface.
 type aPIPortalAuthNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all APIPortalAuths in the indexer for a given namespace.
-func (s aPIPortalAuthNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APIPortalAuth, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIPortalAuth))
-	})
-	return ret, err
-}
-
-// Get retrieves the APIPortalAuth from the indexer for a given namespace and name.
-func (s aPIPortalAuthNamespaceLister) Get(name string) (*v1alpha1.APIPortalAuth, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("apiportalauth"), name)
-	}
-	return obj.(*v1alpha1.APIPortalAuth), nil
+	listers.ResourceIndexer[*hubv1alpha1.APIPortalAuth]
 }

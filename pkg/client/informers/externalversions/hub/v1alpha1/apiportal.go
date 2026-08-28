@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIPortalInformer provides access to a shared informer and lister for
-// APIPortals.
+// APIPortals. Prefer using the type-safe variant (see [TypedAPIPortalInformer]).
 type APIPortalInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APIPortalLister
+	Lister() hubv1alpha1.APIPortalLister
 }
+
+// TypedAPIPortalInformer provides access to a shared informer and lister for
+// APIPortals, including the type-safe TypedInformer variant.
+// It is a superset of APIPortalInformer.
+type TypedAPIPortalInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APIPortalIndexInformer
+	Lister() hubv1alpha1.APIPortalLister
+}
+
+// APIPortalIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APIPortalIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APIPortal]
+
+// APIPortalHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APIPortal.
+type APIPortalHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APIPortal]
+
+// APIPortalDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APIPortal.
+type APIPortalDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APIPortal]
+
+// APIPortalFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APIPortal.
+type APIPortalFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APIPortal]
+
+// APIPortalIndexers is a specialization of [cache.TypedIndexers] for APIPortal.
+type APIPortalIndexers = cache.TypedIndexers[*apishubv1alpha1.APIPortal]
+
+// DeletedAPIPortal is a specialization of [cache.DeletedObject] for APIPortal.
+type DeletedAPIPortal = cache.DeletedObject[*apishubv1alpha1.APIPortal]
 
 type aPIPortalInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPIPortalInformer struct {
 // NewAPIPortalInformer constructs a new informer for APIPortal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIPortalInformer]).
 func NewAPIPortalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIPortalInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPIPortalInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPIPortalInformer constructs a new informer for APIPortal type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIPortalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIPortalIndexers) APIPortalIndexInformer {
+	return NewTypedAPIPortalInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPIPortalInformer constructs a new informer for APIPortal type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPIPortalInformer]).
 func NewFilteredAPIPortalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPIPortalInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPIPortalInformer constructs a new informer for APIPortal type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPIPortalInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIPortalIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APIPortalIndexInformer {
+	return NewTypedAPIPortalInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPIPortalInformerWithOptions constructs a new informer for APIPortal type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIPortalInformerWithOptions]).
+func NewAPIPortalInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPIPortalInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPIPortalInformerWithOptions constructs a new informer for APIPortal type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIPortalInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APIPortalIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apiportals"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPortal](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIPortals(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APIPortals(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIPortals(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIPortals(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIPortals(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIPortals(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APIPortal{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APIPortal{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPIPortalInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIPortalInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPIPortalInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPIPortalInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APIPortal{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPIPortalInformer) Lister() v1alpha1.APIPortalLister {
-	return v1alpha1.NewAPIPortalLister(f.Informer().GetIndexer())
+func (f *aPIPortalInformer) TypedInformer() APIPortalIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPortal](f.factory.InformerFor(&apishubv1alpha1.APIPortal{}, f.defaultInformer))
+}
+
+func (f *aPIPortalInformer) Lister() hubv1alpha1.APIPortalLister {
+	return hubv1alpha1.NewAPIPortalLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPIPortalInformer converts an untyped informer into a TypedAPIPortalInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIPortal. If that is not the case, calling type-safe methods of the returned
+// TypedAPIPortalInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPIPortalInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPIPortalInformer(informer APIPortalInformer) TypedAPIPortalInformer {
+	if informer, ok := informer.(TypedAPIPortalInformer); ok {
+		return informer
+	}
+	return &aPIPortalTypedInformerAdapter{informer}
+}
+
+type aPIPortalTypedInformerAdapter struct {
+	APIPortalInformer
+}
+
+func (a *aPIPortalTypedInformerAdapter) TypedInformer() APIPortalIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPortal](a.Informer())
+}
+
+// ToAPIPortalIndexInformer converts an untyped informer into a APIPortalIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIPortal. If that is not the case, calling type-safe methods of the returned
+// APIPortalIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APIPortalIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPIPortalIndexInformer(informer cache.SharedIndexInformer) APIPortalIndexInformer {
+	if informer, ok := informer.(APIPortalIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPortal](informer)
 }

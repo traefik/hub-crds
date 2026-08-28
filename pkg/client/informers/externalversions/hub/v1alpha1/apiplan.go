@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIPlanInformer provides access to a shared informer and lister for
-// APIPlans.
+// APIPlans. Prefer using the type-safe variant (see [TypedAPIPlanInformer]).
 type APIPlanInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APIPlanLister
+	Lister() hubv1alpha1.APIPlanLister
 }
+
+// TypedAPIPlanInformer provides access to a shared informer and lister for
+// APIPlans, including the type-safe TypedInformer variant.
+// It is a superset of APIPlanInformer.
+type TypedAPIPlanInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APIPlanIndexInformer
+	Lister() hubv1alpha1.APIPlanLister
+}
+
+// APIPlanIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APIPlanIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APIPlan]
+
+// APIPlanHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APIPlan.
+type APIPlanHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APIPlan]
+
+// APIPlanDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APIPlan.
+type APIPlanDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APIPlan]
+
+// APIPlanFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APIPlan.
+type APIPlanFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APIPlan]
+
+// APIPlanIndexers is a specialization of [cache.TypedIndexers] for APIPlan.
+type APIPlanIndexers = cache.TypedIndexers[*apishubv1alpha1.APIPlan]
+
+// DeletedAPIPlan is a specialization of [cache.DeletedObject] for APIPlan.
+type DeletedAPIPlan = cache.DeletedObject[*apishubv1alpha1.APIPlan]
 
 type aPIPlanInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPIPlanInformer struct {
 // NewAPIPlanInformer constructs a new informer for APIPlan type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIPlanInformer]).
 func NewAPIPlanInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIPlanInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPIPlanInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPIPlanInformer constructs a new informer for APIPlan type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIPlanInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIPlanIndexers) APIPlanIndexInformer {
+	return NewTypedAPIPlanInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPIPlanInformer constructs a new informer for APIPlan type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPIPlanInformer]).
 func NewFilteredAPIPlanInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPIPlanInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPIPlanInformer constructs a new informer for APIPlan type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPIPlanInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIPlanIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APIPlanIndexInformer {
+	return NewTypedAPIPlanInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPIPlanInformerWithOptions constructs a new informer for APIPlan type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIPlanInformerWithOptions]).
+func NewAPIPlanInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPIPlanInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPIPlanInformerWithOptions constructs a new informer for APIPlan type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIPlanInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APIPlanIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apiplans"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPlan](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIPlans(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APIPlans(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIPlans(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIPlans(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIPlans(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIPlans(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APIPlan{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APIPlan{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPIPlanInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIPlanInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPIPlanInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPIPlanInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APIPlan{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPIPlanInformer) Lister() v1alpha1.APIPlanLister {
-	return v1alpha1.NewAPIPlanLister(f.Informer().GetIndexer())
+func (f *aPIPlanInformer) TypedInformer() APIPlanIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPlan](f.factory.InformerFor(&apishubv1alpha1.APIPlan{}, f.defaultInformer))
+}
+
+func (f *aPIPlanInformer) Lister() hubv1alpha1.APIPlanLister {
+	return hubv1alpha1.NewAPIPlanLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPIPlanInformer converts an untyped informer into a TypedAPIPlanInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIPlan. If that is not the case, calling type-safe methods of the returned
+// TypedAPIPlanInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPIPlanInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPIPlanInformer(informer APIPlanInformer) TypedAPIPlanInformer {
+	if informer, ok := informer.(TypedAPIPlanInformer); ok {
+		return informer
+	}
+	return &aPIPlanTypedInformerAdapter{informer}
+}
+
+type aPIPlanTypedInformerAdapter struct {
+	APIPlanInformer
+}
+
+func (a *aPIPlanTypedInformerAdapter) TypedInformer() APIPlanIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPlan](a.Informer())
+}
+
+// ToAPIPlanIndexInformer converts an untyped informer into a APIPlanIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIPlan. If that is not the case, calling type-safe methods of the returned
+// APIPlanIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APIPlanIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPIPlanIndexInformer(informer cache.SharedIndexInformer) APIPlanIndexInformer {
+	if informer, ok := informer.(APIPlanIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIPlan](informer)
 }

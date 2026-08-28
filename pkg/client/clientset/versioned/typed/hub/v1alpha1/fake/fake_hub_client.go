@@ -32,63 +32,63 @@ type FakeHubV1alpha1 struct {
 }
 
 func (c *FakeHubV1alpha1) AIServices(namespace string) v1alpha1.AIServiceInterface {
-	return &FakeAIServices{c, namespace}
+	return newFakeAIServices(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIs(namespace string) v1alpha1.APIInterface {
-	return &FakeAPIs{c, namespace}
+	return newFakeAPIs(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIAuths(namespace string) v1alpha1.APIAuthInterface {
-	return &FakeAPIAuths{c, namespace}
+	return newFakeAPIAuths(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIBundles(namespace string) v1alpha1.APIBundleInterface {
-	return &FakeAPIBundles{c, namespace}
+	return newFakeAPIBundles(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APICatalogItems(namespace string) v1alpha1.APICatalogItemInterface {
-	return &FakeAPICatalogItems{c, namespace}
+	return newFakeAPICatalogItems(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIPlans(namespace string) v1alpha1.APIPlanInterface {
-	return &FakeAPIPlans{c, namespace}
+	return newFakeAPIPlans(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIPortals(namespace string) v1alpha1.APIPortalInterface {
-	return &FakeAPIPortals{c, namespace}
+	return newFakeAPIPortals(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIPortalAuths(namespace string) v1alpha1.APIPortalAuthInterface {
-	return &FakeAPIPortalAuths{c, namespace}
+	return newFakeAPIPortalAuths(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIRateLimits(namespace string) v1alpha1.APIRateLimitInterface {
-	return &FakeAPIRateLimits{c, namespace}
+	return newFakeAPIRateLimits(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) APIVersions(namespace string) v1alpha1.APIVersionInterface {
-	return &FakeAPIVersions{c, namespace}
+	return newFakeAPIVersions(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) AccessControlPolicies() v1alpha1.AccessControlPolicyInterface {
-	return &FakeAccessControlPolicies{c}
+	return newFakeAccessControlPolicies(c)
 }
 
 func (c *FakeHubV1alpha1) ContentItems(namespace string) v1alpha1.ContentItemInterface {
-	return &FakeContentItems{c, namespace}
+	return newFakeContentItems(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) ManagedApplications(namespace string) v1alpha1.ManagedApplicationInterface {
-	return &FakeManagedApplications{c, namespace}
+	return newFakeManagedApplications(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) ManagedSubscriptions(namespace string) v1alpha1.ManagedSubscriptionInterface {
-	return &FakeManagedSubscriptions{c, namespace}
+	return newFakeManagedSubscriptions(c, namespace)
 }
 
 func (c *FakeHubV1alpha1) Uplinks(namespace string) v1alpha1.UplinkInterface {
-	return &FakeUplinks{c, namespace}
+	return newFakeUplinks(c, namespace)
 }
 
 // RESTClient returns a RESTClient that is used to communicate

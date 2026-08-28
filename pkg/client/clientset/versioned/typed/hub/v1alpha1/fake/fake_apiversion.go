@@ -22,123 +22,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeAPIVersions implements APIVersionInterface
-type FakeAPIVersions struct {
+// fakeAPIVersions implements APIVersionInterface
+type fakeAPIVersions struct {
+	*gentype.FakeClientWithList[*v1alpha1.APIVersion, *v1alpha1.APIVersionList]
 	Fake *FakeHubV1alpha1
-	ns   string
 }
 
-var apiversionsResource = v1alpha1.SchemeGroupVersion.WithResource("apiversions")
-
-var apiversionsKind = v1alpha1.SchemeGroupVersion.WithKind("APIVersion")
-
-// Get takes name of the aPIVersion, and returns the corresponding aPIVersion object, and an error if there is any.
-func (c *FakeAPIVersions) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.APIVersion, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(apiversionsResource, c.ns, name), &v1alpha1.APIVersion{})
-
-	if obj == nil {
-		return nil, err
+func newFakeAPIVersions(fake *FakeHubV1alpha1, namespace string) hubv1alpha1.APIVersionInterface {
+	return &fakeAPIVersions{
+		gentype.NewFakeClientWithList[*v1alpha1.APIVersion, *v1alpha1.APIVersionList](
+			fake.Fake,
+			namespace,
+			v1alpha1.SchemeGroupVersion.WithResource("apiversions"),
+			v1alpha1.SchemeGroupVersion.WithKind("APIVersion"),
+			func() *v1alpha1.APIVersion { return &v1alpha1.APIVersion{} },
+			func() *v1alpha1.APIVersionList { return &v1alpha1.APIVersionList{} },
+			func(dst, src *v1alpha1.APIVersionList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.APIVersionList) []*v1alpha1.APIVersion { return gentype.ToPointerSlice(list.Items) },
+			func(list *v1alpha1.APIVersionList, items []*v1alpha1.APIVersion) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.APIVersion), err
-}
-
-// List takes label and field selectors, and returns the list of APIVersions that match those selectors.
-func (c *FakeAPIVersions) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.APIVersionList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewListAction(apiversionsResource, apiversionsKind, c.ns, opts), &v1alpha1.APIVersionList{})
-
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.APIVersionList{ListMeta: obj.(*v1alpha1.APIVersionList).ListMeta}
-	for _, item := range obj.(*v1alpha1.APIVersionList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested aPIVersions.
-func (c *FakeAPIVersions) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(apiversionsResource, c.ns, opts))
-
-}
-
-// Create takes the representation of a aPIVersion and creates it.  Returns the server's representation of the aPIVersion, and an error, if there is any.
-func (c *FakeAPIVersions) Create(ctx context.Context, aPIVersion *v1alpha1.APIVersion, opts v1.CreateOptions) (result *v1alpha1.APIVersion, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(apiversionsResource, c.ns, aPIVersion), &v1alpha1.APIVersion{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIVersion), err
-}
-
-// Update takes the representation of a aPIVersion and updates it. Returns the server's representation of the aPIVersion, and an error, if there is any.
-func (c *FakeAPIVersions) Update(ctx context.Context, aPIVersion *v1alpha1.APIVersion, opts v1.UpdateOptions) (result *v1alpha1.APIVersion, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(apiversionsResource, c.ns, aPIVersion), &v1alpha1.APIVersion{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIVersion), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeAPIVersions) UpdateStatus(ctx context.Context, aPIVersion *v1alpha1.APIVersion, opts v1.UpdateOptions) (*v1alpha1.APIVersion, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(apiversionsResource, "status", c.ns, aPIVersion), &v1alpha1.APIVersion{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIVersion), err
-}
-
-// Delete takes name of the aPIVersion and deletes it. Returns an error if one occurs.
-func (c *FakeAPIVersions) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(apiversionsResource, c.ns, name, opts), &v1alpha1.APIVersion{})
-
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeAPIVersions) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(apiversionsResource, c.ns, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.APIVersionList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched aPIVersion.
-func (c *FakeAPIVersions) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.APIVersion, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(apiversionsResource, c.ns, name, pt, data, subresources...), &v1alpha1.APIVersion{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.APIVersion), err
 }

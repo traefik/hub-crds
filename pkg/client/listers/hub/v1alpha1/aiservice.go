@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // AIServiceLister helps list AIServices.
@@ -33,7 +33,7 @@ import (
 type AIServiceLister interface {
 	// List lists all AIServices in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.AIService, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.AIService, err error)
 	// AIServices returns an object that can list and get AIServices.
 	AIServices(namespace string) AIServiceNamespaceLister
 	AIServiceListerExpansion
@@ -41,25 +41,17 @@ type AIServiceLister interface {
 
 // aIServiceLister implements the AIServiceLister interface.
 type aIServiceLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.AIService]
 }
 
 // NewAIServiceLister returns a new AIServiceLister.
 func NewAIServiceLister(indexer cache.Indexer) AIServiceLister {
-	return &aIServiceLister{indexer: indexer}
-}
-
-// List lists all AIServices in the indexer.
-func (s *aIServiceLister) List(selector labels.Selector) (ret []*v1alpha1.AIService, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.AIService))
-	})
-	return ret, err
+	return &aIServiceLister{listers.New[*hubv1alpha1.AIService](indexer, hubv1alpha1.Resource("aiservice"))}
 }
 
 // AIServices returns an object that can list and get AIServices.
 func (s *aIServiceLister) AIServices(namespace string) AIServiceNamespaceLister {
-	return aIServiceNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return aIServiceNamespaceLister{listers.NewNamespaced[*hubv1alpha1.AIService](s.ResourceIndexer, namespace)}
 }
 
 // AIServiceNamespaceLister helps list and get AIServices.
@@ -67,36 +59,15 @@ func (s *aIServiceLister) AIServices(namespace string) AIServiceNamespaceLister 
 type AIServiceNamespaceLister interface {
 	// List lists all AIServices in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.AIService, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.AIService, err error)
 	// Get retrieves the AIService from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.AIService, error)
+	Get(name string) (*hubv1alpha1.AIService, error)
 	AIServiceNamespaceListerExpansion
 }
 
 // aIServiceNamespaceLister implements the AIServiceNamespaceLister
 // interface.
 type aIServiceNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all AIServices in the indexer for a given namespace.
-func (s aIServiceNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.AIService, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.AIService))
-	})
-	return ret, err
-}
-
-// Get retrieves the AIService from the indexer for a given namespace and name.
-func (s aIServiceNamespaceLister) Get(name string) (*v1alpha1.AIService, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("aiservice"), name)
-	}
-	return obj.(*v1alpha1.AIService), nil
+	listers.ResourceIndexer[*hubv1alpha1.AIService]
 }

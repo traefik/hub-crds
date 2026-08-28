@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // ManagedSubscriptionLister helps list ManagedSubscriptions.
@@ -33,7 +33,7 @@ import (
 type ManagedSubscriptionLister interface {
 	// List lists all ManagedSubscriptions in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.ManagedSubscription, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.ManagedSubscription, err error)
 	// ManagedSubscriptions returns an object that can list and get ManagedSubscriptions.
 	ManagedSubscriptions(namespace string) ManagedSubscriptionNamespaceLister
 	ManagedSubscriptionListerExpansion
@@ -41,25 +41,17 @@ type ManagedSubscriptionLister interface {
 
 // managedSubscriptionLister implements the ManagedSubscriptionLister interface.
 type managedSubscriptionLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.ManagedSubscription]
 }
 
 // NewManagedSubscriptionLister returns a new ManagedSubscriptionLister.
 func NewManagedSubscriptionLister(indexer cache.Indexer) ManagedSubscriptionLister {
-	return &managedSubscriptionLister{indexer: indexer}
-}
-
-// List lists all ManagedSubscriptions in the indexer.
-func (s *managedSubscriptionLister) List(selector labels.Selector) (ret []*v1alpha1.ManagedSubscription, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ManagedSubscription))
-	})
-	return ret, err
+	return &managedSubscriptionLister{listers.New[*hubv1alpha1.ManagedSubscription](indexer, hubv1alpha1.Resource("managedsubscription"))}
 }
 
 // ManagedSubscriptions returns an object that can list and get ManagedSubscriptions.
 func (s *managedSubscriptionLister) ManagedSubscriptions(namespace string) ManagedSubscriptionNamespaceLister {
-	return managedSubscriptionNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return managedSubscriptionNamespaceLister{listers.NewNamespaced[*hubv1alpha1.ManagedSubscription](s.ResourceIndexer, namespace)}
 }
 
 // ManagedSubscriptionNamespaceLister helps list and get ManagedSubscriptions.
@@ -67,36 +59,15 @@ func (s *managedSubscriptionLister) ManagedSubscriptions(namespace string) Manag
 type ManagedSubscriptionNamespaceLister interface {
 	// List lists all ManagedSubscriptions in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.ManagedSubscription, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.ManagedSubscription, err error)
 	// Get retrieves the ManagedSubscription from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.ManagedSubscription, error)
+	Get(name string) (*hubv1alpha1.ManagedSubscription, error)
 	ManagedSubscriptionNamespaceListerExpansion
 }
 
 // managedSubscriptionNamespaceLister implements the ManagedSubscriptionNamespaceLister
 // interface.
 type managedSubscriptionNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all ManagedSubscriptions in the indexer for a given namespace.
-func (s managedSubscriptionNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ManagedSubscription, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ManagedSubscription))
-	})
-	return ret, err
-}
-
-// Get retrieves the ManagedSubscription from the indexer for a given namespace and name.
-func (s managedSubscriptionNamespaceLister) Get(name string) (*v1alpha1.ManagedSubscription, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("managedsubscription"), name)
-	}
-	return obj.(*v1alpha1.ManagedSubscription), nil
+	listers.ResourceIndexer[*hubv1alpha1.ManagedSubscription]
 }

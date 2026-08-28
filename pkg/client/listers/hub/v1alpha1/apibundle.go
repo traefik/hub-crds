@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIBundleLister helps list APIBundles.
@@ -33,7 +33,7 @@ import (
 type APIBundleLister interface {
 	// List lists all APIBundles in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIBundle, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIBundle, err error)
 	// APIBundles returns an object that can list and get APIBundles.
 	APIBundles(namespace string) APIBundleNamespaceLister
 	APIBundleListerExpansion
@@ -41,25 +41,17 @@ type APIBundleLister interface {
 
 // aPIBundleLister implements the APIBundleLister interface.
 type aPIBundleLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.APIBundle]
 }
 
 // NewAPIBundleLister returns a new APIBundleLister.
 func NewAPIBundleLister(indexer cache.Indexer) APIBundleLister {
-	return &aPIBundleLister{indexer: indexer}
-}
-
-// List lists all APIBundles in the indexer.
-func (s *aPIBundleLister) List(selector labels.Selector) (ret []*v1alpha1.APIBundle, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIBundle))
-	})
-	return ret, err
+	return &aPIBundleLister{listers.New[*hubv1alpha1.APIBundle](indexer, hubv1alpha1.Resource("apibundle"))}
 }
 
 // APIBundles returns an object that can list and get APIBundles.
 func (s *aPIBundleLister) APIBundles(namespace string) APIBundleNamespaceLister {
-	return aPIBundleNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return aPIBundleNamespaceLister{listers.NewNamespaced[*hubv1alpha1.APIBundle](s.ResourceIndexer, namespace)}
 }
 
 // APIBundleNamespaceLister helps list and get APIBundles.
@@ -67,36 +59,15 @@ func (s *aPIBundleLister) APIBundles(namespace string) APIBundleNamespaceLister 
 type APIBundleNamespaceLister interface {
 	// List lists all APIBundles in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIBundle, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIBundle, err error)
 	// Get retrieves the APIBundle from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APIBundle, error)
+	Get(name string) (*hubv1alpha1.APIBundle, error)
 	APIBundleNamespaceListerExpansion
 }
 
 // aPIBundleNamespaceLister implements the APIBundleNamespaceLister
 // interface.
 type aPIBundleNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all APIBundles in the indexer for a given namespace.
-func (s aPIBundleNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APIBundle, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIBundle))
-	})
-	return ret, err
-}
-
-// Get retrieves the APIBundle from the indexer for a given namespace and name.
-func (s aPIBundleNamespaceLister) Get(name string) (*v1alpha1.APIBundle, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("apibundle"), name)
-	}
-	return obj.(*v1alpha1.APIBundle), nil
+	listers.ResourceIndexer[*hubv1alpha1.APIBundle]
 }

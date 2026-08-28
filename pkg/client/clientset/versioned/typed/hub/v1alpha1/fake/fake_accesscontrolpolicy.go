@@ -22,114 +22,34 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeAccessControlPolicies implements AccessControlPolicyInterface
-type FakeAccessControlPolicies struct {
+// fakeAccessControlPolicies implements AccessControlPolicyInterface
+type fakeAccessControlPolicies struct {
+	*gentype.FakeClientWithList[*v1alpha1.AccessControlPolicy, *v1alpha1.AccessControlPolicyList]
 	Fake *FakeHubV1alpha1
 }
 
-var accesscontrolpoliciesResource = v1alpha1.SchemeGroupVersion.WithResource("accesscontrolpolicies")
-
-var accesscontrolpoliciesKind = v1alpha1.SchemeGroupVersion.WithKind("AccessControlPolicy")
-
-// Get takes name of the accessControlPolicy, and returns the corresponding accessControlPolicy object, and an error if there is any.
-func (c *FakeAccessControlPolicies) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.AccessControlPolicy, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewRootGetAction(accesscontrolpoliciesResource, name), &v1alpha1.AccessControlPolicy{})
-	if obj == nil {
-		return nil, err
+func newFakeAccessControlPolicies(fake *FakeHubV1alpha1) hubv1alpha1.AccessControlPolicyInterface {
+	return &fakeAccessControlPolicies{
+		gentype.NewFakeClientWithList[*v1alpha1.AccessControlPolicy, *v1alpha1.AccessControlPolicyList](
+			fake.Fake,
+			"",
+			v1alpha1.SchemeGroupVersion.WithResource("accesscontrolpolicies"),
+			v1alpha1.SchemeGroupVersion.WithKind("AccessControlPolicy"),
+			func() *v1alpha1.AccessControlPolicy { return &v1alpha1.AccessControlPolicy{} },
+			func() *v1alpha1.AccessControlPolicyList { return &v1alpha1.AccessControlPolicyList{} },
+			func(dst, src *v1alpha1.AccessControlPolicyList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.AccessControlPolicyList) []*v1alpha1.AccessControlPolicy {
+				return gentype.ToPointerSlice(list.Items)
+			},
+			func(list *v1alpha1.AccessControlPolicyList, items []*v1alpha1.AccessControlPolicy) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.AccessControlPolicy), err
-}
-
-// List takes label and field selectors, and returns the list of AccessControlPolicies that match those selectors.
-func (c *FakeAccessControlPolicies) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.AccessControlPolicyList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewRootListAction(accesscontrolpoliciesResource, accesscontrolpoliciesKind, opts), &v1alpha1.AccessControlPolicyList{})
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.AccessControlPolicyList{ListMeta: obj.(*v1alpha1.AccessControlPolicyList).ListMeta}
-	for _, item := range obj.(*v1alpha1.AccessControlPolicyList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested accessControlPolicies.
-func (c *FakeAccessControlPolicies) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewRootWatchAction(accesscontrolpoliciesResource, opts))
-}
-
-// Create takes the representation of a accessControlPolicy and creates it.  Returns the server's representation of the accessControlPolicy, and an error, if there is any.
-func (c *FakeAccessControlPolicies) Create(ctx context.Context, accessControlPolicy *v1alpha1.AccessControlPolicy, opts v1.CreateOptions) (result *v1alpha1.AccessControlPolicy, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewRootCreateAction(accesscontrolpoliciesResource, accessControlPolicy), &v1alpha1.AccessControlPolicy{})
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.AccessControlPolicy), err
-}
-
-// Update takes the representation of a accessControlPolicy and updates it. Returns the server's representation of the accessControlPolicy, and an error, if there is any.
-func (c *FakeAccessControlPolicies) Update(ctx context.Context, accessControlPolicy *v1alpha1.AccessControlPolicy, opts v1.UpdateOptions) (result *v1alpha1.AccessControlPolicy, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateAction(accesscontrolpoliciesResource, accessControlPolicy), &v1alpha1.AccessControlPolicy{})
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.AccessControlPolicy), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeAccessControlPolicies) UpdateStatus(ctx context.Context, accessControlPolicy *v1alpha1.AccessControlPolicy, opts v1.UpdateOptions) (*v1alpha1.AccessControlPolicy, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewRootUpdateSubresourceAction(accesscontrolpoliciesResource, "status", accessControlPolicy), &v1alpha1.AccessControlPolicy{})
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.AccessControlPolicy), err
-}
-
-// Delete takes name of the accessControlPolicy and deletes it. Returns an error if one occurs.
-func (c *FakeAccessControlPolicies) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewRootDeleteActionWithOptions(accesscontrolpoliciesResource, name, opts), &v1alpha1.AccessControlPolicy{})
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeAccessControlPolicies) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(accesscontrolpoliciesResource, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.AccessControlPolicyList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched accessControlPolicy.
-func (c *FakeAccessControlPolicies) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.AccessControlPolicy, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(accesscontrolpoliciesResource, name, pt, data, subresources...), &v1alpha1.AccessControlPolicy{})
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.AccessControlPolicy), err
 }

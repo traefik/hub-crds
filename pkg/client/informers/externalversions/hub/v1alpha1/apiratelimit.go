@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIRateLimitInformer provides access to a shared informer and lister for
-// APIRateLimits.
+// APIRateLimits. Prefer using the type-safe variant (see [TypedAPIRateLimitInformer]).
 type APIRateLimitInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APIRateLimitLister
+	Lister() hubv1alpha1.APIRateLimitLister
 }
+
+// TypedAPIRateLimitInformer provides access to a shared informer and lister for
+// APIRateLimits, including the type-safe TypedInformer variant.
+// It is a superset of APIRateLimitInformer.
+type TypedAPIRateLimitInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APIRateLimitIndexInformer
+	Lister() hubv1alpha1.APIRateLimitLister
+}
+
+// APIRateLimitIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APIRateLimitIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APIRateLimit]
+
+// APIRateLimitHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APIRateLimit.
+type APIRateLimitHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APIRateLimit]
+
+// APIRateLimitDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APIRateLimit.
+type APIRateLimitDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APIRateLimit]
+
+// APIRateLimitFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APIRateLimit.
+type APIRateLimitFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APIRateLimit]
+
+// APIRateLimitIndexers is a specialization of [cache.TypedIndexers] for APIRateLimit.
+type APIRateLimitIndexers = cache.TypedIndexers[*apishubv1alpha1.APIRateLimit]
+
+// DeletedAPIRateLimit is a specialization of [cache.DeletedObject] for APIRateLimit.
+type DeletedAPIRateLimit = cache.DeletedObject[*apishubv1alpha1.APIRateLimit]
 
 type aPIRateLimitInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPIRateLimitInformer struct {
 // NewAPIRateLimitInformer constructs a new informer for APIRateLimit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIRateLimitInformer]).
 func NewAPIRateLimitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIRateLimitInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPIRateLimitInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPIRateLimitInformer constructs a new informer for APIRateLimit type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIRateLimitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIRateLimitIndexers) APIRateLimitIndexInformer {
+	return NewTypedAPIRateLimitInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPIRateLimitInformer constructs a new informer for APIRateLimit type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPIRateLimitInformer]).
 func NewFilteredAPIRateLimitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPIRateLimitInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPIRateLimitInformer constructs a new informer for APIRateLimit type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPIRateLimitInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIRateLimitIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APIRateLimitIndexInformer {
+	return NewTypedAPIRateLimitInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPIRateLimitInformerWithOptions constructs a new informer for APIRateLimit type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIRateLimitInformerWithOptions]).
+func NewAPIRateLimitInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPIRateLimitInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPIRateLimitInformerWithOptions constructs a new informer for APIRateLimit type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIRateLimitInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APIRateLimitIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apiratelimits"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIRateLimit](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIRateLimits(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APIRateLimits(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIRateLimits(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIRateLimits(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIRateLimits(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIRateLimits(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APIRateLimit{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APIRateLimit{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPIRateLimitInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIRateLimitInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPIRateLimitInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPIRateLimitInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APIRateLimit{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPIRateLimitInformer) Lister() v1alpha1.APIRateLimitLister {
-	return v1alpha1.NewAPIRateLimitLister(f.Informer().GetIndexer())
+func (f *aPIRateLimitInformer) TypedInformer() APIRateLimitIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIRateLimit](f.factory.InformerFor(&apishubv1alpha1.APIRateLimit{}, f.defaultInformer))
+}
+
+func (f *aPIRateLimitInformer) Lister() hubv1alpha1.APIRateLimitLister {
+	return hubv1alpha1.NewAPIRateLimitLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPIRateLimitInformer converts an untyped informer into a TypedAPIRateLimitInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIRateLimit. If that is not the case, calling type-safe methods of the returned
+// TypedAPIRateLimitInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPIRateLimitInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPIRateLimitInformer(informer APIRateLimitInformer) TypedAPIRateLimitInformer {
+	if informer, ok := informer.(TypedAPIRateLimitInformer); ok {
+		return informer
+	}
+	return &aPIRateLimitTypedInformerAdapter{informer}
+}
+
+type aPIRateLimitTypedInformerAdapter struct {
+	APIRateLimitInformer
+}
+
+func (a *aPIRateLimitTypedInformerAdapter) TypedInformer() APIRateLimitIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIRateLimit](a.Informer())
+}
+
+// ToAPIRateLimitIndexInformer converts an untyped informer into a APIRateLimitIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIRateLimit. If that is not the case, calling type-safe methods of the returned
+// APIRateLimitIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APIRateLimitIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPIRateLimitIndexInformer(informer cache.SharedIndexInformer) APIRateLimitIndexInformer {
+	if informer, ok := informer.(APIRateLimitIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIRateLimit](informer)
 }

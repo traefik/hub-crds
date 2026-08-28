@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // APICatalogItemLister helps list APICatalogItems.
@@ -33,7 +33,7 @@ import (
 type APICatalogItemLister interface {
 	// List lists all APICatalogItems in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APICatalogItem, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APICatalogItem, err error)
 	// APICatalogItems returns an object that can list and get APICatalogItems.
 	APICatalogItems(namespace string) APICatalogItemNamespaceLister
 	APICatalogItemListerExpansion
@@ -41,25 +41,17 @@ type APICatalogItemLister interface {
 
 // aPICatalogItemLister implements the APICatalogItemLister interface.
 type aPICatalogItemLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.APICatalogItem]
 }
 
 // NewAPICatalogItemLister returns a new APICatalogItemLister.
 func NewAPICatalogItemLister(indexer cache.Indexer) APICatalogItemLister {
-	return &aPICatalogItemLister{indexer: indexer}
-}
-
-// List lists all APICatalogItems in the indexer.
-func (s *aPICatalogItemLister) List(selector labels.Selector) (ret []*v1alpha1.APICatalogItem, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APICatalogItem))
-	})
-	return ret, err
+	return &aPICatalogItemLister{listers.New[*hubv1alpha1.APICatalogItem](indexer, hubv1alpha1.Resource("apicatalogitem"))}
 }
 
 // APICatalogItems returns an object that can list and get APICatalogItems.
 func (s *aPICatalogItemLister) APICatalogItems(namespace string) APICatalogItemNamespaceLister {
-	return aPICatalogItemNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return aPICatalogItemNamespaceLister{listers.NewNamespaced[*hubv1alpha1.APICatalogItem](s.ResourceIndexer, namespace)}
 }
 
 // APICatalogItemNamespaceLister helps list and get APICatalogItems.
@@ -67,36 +59,15 @@ func (s *aPICatalogItemLister) APICatalogItems(namespace string) APICatalogItemN
 type APICatalogItemNamespaceLister interface {
 	// List lists all APICatalogItems in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APICatalogItem, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APICatalogItem, err error)
 	// Get retrieves the APICatalogItem from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APICatalogItem, error)
+	Get(name string) (*hubv1alpha1.APICatalogItem, error)
 	APICatalogItemNamespaceListerExpansion
 }
 
 // aPICatalogItemNamespaceLister implements the APICatalogItemNamespaceLister
 // interface.
 type aPICatalogItemNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all APICatalogItems in the indexer for a given namespace.
-func (s aPICatalogItemNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APICatalogItem, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APICatalogItem))
-	})
-	return ret, err
-}
-
-// Get retrieves the APICatalogItem from the indexer for a given namespace and name.
-func (s aPICatalogItemNamespaceLister) Get(name string) (*v1alpha1.APICatalogItem, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("apicatalogitem"), name)
-	}
-	return obj.(*v1alpha1.APICatalogItem), nil
+	listers.ResourceIndexer[*hubv1alpha1.APICatalogItem]
 }

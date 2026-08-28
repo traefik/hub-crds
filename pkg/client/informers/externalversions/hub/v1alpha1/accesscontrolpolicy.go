@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // AccessControlPolicyInformer provides access to a shared informer and lister for
-// AccessControlPolicies.
+// AccessControlPolicies. Prefer using the type-safe variant (see [TypedAccessControlPolicyInformer]).
 type AccessControlPolicyInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.AccessControlPolicyLister
+	Lister() hubv1alpha1.AccessControlPolicyLister
 }
+
+// TypedAccessControlPolicyInformer provides access to a shared informer and lister for
+// AccessControlPolicies, including the type-safe TypedInformer variant.
+// It is a superset of AccessControlPolicyInformer.
+type TypedAccessControlPolicyInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() AccessControlPolicyIndexInformer
+	Lister() hubv1alpha1.AccessControlPolicyLister
+}
+
+// AccessControlPolicyIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type AccessControlPolicyIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.AccessControlPolicy]
+
+// AccessControlPolicyHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for AccessControlPolicy.
+type AccessControlPolicyHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.AccessControlPolicy]
+
+// AccessControlPolicyDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for AccessControlPolicy.
+type AccessControlPolicyDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.AccessControlPolicy]
+
+// AccessControlPolicyFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for AccessControlPolicy.
+type AccessControlPolicyFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.AccessControlPolicy]
+
+// AccessControlPolicyIndexers is a specialization of [cache.TypedIndexers] for AccessControlPolicy.
+type AccessControlPolicyIndexers = cache.TypedIndexers[*apishubv1alpha1.AccessControlPolicy]
+
+// DeletedAccessControlPolicy is a specialization of [cache.DeletedObject] for AccessControlPolicy.
+type DeletedAccessControlPolicy = cache.DeletedObject[*apishubv1alpha1.AccessControlPolicy]
 
 type accessControlPolicyInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -50,43 +79,132 @@ type accessControlPolicyInformer struct {
 // NewAccessControlPolicyInformer constructs a new informer for AccessControlPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAccessControlPolicyInformer]).
 func NewAccessControlPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAccessControlPolicyInformer(client, resyncPeriod, indexers, nil)
+	return NewAccessControlPolicyInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAccessControlPolicyInformer constructs a new informer for AccessControlPolicy type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAccessControlPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers AccessControlPolicyIndexers) AccessControlPolicyIndexInformer {
+	return NewTypedAccessControlPolicyInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAccessControlPolicyInformer constructs a new informer for AccessControlPolicy type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAccessControlPolicyInformer]).
 func NewFilteredAccessControlPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAccessControlPolicyInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAccessControlPolicyInformer constructs a new informer for AccessControlPolicy type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAccessControlPolicyInformer(client versioned.Interface, resyncPeriod time.Duration, indexers AccessControlPolicyIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) AccessControlPolicyIndexInformer {
+	return NewTypedAccessControlPolicyInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAccessControlPolicyInformerWithOptions constructs a new informer for AccessControlPolicy type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAccessControlPolicyInformerWithOptions]).
+func NewAccessControlPolicyInformerWithOptions(client versioned.Interface, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAccessControlPolicyInformerWithOptions(client, options)
+}
+
+// NewTypedAccessControlPolicyInformerWithOptions constructs a new informer for AccessControlPolicy type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAccessControlPolicyInformerWithOptions(client versioned.Interface, options internalinterfaces.InformerOptions) AccessControlPolicyIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "accesscontrolpolicys"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AccessControlPolicy](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().AccessControlPolicies().List(context.TODO(), options)
+				return client.HubV1alpha1().AccessControlPolicies().List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().AccessControlPolicies().Watch(context.TODO(), options)
+				return client.HubV1alpha1().AccessControlPolicies().Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().AccessControlPolicies().List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().AccessControlPolicies().Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.AccessControlPolicy{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.AccessControlPolicy{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *accessControlPolicyInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAccessControlPolicyInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAccessControlPolicyInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *accessControlPolicyInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.AccessControlPolicy{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *accessControlPolicyInformer) Lister() v1alpha1.AccessControlPolicyLister {
-	return v1alpha1.NewAccessControlPolicyLister(f.Informer().GetIndexer())
+func (f *accessControlPolicyInformer) TypedInformer() AccessControlPolicyIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AccessControlPolicy](f.factory.InformerFor(&apishubv1alpha1.AccessControlPolicy{}, f.defaultInformer))
+}
+
+func (f *accessControlPolicyInformer) Lister() hubv1alpha1.AccessControlPolicyLister {
+	return hubv1alpha1.NewAccessControlPolicyLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAccessControlPolicyInformer converts an untyped informer into a TypedAccessControlPolicyInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *AccessControlPolicy. If that is not the case, calling type-safe methods of the returned
+// TypedAccessControlPolicyInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAccessControlPolicyInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAccessControlPolicyInformer(informer AccessControlPolicyInformer) TypedAccessControlPolicyInformer {
+	if informer, ok := informer.(TypedAccessControlPolicyInformer); ok {
+		return informer
+	}
+	return &accessControlPolicyTypedInformerAdapter{informer}
+}
+
+type accessControlPolicyTypedInformerAdapter struct {
+	AccessControlPolicyInformer
+}
+
+func (a *accessControlPolicyTypedInformerAdapter) TypedInformer() AccessControlPolicyIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AccessControlPolicy](a.Informer())
+}
+
+// ToAccessControlPolicyIndexInformer converts an untyped informer into a AccessControlPolicyIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *AccessControlPolicy. If that is not the case, calling type-safe methods of the returned
+// AccessControlPolicyIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a AccessControlPolicyIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAccessControlPolicyIndexInformer(informer cache.SharedIndexInformer) AccessControlPolicyIndexInformer {
+	if informer, ok := informer.(AccessControlPolicyIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.AccessControlPolicy](informer)
 }

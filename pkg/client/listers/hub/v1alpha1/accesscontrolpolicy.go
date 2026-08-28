@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // AccessControlPolicyLister helps list AccessControlPolicies.
@@ -33,39 +33,19 @@ import (
 type AccessControlPolicyLister interface {
 	// List lists all AccessControlPolicies in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.AccessControlPolicy, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.AccessControlPolicy, err error)
 	// Get retrieves the AccessControlPolicy from the index for a given name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.AccessControlPolicy, error)
+	Get(name string) (*hubv1alpha1.AccessControlPolicy, error)
 	AccessControlPolicyListerExpansion
 }
 
 // accessControlPolicyLister implements the AccessControlPolicyLister interface.
 type accessControlPolicyLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.AccessControlPolicy]
 }
 
 // NewAccessControlPolicyLister returns a new AccessControlPolicyLister.
 func NewAccessControlPolicyLister(indexer cache.Indexer) AccessControlPolicyLister {
-	return &accessControlPolicyLister{indexer: indexer}
-}
-
-// List lists all AccessControlPolicies in the indexer.
-func (s *accessControlPolicyLister) List(selector labels.Selector) (ret []*v1alpha1.AccessControlPolicy, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.AccessControlPolicy))
-	})
-	return ret, err
-}
-
-// Get retrieves the AccessControlPolicy from the index for a given name.
-func (s *accessControlPolicyLister) Get(name string) (*v1alpha1.AccessControlPolicy, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("accesscontrolpolicy"), name)
-	}
-	return obj.(*v1alpha1.AccessControlPolicy), nil
+	return &accessControlPolicyLister{listers.New[*hubv1alpha1.AccessControlPolicy](indexer, hubv1alpha1.Resource("accesscontrolpolicy"))}
 }

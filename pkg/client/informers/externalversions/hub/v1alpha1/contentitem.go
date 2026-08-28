@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // ContentItemInformer provides access to a shared informer and lister for
-// ContentItems.
+// ContentItems. Prefer using the type-safe variant (see [TypedContentItemInformer]).
 type ContentItemInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ContentItemLister
+	Lister() hubv1alpha1.ContentItemLister
 }
+
+// TypedContentItemInformer provides access to a shared informer and lister for
+// ContentItems, including the type-safe TypedInformer variant.
+// It is a superset of ContentItemInformer.
+type TypedContentItemInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() ContentItemIndexInformer
+	Lister() hubv1alpha1.ContentItemLister
+}
+
+// ContentItemIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type ContentItemIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.ContentItem]
+
+// ContentItemHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for ContentItem.
+type ContentItemHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.ContentItem]
+
+// ContentItemDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for ContentItem.
+type ContentItemDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.ContentItem]
+
+// ContentItemFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for ContentItem.
+type ContentItemFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.ContentItem]
+
+// ContentItemIndexers is a specialization of [cache.TypedIndexers] for ContentItem.
+type ContentItemIndexers = cache.TypedIndexers[*apishubv1alpha1.ContentItem]
+
+// DeletedContentItem is a specialization of [cache.DeletedObject] for ContentItem.
+type DeletedContentItem = cache.DeletedObject[*apishubv1alpha1.ContentItem]
 
 type contentItemInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type contentItemInformer struct {
 // NewContentItemInformer constructs a new informer for ContentItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedContentItemInformer]).
 func NewContentItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredContentItemInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewContentItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedContentItemInformer constructs a new informer for ContentItem type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedContentItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers ContentItemIndexers) ContentItemIndexInformer {
+	return NewTypedContentItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredContentItemInformer constructs a new informer for ContentItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredContentItemInformer]).
 func NewFilteredContentItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedContentItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredContentItemInformer constructs a new informer for ContentItem type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredContentItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers ContentItemIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) ContentItemIndexInformer {
+	return NewTypedContentItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewContentItemInformerWithOptions constructs a new informer for ContentItem type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedContentItemInformerWithOptions]).
+func NewContentItemInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedContentItemInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedContentItemInformerWithOptions constructs a new informer for ContentItem type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedContentItemInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) ContentItemIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "contentitems"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ContentItem](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().ContentItems(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().ContentItems(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().ContentItems(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().ContentItems(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().ContentItems(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().ContentItems(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.ContentItem{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.ContentItem{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *contentItemInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredContentItemInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedContentItemInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *contentItemInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.ContentItem{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *contentItemInformer) Lister() v1alpha1.ContentItemLister {
-	return v1alpha1.NewContentItemLister(f.Informer().GetIndexer())
+func (f *contentItemInformer) TypedInformer() ContentItemIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ContentItem](f.factory.InformerFor(&apishubv1alpha1.ContentItem{}, f.defaultInformer))
+}
+
+func (f *contentItemInformer) Lister() hubv1alpha1.ContentItemLister {
+	return hubv1alpha1.NewContentItemLister(f.Informer().GetIndexer())
+}
+
+// ToTypedContentItemInformer converts an untyped informer into a TypedContentItemInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *ContentItem. If that is not the case, calling type-safe methods of the returned
+// TypedContentItemInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedContentItemInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedContentItemInformer(informer ContentItemInformer) TypedContentItemInformer {
+	if informer, ok := informer.(TypedContentItemInformer); ok {
+		return informer
+	}
+	return &contentItemTypedInformerAdapter{informer}
+}
+
+type contentItemTypedInformerAdapter struct {
+	ContentItemInformer
+}
+
+func (a *contentItemTypedInformerAdapter) TypedInformer() ContentItemIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ContentItem](a.Informer())
+}
+
+// ToContentItemIndexInformer converts an untyped informer into a ContentItemIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *ContentItem. If that is not the case, calling type-safe methods of the returned
+// ContentItemIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a ContentItemIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToContentItemIndexInformer(informer cache.SharedIndexInformer) ContentItemIndexInformer {
+	if informer, ok := informer.(ContentItemIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.ContentItem](informer)
 }

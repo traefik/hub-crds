@@ -148,7 +148,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "duplicated API: implicit default",
@@ -164,7 +164,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "invalid API selector",
@@ -219,7 +219,7 @@ spec:
   managedApplications:
     - name: my-managed-application
     - name: my-managed-application`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.managedApplications", BadValue: "array", Detail: "duplicated managed applications"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.managedApplications", BadValue: field.OmitValueType{}, Detail: "duplicated managed applications"}},
 		},
 	}
 

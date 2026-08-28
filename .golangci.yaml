@@ -5,7 +5,9 @@ linters:
     - dupl
     - err113
     - exhaustruct
+    - exhaustruct_v5
     - gochecknoglobals
+    - gomodguard
     - ireturn
     - lll
     - wrapcheck
@@ -50,6 +52,7 @@ linters:
     goconst:
       min-len: 5
       min-occurrences: 3
+      ignore-tests: true
     godox:
       keywords:
         - FIXME
@@ -104,7 +107,8 @@ formatters:
     - goimports
   settings:
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
   exclusions:
     generated: lax
     paths:

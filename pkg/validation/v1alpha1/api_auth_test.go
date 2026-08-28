@@ -98,7 +98,7 @@ spec:
     keySource:
       header: X-API-Key
       headerAuthScheme: Bearer`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKey.keySource", BadValue: "object", Detail: "headerAuthScheme can only be used when header is 'Authorization'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apiKey.keySource", BadValue: field.OmitValueType{}, Detail: "headerAuthScheme can only be used when header is 'Authorization'"}},
 		},
 		{
 			desc: "valid: JWT with signing secret",
@@ -394,7 +394,7 @@ metadata:
   namespace: default
 spec:
   isDefault: true`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one authentication method must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one authentication method must be specified"}},
 		},
 		{
 			desc: "multiple authentication methods specified",
@@ -410,7 +410,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     signingSecretName: "jwt-secret"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one authentication method must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one authentication method must be specified"}},
 		},
 		{
 			desc: "multiple authentication methods specified with keyless",
@@ -424,7 +424,7 @@ spec:
   isDefault: true
   keyless: {}
   apiKey: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one authentication method must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one authentication method must be specified"}},
 		},
 		{
 			desc: "JWT missing required appIdClaim",
@@ -468,7 +468,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     jwksUrl: "not-a-url"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "not-a-url", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "JWT missing verification method",
@@ -483,7 +483,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     stripAuthorizationHeader: true`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: field.OmitValueType{}, Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
 		},
 		{
 			desc: "JWT multiple verification methods",
@@ -499,7 +499,7 @@ spec:
     appIdClaim: "client_id"
     signingSecretName: "jwt-secret"
     publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: field.OmitValueType{}, Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
 		},
 		{
 			desc: "JWT trustedIssuers with invalid JWKS URL",
@@ -516,7 +516,7 @@ spec:
     trustedIssuers:
       - jwksUrl: "not-a-valid-url"
         issuer: "https://tenant-a.example.com/"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "not-a-valid-url", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "JWT trustedIssuers combined with jwksUrl, mutual exclusivity",
@@ -534,7 +534,7 @@ spec:
     trustedIssuers:
       - jwksUrl: "https://tenant-a.example.com/jwks.json"
         issuer: "https://tenant-a.example.com/"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: field.OmitValueType{}, Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
 		},
 		{
 			desc: "JWT trustedIssuers combined with publicKey, mutual exclusivity",
@@ -552,7 +552,7 @@ spec:
     trustedIssuers:
       - jwksUrl: "https://tenant-a.example.com/jwks.json"
         issuer: "https://tenant-a.example.com/"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: field.OmitValueType{}, Detail: "exactly one of signingSecretName, publicKey, jwksFile, jwksUrl, or trustedIssuers must be specified"}},
 		},
 		{
 			desc: "JWT trustedIssuers with empty array",
@@ -569,7 +569,7 @@ spec:
     trustedIssuers: []`),
 			wantErrs: field.ErrorList{
 				{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers", BadValue: int64(0), Detail: "spec.jwt.trustedIssuers in body should have at least 1 items"},
-				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "trustedIssuers must not be empty when specified"},
+				{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: field.OmitValueType{}, Detail: "trustedIssuers must not be empty when specified"},
 			},
 		},
 		{
@@ -587,7 +587,7 @@ spec:
     trustedIssuers:
       - jwksUrl: "https://fallback-1.example.com/jwks.json"
       - jwksUrl: "https://fallback-2.example.com/jwks.json"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: "object", Detail: "only one entry in trustedIssuers may omit the issuer field"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt", BadValue: field.OmitValueType{}, Detail: "only one entry in trustedIssuers may omit the issuer field"}},
 		},
 		{
 			desc: "JWT trustedIssuers with empty jwksUrl",
@@ -604,7 +604,7 @@ spec:
     trustedIssuers:
       - jwksUrl: ""
         issuer: "https://tenant-a.example.com/"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "JWT trustedIssuers with HTTP URL (not HTTPS)",
@@ -621,7 +621,7 @@ spec:
     trustedIssuers:
       - jwksUrl: "http://tenant-a.example.com/jwks.json"
         issuer: "https://tenant-a.example.com/"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.trustedIssuers[0].jwksUrl", BadValue: "http://tenant-a.example.com/jwks.json", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "JWT jwksUrl with HTTP URL (not HTTPS)",
@@ -636,7 +636,7 @@ spec:
   jwt:
     appIdClaim: "client_id"
     jwksUrl: "http://example.com/.well-known/jwks.json"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "string", Detail: "must be a valid HTTPS URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.jwksUrl", BadValue: "http://example.com/.well-known/jwks.json", Detail: "must be a valid HTTPS URL"}},
 		},
 		{
 			desc: "LDAP missing required URL",
@@ -679,7 +679,7 @@ spec:
   ldap:
     url: "https://ldap.example.com"
     baseDn: "dc=example,dc=com"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ldap.url", BadValue: "string", Detail: "must be a valid LDAP URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ldap.url", BadValue: "https://ldap.example.com", Detail: "must be a valid LDAP URL"}},
 		},
 		{
 			desc: "LDAP bindPasswordSecretName too long",

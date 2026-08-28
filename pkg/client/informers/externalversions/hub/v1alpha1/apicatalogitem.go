@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APICatalogItemInformer provides access to a shared informer and lister for
-// APICatalogItems.
+// APICatalogItems. Prefer using the type-safe variant (see [TypedAPICatalogItemInformer]).
 type APICatalogItemInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APICatalogItemLister
+	Lister() hubv1alpha1.APICatalogItemLister
 }
+
+// TypedAPICatalogItemInformer provides access to a shared informer and lister for
+// APICatalogItems, including the type-safe TypedInformer variant.
+// It is a superset of APICatalogItemInformer.
+type TypedAPICatalogItemInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APICatalogItemIndexInformer
+	Lister() hubv1alpha1.APICatalogItemLister
+}
+
+// APICatalogItemIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APICatalogItemIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APICatalogItem]
+
+// APICatalogItemHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APICatalogItem.
+type APICatalogItemHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APICatalogItem]
+
+// APICatalogItemDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APICatalogItem.
+type APICatalogItemDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APICatalogItem]
+
+// APICatalogItemFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APICatalogItem.
+type APICatalogItemFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APICatalogItem]
+
+// APICatalogItemIndexers is a specialization of [cache.TypedIndexers] for APICatalogItem.
+type APICatalogItemIndexers = cache.TypedIndexers[*apishubv1alpha1.APICatalogItem]
+
+// DeletedAPICatalogItem is a specialization of [cache.DeletedObject] for APICatalogItem.
+type DeletedAPICatalogItem = cache.DeletedObject[*apishubv1alpha1.APICatalogItem]
 
 type aPICatalogItemInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPICatalogItemInformer struct {
 // NewAPICatalogItemInformer constructs a new informer for APICatalogItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPICatalogItemInformer]).
 func NewAPICatalogItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPICatalogItemInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPICatalogItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPICatalogItemInformer constructs a new informer for APICatalogItem type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPICatalogItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APICatalogItemIndexers) APICatalogItemIndexInformer {
+	return NewTypedAPICatalogItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPICatalogItemInformer constructs a new informer for APICatalogItem type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPICatalogItemInformer]).
 func NewFilteredAPICatalogItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPICatalogItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPICatalogItemInformer constructs a new informer for APICatalogItem type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPICatalogItemInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APICatalogItemIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APICatalogItemIndexInformer {
+	return NewTypedAPICatalogItemInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPICatalogItemInformerWithOptions constructs a new informer for APICatalogItem type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPICatalogItemInformerWithOptions]).
+func NewAPICatalogItemInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPICatalogItemInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPICatalogItemInformerWithOptions constructs a new informer for APICatalogItem type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPICatalogItemInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APICatalogItemIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apicatalogitems"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APICatalogItem](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APICatalogItems(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APICatalogItems(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APICatalogItems(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APICatalogItems(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APICatalogItems(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APICatalogItems(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APICatalogItem{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APICatalogItem{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPICatalogItemInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPICatalogItemInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPICatalogItemInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPICatalogItemInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APICatalogItem{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPICatalogItemInformer) Lister() v1alpha1.APICatalogItemLister {
-	return v1alpha1.NewAPICatalogItemLister(f.Informer().GetIndexer())
+func (f *aPICatalogItemInformer) TypedInformer() APICatalogItemIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APICatalogItem](f.factory.InformerFor(&apishubv1alpha1.APICatalogItem{}, f.defaultInformer))
+}
+
+func (f *aPICatalogItemInformer) Lister() hubv1alpha1.APICatalogItemLister {
+	return hubv1alpha1.NewAPICatalogItemLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPICatalogItemInformer converts an untyped informer into a TypedAPICatalogItemInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APICatalogItem. If that is not the case, calling type-safe methods of the returned
+// TypedAPICatalogItemInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPICatalogItemInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPICatalogItemInformer(informer APICatalogItemInformer) TypedAPICatalogItemInformer {
+	if informer, ok := informer.(TypedAPICatalogItemInformer); ok {
+		return informer
+	}
+	return &aPICatalogItemTypedInformerAdapter{informer}
+}
+
+type aPICatalogItemTypedInformerAdapter struct {
+	APICatalogItemInformer
+}
+
+func (a *aPICatalogItemTypedInformerAdapter) TypedInformer() APICatalogItemIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APICatalogItem](a.Informer())
+}
+
+// ToAPICatalogItemIndexInformer converts an untyped informer into a APICatalogItemIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APICatalogItem. If that is not the case, calling type-safe methods of the returned
+// APICatalogItemIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APICatalogItemIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPICatalogItemIndexInformer(informer cache.SharedIndexInformer) APICatalogItemIndexInformer {
+	if informer, ok := informer.(APICatalogItemIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APICatalogItem](informer)
 }

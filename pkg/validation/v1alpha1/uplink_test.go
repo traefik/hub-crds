@@ -151,7 +151,7 @@ metadata:
   namespace: default
 spec:
   weight: -1`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.weight", BadValue: "integer", Detail: "must be a positive number"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.weight", BadValue: int64(-1), Detail: "must be a positive number"}},
 		},
 		{
 			desc: "valid: with healthcheck",

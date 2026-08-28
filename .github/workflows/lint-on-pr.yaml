@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 env:
   # renovate: datasource=github-releases depName=golangci/golangci-lint
-  golang_ci_lint_version: v2.7.2
+  golang_ci_lint_version: v2.13.2
 permissions:
   contents: read
 

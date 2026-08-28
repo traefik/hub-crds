@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package externalversions
 
 import (
-	"fmt"
+	fmt "fmt"
 
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

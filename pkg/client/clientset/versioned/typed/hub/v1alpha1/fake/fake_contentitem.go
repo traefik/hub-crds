@@ -22,123 +22,34 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package fake
 
 import (
-	"context"
-
 	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	labels "k8s.io/apimachinery/pkg/labels"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	testing "k8s.io/client-go/testing"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/clientset/versioned/typed/hub/v1alpha1"
+	gentype "k8s.io/client-go/gentype"
 )
 
-// FakeContentItems implements ContentItemInterface
-type FakeContentItems struct {
+// fakeContentItems implements ContentItemInterface
+type fakeContentItems struct {
+	*gentype.FakeClientWithList[*v1alpha1.ContentItem, *v1alpha1.ContentItemList]
 	Fake *FakeHubV1alpha1
-	ns   string
 }
 
-var contentitemsResource = v1alpha1.SchemeGroupVersion.WithResource("contentitems")
-
-var contentitemsKind = v1alpha1.SchemeGroupVersion.WithKind("ContentItem")
-
-// Get takes name of the contentItem, and returns the corresponding contentItem object, and an error if there is any.
-func (c *FakeContentItems) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.ContentItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(contentitemsResource, c.ns, name), &v1alpha1.ContentItem{})
-
-	if obj == nil {
-		return nil, err
+func newFakeContentItems(fake *FakeHubV1alpha1, namespace string) hubv1alpha1.ContentItemInterface {
+	return &fakeContentItems{
+		gentype.NewFakeClientWithList[*v1alpha1.ContentItem, *v1alpha1.ContentItemList](
+			fake.Fake,
+			namespace,
+			v1alpha1.SchemeGroupVersion.WithResource("contentitems"),
+			v1alpha1.SchemeGroupVersion.WithKind("ContentItem"),
+			func() *v1alpha1.ContentItem { return &v1alpha1.ContentItem{} },
+			func() *v1alpha1.ContentItemList { return &v1alpha1.ContentItemList{} },
+			func(dst, src *v1alpha1.ContentItemList) { dst.ListMeta = src.ListMeta },
+			func(list *v1alpha1.ContentItemList) []*v1alpha1.ContentItem {
+				return gentype.ToPointerSlice(list.Items)
+			},
+			func(list *v1alpha1.ContentItemList, items []*v1alpha1.ContentItem) {
+				list.Items = gentype.FromPointerSlice(items)
+			},
+		),
+		fake,
 	}
-	return obj.(*v1alpha1.ContentItem), err
-}
-
-// List takes label and field selectors, and returns the list of ContentItems that match those selectors.
-func (c *FakeContentItems) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.ContentItemList, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewListAction(contentitemsResource, contentitemsKind, c.ns, opts), &v1alpha1.ContentItemList{})
-
-	if obj == nil {
-		return nil, err
-	}
-
-	label, _, _ := testing.ExtractFromListOptions(opts)
-	if label == nil {
-		label = labels.Everything()
-	}
-	list := &v1alpha1.ContentItemList{ListMeta: obj.(*v1alpha1.ContentItemList).ListMeta}
-	for _, item := range obj.(*v1alpha1.ContentItemList).Items {
-		if label.Matches(labels.Set(item.Labels)) {
-			list.Items = append(list.Items, item)
-		}
-	}
-	return list, err
-}
-
-// Watch returns a watch.Interface that watches the requested contentItems.
-func (c *FakeContentItems) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(contentitemsResource, c.ns, opts))
-
-}
-
-// Create takes the representation of a contentItem and creates it.  Returns the server's representation of the contentItem, and an error, if there is any.
-func (c *FakeContentItems) Create(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.CreateOptions) (result *v1alpha1.ContentItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(contentitemsResource, c.ns, contentItem), &v1alpha1.ContentItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.ContentItem), err
-}
-
-// Update takes the representation of a contentItem and updates it. Returns the server's representation of the contentItem, and an error, if there is any.
-func (c *FakeContentItems) Update(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.UpdateOptions) (result *v1alpha1.ContentItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(contentitemsResource, c.ns, contentItem), &v1alpha1.ContentItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.ContentItem), err
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeContentItems) UpdateStatus(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.UpdateOptions) (*v1alpha1.ContentItem, error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateSubresourceAction(contentitemsResource, "status", c.ns, contentItem), &v1alpha1.ContentItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.ContentItem), err
-}
-
-// Delete takes name of the contentItem and deletes it. Returns an error if one occurs.
-func (c *FakeContentItems) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteActionWithOptions(contentitemsResource, c.ns, name, opts), &v1alpha1.ContentItem{})
-
-	return err
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *FakeContentItems) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(contentitemsResource, c.ns, listOpts)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.ContentItemList{})
-	return err
-}
-
-// Patch applies the patch and returns the patched contentItem.
-func (c *FakeContentItems) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ContentItem, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(contentitemsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ContentItem{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.ContentItem), err
 }

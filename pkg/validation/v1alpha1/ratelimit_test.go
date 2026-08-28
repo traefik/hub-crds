@@ -113,7 +113,7 @@ spec:
   everyone: true
   groups:
     - my-group`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "groups and everyone are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "groups and everyone are mutually exclusive"}},
 		},
 		{
 			desc: "limit must be a positive integer",
@@ -126,7 +126,7 @@ metadata:
 spec:
   limit: -10
 `),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.limit", BadValue: "integer", Detail: "must be a positive number"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.limit", BadValue: int64(-10), Detail: "must be a positive number"}},
 		},
 		{
 			desc: "period must be less than 1 hour",
@@ -140,7 +140,7 @@ spec:
   limit: 1
   period: 2h
 `),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.period", BadValue: "string", Detail: "must be between 1s and 1h"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.period", BadValue: "2h", Detail: "must be between 1s and 1h"}},
 		},
 		{
 			desc: "period must be more than 1 second",
@@ -154,7 +154,7 @@ spec:
   limit: 1
   period: 0s
 `),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.period", BadValue: "string", Detail: "must be between 1s and 1h"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.period", BadValue: "0s", Detail: "must be between 1s and 1h"}},
 		},
 		{
 			desc: "strategy must be local or distributed",
@@ -183,7 +183,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "duplicated API: implicit default",
@@ -198,7 +198,7 @@ spec:
   apis:
     - name: my-api
     - name: my-api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: "array", Detail: "duplicated apis"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.apis", BadValue: field.OmitValueType{}, Detail: "duplicated apis"}},
 		},
 		{
 			desc: "invalid API selector",

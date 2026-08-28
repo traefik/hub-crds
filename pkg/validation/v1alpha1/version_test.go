@@ -157,7 +157,7 @@ metadata:
 spec:
   release: v1.0.0
   openApiSpec: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec", BadValue: "object", Detail: "path or url must be defined"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec", BadValue: field.OmitValueType{}, Detail: "path or url must be defined"}},
 		},
 		{
 			desc: "openApiSpec url must be a valid URL",
@@ -171,7 +171,7 @@ spec:
   release: v1.0.0
   openApiSpec:
     url: ../invalid-spec-url.json`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.url", BadValue: "string", Detail: "must be a valid URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.url", BadValue: "../invalid-spec-url.json", Detail: "must be a valid URL"}},
 		},
 		{
 			desc: "openApiSpec path must start with a /",
@@ -185,7 +185,7 @@ spec:
   release: v1.0.0
   openApiSpec:
     path: something`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "must start with a '/'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "something", Detail: "must start with a '/'"}},
 		},
 		{
 			desc: "openApiSpec path cannot contains ../",
@@ -199,7 +199,7 @@ spec:
   release: v1.0.0
   openApiSpec:
     path: /foo/../bar`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "cannot contains '../'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "/foo/../bar", Detail: "cannot contains '../'"}},
 		},
 		{
 			desc: "openApiSpec path cannot ends with /..",
@@ -213,7 +213,7 @@ spec:
   release: v1.0.0
   openApiSpec:
     path: /foo/..`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "string", Detail: "cannot contains '../'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.path", BadValue: "/foo/..", Detail: "cannot contains '../'"}},
 		},
 		{
 			desc: "valid: openApiSpec path with segment starting with ..",
@@ -313,7 +313,7 @@ spec:
       matchers:
       - path: /foo
         pathPrefix: /foo`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: field.OmitValueType{}, Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
 			desc: "operationSet matcher path and pathRegex are mutually exclusive",
@@ -332,7 +332,7 @@ spec:
       matchers:
       - path: /foo
         pathRegex: /.*/foo`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: field.OmitValueType{}, Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
 			desc: "operationSet matcher pathPrefix and pathRegex are mutually exclusive",
@@ -351,7 +351,7 @@ spec:
       matchers:
       - pathPrefix: /foo
         pathRegex: /.*/foo`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: field.OmitValueType{}, Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
 			desc: "operationSet matcher path, pathPrefix and pathRegex are mutually exclusive",
@@ -371,7 +371,7 @@ spec:
           - path: /foo
             pathPrefix: /foo
             pathRegex: /.*/foo`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: "object", Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0]", BadValue: field.OmitValueType{}, Detail: "path, pathPrefix and pathRegex are mutually exclusive"}},
 		},
 		{
 			desc: "operationSet matcher path must start with a /",
@@ -389,7 +389,7 @@ spec:
       - name: my-operation-set
         matchers:
           - path: something`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "string", Detail: "must start with a '/'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "something", Detail: "must start with a '/'"}},
 		},
 		{
 			desc: "operationSet matcher path cannot contains ../",
@@ -407,7 +407,7 @@ spec:
       - name: my-operation-set
         matchers:
           - path: /foo/../bar`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "string", Detail: "cannot contains '../'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "/foo/../bar", Detail: "cannot contains '../'"}},
 		},
 		{
 			desc: "operationSet matcher path cannot ends with /..",
@@ -425,7 +425,7 @@ spec:
       - name: my-operation-set
         matchers:
           - path: /foo/..`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "string", Detail: "cannot contains '../'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].path", BadValue: "/foo/..", Detail: "cannot contains '../'"}},
 		},
 		{
 			desc: "valid: operationSet matcher path with segment starting with ..",
@@ -460,7 +460,7 @@ spec:
       - name: my-operation-set
         matchers:
           - pathPrefix: something`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "string", Detail: "must start with a '/'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "something", Detail: "must start with a '/'"}},
 		},
 		{
 			desc: "operationSet matcher pathPrefix cannot contains ../",
@@ -478,7 +478,7 @@ spec:
       - name: my-operation-set
         matchers:
           - pathPrefix: /foo/../bar`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "string", Detail: "cannot contains '../'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "/foo/../bar", Detail: "cannot contains '../'"}},
 		},
 		{
 			desc: "operationSet matcher pathPrefix cannot ends with /..",
@@ -496,7 +496,7 @@ spec:
       - name: my-operation-set
         matchers:
           - pathPrefix: /foo/..`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "string", Detail: "cannot contains '../'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.operationSets[0].matchers[0].pathPrefix", BadValue: "/foo/..", Detail: "cannot contains '../'"}},
 		},
 		{
 			desc: "valid: operationSet matcher pathPrefix with segment starting with ..",
@@ -545,7 +545,7 @@ spec:
   release: something
   openApiSpec:
     path: /api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.release", BadValue: "string", Detail: "must be a valid semver version"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.release", BadValue: "something", Detail: "must be a valid semver version"}},
 		},
 		{
 			desc: "release must be a valid semver version: not a number minor",
@@ -559,7 +559,7 @@ spec:
   release: v1.a
   openApiSpec:
     path: /api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.release", BadValue: "string", Detail: "must be a valid semver version"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.release", BadValue: "v1.a", Detail: "must be a valid semver version"}},
 		},
 		{
 			desc: "release must be a valid semver version: too many dot",
@@ -573,7 +573,7 @@ spec:
   release: v1.1.1.1
   openApiSpec:
     path: /api`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.release", BadValue: "string", Detail: "must be a valid semver version"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.release", BadValue: "v1.1.1.1", Detail: "must be a valid semver version"}},
 		},
 		{
 			desc: "valid: release is a valid semver version",
@@ -614,7 +614,7 @@ spec:
   openApiSpec:
     path: /openapi.json
     refreshInterval: 30s`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.refreshInterval", BadValue: "string", Detail: "must be at least 1m"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.openApiSpec.refreshInterval", BadValue: "30s", Detail: "must be at least 1m"}},
 		},
 	}
 

@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // ContentItemLister helps list ContentItems.
@@ -33,7 +33,7 @@ import (
 type ContentItemLister interface {
 	// List lists all ContentItems in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.ContentItem, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.ContentItem, err error)
 	// ContentItems returns an object that can list and get ContentItems.
 	ContentItems(namespace string) ContentItemNamespaceLister
 	ContentItemListerExpansion
@@ -41,25 +41,17 @@ type ContentItemLister interface {
 
 // contentItemLister implements the ContentItemLister interface.
 type contentItemLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.ContentItem]
 }
 
 // NewContentItemLister returns a new ContentItemLister.
 func NewContentItemLister(indexer cache.Indexer) ContentItemLister {
-	return &contentItemLister{indexer: indexer}
-}
-
-// List lists all ContentItems in the indexer.
-func (s *contentItemLister) List(selector labels.Selector) (ret []*v1alpha1.ContentItem, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ContentItem))
-	})
-	return ret, err
+	return &contentItemLister{listers.New[*hubv1alpha1.ContentItem](indexer, hubv1alpha1.Resource("contentitem"))}
 }
 
 // ContentItems returns an object that can list and get ContentItems.
 func (s *contentItemLister) ContentItems(namespace string) ContentItemNamespaceLister {
-	return contentItemNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return contentItemNamespaceLister{listers.NewNamespaced[*hubv1alpha1.ContentItem](s.ResourceIndexer, namespace)}
 }
 
 // ContentItemNamespaceLister helps list and get ContentItems.
@@ -67,36 +59,15 @@ func (s *contentItemLister) ContentItems(namespace string) ContentItemNamespaceL
 type ContentItemNamespaceLister interface {
 	// List lists all ContentItems in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.ContentItem, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.ContentItem, err error)
 	// Get retrieves the ContentItem from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.ContentItem, error)
+	Get(name string) (*hubv1alpha1.ContentItem, error)
 	ContentItemNamespaceListerExpansion
 }
 
 // contentItemNamespaceLister implements the ContentItemNamespaceLister
 // interface.
 type contentItemNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all ContentItems in the indexer for a given namespace.
-func (s contentItemNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ContentItem, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ContentItem))
-	})
-	return ret, err
-}
-
-// Get retrieves the ContentItem from the indexer for a given namespace and name.
-func (s contentItemNamespaceLister) Get(name string) (*v1alpha1.ContentItem, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("contentitem"), name)
-	}
-	return obj.(*v1alpha1.ContentItem), nil
+	listers.ResourceIndexer[*hubv1alpha1.ContentItem]
 }

@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIBundleInformer provides access to a shared informer and lister for
-// APIBundles.
+// APIBundles. Prefer using the type-safe variant (see [TypedAPIBundleInformer]).
 type APIBundleInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APIBundleLister
+	Lister() hubv1alpha1.APIBundleLister
 }
+
+// TypedAPIBundleInformer provides access to a shared informer and lister for
+// APIBundles, including the type-safe TypedInformer variant.
+// It is a superset of APIBundleInformer.
+type TypedAPIBundleInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APIBundleIndexInformer
+	Lister() hubv1alpha1.APIBundleLister
+}
+
+// APIBundleIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APIBundleIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APIBundle]
+
+// APIBundleHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APIBundle.
+type APIBundleHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APIBundle]
+
+// APIBundleDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APIBundle.
+type APIBundleDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APIBundle]
+
+// APIBundleFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APIBundle.
+type APIBundleFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APIBundle]
+
+// APIBundleIndexers is a specialization of [cache.TypedIndexers] for APIBundle.
+type APIBundleIndexers = cache.TypedIndexers[*apishubv1alpha1.APIBundle]
+
+// DeletedAPIBundle is a specialization of [cache.DeletedObject] for APIBundle.
+type DeletedAPIBundle = cache.DeletedObject[*apishubv1alpha1.APIBundle]
 
 type aPIBundleInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPIBundleInformer struct {
 // NewAPIBundleInformer constructs a new informer for APIBundle type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIBundleInformer]).
 func NewAPIBundleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIBundleInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPIBundleInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPIBundleInformer constructs a new informer for APIBundle type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIBundleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIBundleIndexers) APIBundleIndexInformer {
+	return NewTypedAPIBundleInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPIBundleInformer constructs a new informer for APIBundle type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPIBundleInformer]).
 func NewFilteredAPIBundleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPIBundleInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPIBundleInformer constructs a new informer for APIBundle type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPIBundleInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIBundleIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APIBundleIndexInformer {
+	return NewTypedAPIBundleInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPIBundleInformerWithOptions constructs a new informer for APIBundle type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIBundleInformerWithOptions]).
+func NewAPIBundleInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPIBundleInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPIBundleInformerWithOptions constructs a new informer for APIBundle type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIBundleInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APIBundleIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apibundles"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIBundle](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIBundles(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APIBundles(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIBundles(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIBundles(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIBundles(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIBundles(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APIBundle{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APIBundle{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPIBundleInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIBundleInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPIBundleInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPIBundleInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APIBundle{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPIBundleInformer) Lister() v1alpha1.APIBundleLister {
-	return v1alpha1.NewAPIBundleLister(f.Informer().GetIndexer())
+func (f *aPIBundleInformer) TypedInformer() APIBundleIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIBundle](f.factory.InformerFor(&apishubv1alpha1.APIBundle{}, f.defaultInformer))
+}
+
+func (f *aPIBundleInformer) Lister() hubv1alpha1.APIBundleLister {
+	return hubv1alpha1.NewAPIBundleLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPIBundleInformer converts an untyped informer into a TypedAPIBundleInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIBundle. If that is not the case, calling type-safe methods of the returned
+// TypedAPIBundleInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPIBundleInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPIBundleInformer(informer APIBundleInformer) TypedAPIBundleInformer {
+	if informer, ok := informer.(TypedAPIBundleInformer); ok {
+		return informer
+	}
+	return &aPIBundleTypedInformerAdapter{informer}
+}
+
+type aPIBundleTypedInformerAdapter struct {
+	APIBundleInformer
+}
+
+func (a *aPIBundleTypedInformerAdapter) TypedInformer() APIBundleIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIBundle](a.Informer())
+}
+
+// ToAPIBundleIndexInformer converts an untyped informer into a APIBundleIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIBundle. If that is not the case, calling type-safe methods of the returned
+// APIBundleIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APIBundleIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPIBundleIndexInformer(informer cache.SharedIndexInformer) APIBundleIndexInformer {
+	if informer, ok := informer.(APIBundleIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIBundle](informer)
 }

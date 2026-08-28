@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIAuthInformer provides access to a shared informer and lister for
-// APIAuths.
+// APIAuths. Prefer using the type-safe variant (see [TypedAPIAuthInformer]).
 type APIAuthInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APIAuthLister
+	Lister() hubv1alpha1.APIAuthLister
 }
+
+// TypedAPIAuthInformer provides access to a shared informer and lister for
+// APIAuths, including the type-safe TypedInformer variant.
+// It is a superset of APIAuthInformer.
+type TypedAPIAuthInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APIAuthIndexInformer
+	Lister() hubv1alpha1.APIAuthLister
+}
+
+// APIAuthIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APIAuthIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APIAuth]
+
+// APIAuthHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APIAuth.
+type APIAuthHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APIAuth]
+
+// APIAuthDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APIAuth.
+type APIAuthDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APIAuth]
+
+// APIAuthFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APIAuth.
+type APIAuthFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APIAuth]
+
+// APIAuthIndexers is a specialization of [cache.TypedIndexers] for APIAuth.
+type APIAuthIndexers = cache.TypedIndexers[*apishubv1alpha1.APIAuth]
+
+// DeletedAPIAuth is a specialization of [cache.DeletedObject] for APIAuth.
+type DeletedAPIAuth = cache.DeletedObject[*apishubv1alpha1.APIAuth]
 
 type aPIAuthInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPIAuthInformer struct {
 // NewAPIAuthInformer constructs a new informer for APIAuth type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIAuthInformer]).
 func NewAPIAuthInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIAuthInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPIAuthInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPIAuthInformer constructs a new informer for APIAuth type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIAuthInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIAuthIndexers) APIAuthIndexInformer {
+	return NewTypedAPIAuthInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPIAuthInformer constructs a new informer for APIAuth type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPIAuthInformer]).
 func NewFilteredAPIAuthInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPIAuthInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPIAuthInformer constructs a new informer for APIAuth type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPIAuthInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIAuthIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APIAuthIndexInformer {
+	return NewTypedAPIAuthInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPIAuthInformerWithOptions constructs a new informer for APIAuth type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIAuthInformerWithOptions]).
+func NewAPIAuthInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPIAuthInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPIAuthInformerWithOptions constructs a new informer for APIAuth type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIAuthInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APIAuthIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apiauths"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIAuth](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIAuths(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APIAuths(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIAuths(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIAuths(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIAuths(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIAuths(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APIAuth{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APIAuth{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPIAuthInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIAuthInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPIAuthInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPIAuthInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APIAuth{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPIAuthInformer) Lister() v1alpha1.APIAuthLister {
-	return v1alpha1.NewAPIAuthLister(f.Informer().GetIndexer())
+func (f *aPIAuthInformer) TypedInformer() APIAuthIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIAuth](f.factory.InformerFor(&apishubv1alpha1.APIAuth{}, f.defaultInformer))
+}
+
+func (f *aPIAuthInformer) Lister() hubv1alpha1.APIAuthLister {
+	return hubv1alpha1.NewAPIAuthLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPIAuthInformer converts an untyped informer into a TypedAPIAuthInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIAuth. If that is not the case, calling type-safe methods of the returned
+// TypedAPIAuthInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPIAuthInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPIAuthInformer(informer APIAuthInformer) TypedAPIAuthInformer {
+	if informer, ok := informer.(TypedAPIAuthInformer); ok {
+		return informer
+	}
+	return &aPIAuthTypedInformerAdapter{informer}
+}
+
+type aPIAuthTypedInformerAdapter struct {
+	APIAuthInformer
+}
+
+func (a *aPIAuthTypedInformerAdapter) TypedInformer() APIAuthIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIAuth](a.Informer())
+}
+
+// ToAPIAuthIndexInformer converts an untyped informer into a APIAuthIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIAuth. If that is not the case, calling type-safe methods of the returned
+// APIAuthIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APIAuthIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPIAuthIndexInformer(informer cache.SharedIndexInformer) APIAuthIndexInformer {
+	if informer, ok := informer.(APIAuthIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIAuth](informer)
 }

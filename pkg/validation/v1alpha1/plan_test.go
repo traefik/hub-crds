@@ -162,7 +162,7 @@ spec:
   quota:
     limit: -10
 `),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.quota.limit", BadValue: "integer", Detail: "must be a positive number"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.quota.limit", BadValue: int64(-10), Detail: "must be a positive number"}},
 		},
 		{
 			desc: "ratelimit limit must be a positive integer",
@@ -176,7 +176,7 @@ spec:
   title: my-plan
   rateLimit:
     limit: -1`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.limit", BadValue: "integer", Detail: "must be a positive number"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.limit", BadValue: int64(-1), Detail: "must be a positive number"}},
 		},
 		{
 			desc: "quota period must be less than 9999 hour",
@@ -191,7 +191,7 @@ spec:
   quota:
     limit: 1
     period: 10000h`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.quota.period", BadValue: "string", Detail: "must be between 1s and 9999h"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.quota.period", BadValue: "10000h", Detail: "must be between 1s and 9999h"}},
 		},
 		{
 			desc: "rate limit period must be less than 1 hour",
@@ -206,7 +206,7 @@ spec:
   rateLimit:
     limit: 1
     period: 2h`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.period", BadValue: "string", Detail: "must be between 1s and 1h"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.period", BadValue: "2h", Detail: "must be between 1s and 1h"}},
 		},
 		{
 			desc: "quota period must be more than 1 second",
@@ -221,7 +221,7 @@ spec:
   quota:
     limit: 1
     period: 0s`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.quota.period", BadValue: "string", Detail: "must be between 1s and 9999h"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.quota.period", BadValue: "0s", Detail: "must be between 1s and 9999h"}},
 		},
 		{
 			desc: "ratelimit period must be more than 1 second",
@@ -236,7 +236,7 @@ spec:
   rateLimit:
     limit: 1
     period: 0s`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.period", BadValue: "string", Detail: "must be between 1s and 1h"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.rateLimit.period", BadValue: "0s", Detail: "must be between 1s and 1h"}},
 		},
 		{
 			desc: "invalid bucket value for rateLimit",

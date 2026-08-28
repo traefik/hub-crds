@@ -24,7 +24,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/traefik/hub-crds/pkg/validation"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
@@ -35,7 +34,7 @@ func TestValidator_Validate(t *testing.T) {
 	validator := validation.NewValidator()
 
 	err := validator.Register(&apiextensions.CustomResourceDefinition{
-		ObjectMeta: metav1.ObjectMeta{Name: "MyResource"},
+		Name: "MyResource",
 		Spec: apiextensions.CustomResourceDefinitionSpec{
 			Names: apiextensions.CustomResourceDefinitionNames{
 				Kind: "MyResource",
@@ -128,7 +127,7 @@ func TestValidator_Validate(t *testing.T) {
 					"baz": "foobar",
 				},
 			},
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.baz", BadValue: "string", Detail: "must start with 'baz'"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.baz", BadValue: "foobar", Detail: "must start with 'baz'"}},
 		},
 		{
 			desc: "invalid field type",

@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIRateLimitLister helps list APIRateLimits.
@@ -33,7 +33,7 @@ import (
 type APIRateLimitLister interface {
 	// List lists all APIRateLimits in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIRateLimit, err error)
 	// APIRateLimits returns an object that can list and get APIRateLimits.
 	APIRateLimits(namespace string) APIRateLimitNamespaceLister
 	APIRateLimitListerExpansion
@@ -41,25 +41,17 @@ type APIRateLimitLister interface {
 
 // aPIRateLimitLister implements the APIRateLimitLister interface.
 type aPIRateLimitLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.APIRateLimit]
 }
 
 // NewAPIRateLimitLister returns a new APIRateLimitLister.
 func NewAPIRateLimitLister(indexer cache.Indexer) APIRateLimitLister {
-	return &aPIRateLimitLister{indexer: indexer}
-}
-
-// List lists all APIRateLimits in the indexer.
-func (s *aPIRateLimitLister) List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIRateLimit))
-	})
-	return ret, err
+	return &aPIRateLimitLister{listers.New[*hubv1alpha1.APIRateLimit](indexer, hubv1alpha1.Resource("apiratelimit"))}
 }
 
 // APIRateLimits returns an object that can list and get APIRateLimits.
 func (s *aPIRateLimitLister) APIRateLimits(namespace string) APIRateLimitNamespaceLister {
-	return aPIRateLimitNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return aPIRateLimitNamespaceLister{listers.NewNamespaced[*hubv1alpha1.APIRateLimit](s.ResourceIndexer, namespace)}
 }
 
 // APIRateLimitNamespaceLister helps list and get APIRateLimits.
@@ -67,36 +59,15 @@ func (s *aPIRateLimitLister) APIRateLimits(namespace string) APIRateLimitNamespa
 type APIRateLimitNamespaceLister interface {
 	// List lists all APIRateLimits in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.APIRateLimit, err error)
 	// Get retrieves the APIRateLimit from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.APIRateLimit, error)
+	Get(name string) (*hubv1alpha1.APIRateLimit, error)
 	APIRateLimitNamespaceListerExpansion
 }
 
 // aPIRateLimitNamespaceLister implements the APIRateLimitNamespaceLister
 // interface.
 type aPIRateLimitNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all APIRateLimits in the indexer for a given namespace.
-func (s aPIRateLimitNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.APIRateLimit, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.APIRateLimit))
-	})
-	return ret, err
-}
-
-// Get retrieves the APIRateLimit from the indexer for a given namespace and name.
-func (s aPIRateLimitNamespaceLister) Get(name string) (*v1alpha1.APIRateLimit, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("apiratelimit"), name)
-	}
-	return obj.(*v1alpha1.APIRateLimit), nil
+	listers.ResourceIndexer[*hubv1alpha1.APIRateLimit]
 }

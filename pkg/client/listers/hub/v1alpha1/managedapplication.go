@@ -22,10 +22,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // ManagedApplicationLister helps list ManagedApplications.
@@ -33,7 +33,7 @@ import (
 type ManagedApplicationLister interface {
 	// List lists all ManagedApplications in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.ManagedApplication, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.ManagedApplication, err error)
 	// ManagedApplications returns an object that can list and get ManagedApplications.
 	ManagedApplications(namespace string) ManagedApplicationNamespaceLister
 	ManagedApplicationListerExpansion
@@ -41,25 +41,17 @@ type ManagedApplicationLister interface {
 
 // managedApplicationLister implements the ManagedApplicationLister interface.
 type managedApplicationLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*hubv1alpha1.ManagedApplication]
 }
 
 // NewManagedApplicationLister returns a new ManagedApplicationLister.
 func NewManagedApplicationLister(indexer cache.Indexer) ManagedApplicationLister {
-	return &managedApplicationLister{indexer: indexer}
-}
-
-// List lists all ManagedApplications in the indexer.
-func (s *managedApplicationLister) List(selector labels.Selector) (ret []*v1alpha1.ManagedApplication, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ManagedApplication))
-	})
-	return ret, err
+	return &managedApplicationLister{listers.New[*hubv1alpha1.ManagedApplication](indexer, hubv1alpha1.Resource("managedapplication"))}
 }
 
 // ManagedApplications returns an object that can list and get ManagedApplications.
 func (s *managedApplicationLister) ManagedApplications(namespace string) ManagedApplicationNamespaceLister {
-	return managedApplicationNamespaceLister{indexer: s.indexer, namespace: namespace}
+	return managedApplicationNamespaceLister{listers.NewNamespaced[*hubv1alpha1.ManagedApplication](s.ResourceIndexer, namespace)}
 }
 
 // ManagedApplicationNamespaceLister helps list and get ManagedApplications.
@@ -67,36 +59,15 @@ func (s *managedApplicationLister) ManagedApplications(namespace string) Managed
 type ManagedApplicationNamespaceLister interface {
 	// List lists all ManagedApplications in the indexer for a given namespace.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.ManagedApplication, err error)
+	List(selector labels.Selector) (ret []*hubv1alpha1.ManagedApplication, err error)
 	// Get retrieves the ManagedApplication from the indexer for a given namespace and name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.ManagedApplication, error)
+	Get(name string) (*hubv1alpha1.ManagedApplication, error)
 	ManagedApplicationNamespaceListerExpansion
 }
 
 // managedApplicationNamespaceLister implements the ManagedApplicationNamespaceLister
 // interface.
 type managedApplicationNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all ManagedApplications in the indexer for a given namespace.
-func (s managedApplicationNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.ManagedApplication, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.ManagedApplication))
-	})
-	return ret, err
-}
-
-// Get retrieves the ManagedApplication from the indexer for a given namespace and name.
-func (s managedApplicationNamespaceLister) Get(name string) (*v1alpha1.ManagedApplication, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1alpha1.Resource("managedapplication"), name)
-	}
-	return obj.(*v1alpha1.ManagedApplication), nil
+	listers.ResourceIndexer[*hubv1alpha1.ManagedApplication]
 }

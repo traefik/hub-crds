@@ -265,7 +265,7 @@ spec:
     secretName: "oidc-secret"
     claims:
       groups: "groups"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.issuerUrl", BadValue: "string", Detail: "must be a valid URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.issuerUrl", BadValue: "not-a-url", Detail: "must be a valid URL"}},
 		},
 		{
 			desc: "secretName too long",
@@ -395,7 +395,7 @@ spec:
   ldap:
     url: "ldap://ldap.example.com:389"
     baseDn: "dc=example,dc=com"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of oidc or ldap must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one of oidc or ldap must be specified"}},
 		},
 		{
 			desc: "invalid: neither OIDC nor LDAP configured",
@@ -406,7 +406,7 @@ metadata:
   name: my-auth
   namespace: default
 spec: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: "object", Detail: "exactly one of oidc or ldap must be specified"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec", BadValue: field.OmitValueType{}, Detail: "exactly one of oidc or ldap must be specified"}},
 		},
 		{
 			desc: "invalid: LDAP missing required URL",
@@ -446,7 +446,7 @@ spec:
   ldap:
     url: "https://ldap.example.com"
     baseDn: "dc=example,dc=com"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ldap.url", BadValue: "string", Detail: "must be a valid LDAP URL"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.ldap.url", BadValue: "https://ldap.example.com", Detail: "must be a valid LDAP URL"}},
 		},
 		{
 			desc: "invalid: LDAP bindPasswordSecretName too long",

@@ -22,15 +22,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
-	"time"
+	context "context"
 
-	v1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	scheme "github.com/traefik/hub-crds/pkg/client/clientset/versioned/scheme"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
-	rest "k8s.io/client-go/rest"
+	gentype "k8s.io/client-go/gentype"
 )
 
 // ContentItemsGetter has a method to return a ContentItemInterface.
@@ -41,158 +40,34 @@ type ContentItemsGetter interface {
 
 // ContentItemInterface has methods to work with ContentItem resources.
 type ContentItemInterface interface {
-	Create(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.CreateOptions) (*v1alpha1.ContentItem, error)
-	Update(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.UpdateOptions) (*v1alpha1.ContentItem, error)
-	UpdateStatus(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.UpdateOptions) (*v1alpha1.ContentItem, error)
+	Create(ctx context.Context, contentItem *hubv1alpha1.ContentItem, opts v1.CreateOptions) (*hubv1alpha1.ContentItem, error)
+	Update(ctx context.Context, contentItem *hubv1alpha1.ContentItem, opts v1.UpdateOptions) (*hubv1alpha1.ContentItem, error)
+	// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+	UpdateStatus(ctx context.Context, contentItem *hubv1alpha1.ContentItem, opts v1.UpdateOptions) (*hubv1alpha1.ContentItem, error)
 	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
-	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.ContentItem, error)
-	List(ctx context.Context, opts v1.ListOptions) (*v1alpha1.ContentItemList, error)
+	Get(ctx context.Context, name string, opts v1.GetOptions) (*hubv1alpha1.ContentItem, error)
+	List(ctx context.Context, opts v1.ListOptions) (*hubv1alpha1.ContentItemList, error)
 	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
-	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ContentItem, err error)
+	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *hubv1alpha1.ContentItem, err error)
 	ContentItemExpansion
 }
 
 // contentItems implements ContentItemInterface
 type contentItems struct {
-	client rest.Interface
-	ns     string
+	*gentype.ClientWithList[*hubv1alpha1.ContentItem, *hubv1alpha1.ContentItemList]
 }
 
 // newContentItems returns a ContentItems
 func newContentItems(c *HubV1alpha1Client, namespace string) *contentItems {
 	return &contentItems{
-		client: c.RESTClient(),
-		ns:     namespace,
+		gentype.NewClientWithList[*hubv1alpha1.ContentItem, *hubv1alpha1.ContentItemList](
+			"contentitems",
+			c.RESTClient(),
+			scheme.ParameterCodec,
+			namespace,
+			func() *hubv1alpha1.ContentItem { return &hubv1alpha1.ContentItem{} },
+			func() *hubv1alpha1.ContentItemList { return &hubv1alpha1.ContentItemList{} },
+		),
 	}
-}
-
-// Get takes name of the contentItem, and returns the corresponding contentItem object, and an error if there is any.
-func (c *contentItems) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.ContentItem, err error) {
-	result = &v1alpha1.ContentItem{}
-	err = c.client.Get().
-		Namespace(c.ns).
-		Resource("contentitems").
-		Name(name).
-		VersionedParams(&options, scheme.ParameterCodec).
-		Do(ctx).
-		Into(result)
-	return
-}
-
-// List takes label and field selectors, and returns the list of ContentItems that match those selectors.
-func (c *contentItems) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.ContentItemList, err error) {
-	var timeout time.Duration
-	if opts.TimeoutSeconds != nil {
-		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
-	}
-	result = &v1alpha1.ContentItemList{}
-	err = c.client.Get().
-		Namespace(c.ns).
-		Resource("contentitems").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Timeout(timeout).
-		Do(ctx).
-		Into(result)
-	return
-}
-
-// Watch returns a watch.Interface that watches the requested contentItems.
-func (c *contentItems) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
-	var timeout time.Duration
-	if opts.TimeoutSeconds != nil {
-		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
-	}
-	opts.Watch = true
-	return c.client.Get().
-		Namespace(c.ns).
-		Resource("contentitems").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Timeout(timeout).
-		Watch(ctx)
-}
-
-// Create takes the representation of a contentItem and creates it.  Returns the server's representation of the contentItem, and an error, if there is any.
-func (c *contentItems) Create(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.CreateOptions) (result *v1alpha1.ContentItem, err error) {
-	result = &v1alpha1.ContentItem{}
-	err = c.client.Post().
-		Namespace(c.ns).
-		Resource("contentitems").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Body(contentItem).
-		Do(ctx).
-		Into(result)
-	return
-}
-
-// Update takes the representation of a contentItem and updates it. Returns the server's representation of the contentItem, and an error, if there is any.
-func (c *contentItems) Update(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.UpdateOptions) (result *v1alpha1.ContentItem, err error) {
-	result = &v1alpha1.ContentItem{}
-	err = c.client.Put().
-		Namespace(c.ns).
-		Resource("contentitems").
-		Name(contentItem.Name).
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Body(contentItem).
-		Do(ctx).
-		Into(result)
-	return
-}
-
-// UpdateStatus was generated because the type contains a Status member.
-// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *contentItems) UpdateStatus(ctx context.Context, contentItem *v1alpha1.ContentItem, opts v1.UpdateOptions) (result *v1alpha1.ContentItem, err error) {
-	result = &v1alpha1.ContentItem{}
-	err = c.client.Put().
-		Namespace(c.ns).
-		Resource("contentitems").
-		Name(contentItem.Name).
-		SubResource("status").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Body(contentItem).
-		Do(ctx).
-		Into(result)
-	return
-}
-
-// Delete takes name of the contentItem and deletes it. Returns an error if one occurs.
-func (c *contentItems) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
-	return c.client.Delete().
-		Namespace(c.ns).
-		Resource("contentitems").
-		Name(name).
-		Body(&opts).
-		Do(ctx).
-		Error()
-}
-
-// DeleteCollection deletes a collection of objects.
-func (c *contentItems) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	var timeout time.Duration
-	if listOpts.TimeoutSeconds != nil {
-		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
-	}
-	return c.client.Delete().
-		Namespace(c.ns).
-		Resource("contentitems").
-		VersionedParams(&listOpts, scheme.ParameterCodec).
-		Timeout(timeout).
-		Body(&opts).
-		Do(ctx).
-		Error()
-}
-
-// Patch applies the patch and returns the patched contentItem.
-func (c *contentItems) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ContentItem, err error) {
-	result = &v1alpha1.ContentItem{}
-	err = c.client.Patch(pt).
-		Namespace(c.ns).
-		Resource("contentitems").
-		Name(name).
-		SubResource(subresources...).
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Body(data).
-		Do(ctx).
-		Into(result)
-	return
 }

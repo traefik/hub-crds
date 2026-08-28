@@ -22,25 +22,54 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	hubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
+	apishubv1alpha1 "github.com/traefik/hub-crds/pkg/apis/hub/v1alpha1"
 	versioned "github.com/traefik/hub-crds/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/traefik/hub-crds/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
+	hubv1alpha1 "github.com/traefik/hub-crds/pkg/client/listers/hub/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
 
 // APIVersionInformer provides access to a shared informer and lister for
-// APIVersions.
+// APIVersions. Prefer using the type-safe variant (see [TypedAPIVersionInformer]).
 type APIVersionInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.APIVersionLister
+	Lister() hubv1alpha1.APIVersionLister
 }
+
+// TypedAPIVersionInformer provides access to a shared informer and lister for
+// APIVersions, including the type-safe TypedInformer variant.
+// It is a superset of APIVersionInformer.
+type TypedAPIVersionInformer interface {
+	Informer() cache.SharedIndexInformer
+	TypedInformer() APIVersionIndexInformer
+	Lister() hubv1alpha1.APIVersionLister
+}
+
+// APIVersionIndexInformer is a wrapper around the underlying [cache.SharedIndexInformer]
+// with type-safe variants of several methods.
+type APIVersionIndexInformer cache.TypedSharedIndexInformer[*apishubv1alpha1.APIVersion]
+
+// APIVersionHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerFuncs] for APIVersion.
+type APIVersionHandlerFuncs = cache.TypedResourceEventHandlerFuncs[*apishubv1alpha1.APIVersion]
+
+// APIVersionDetailedHandlerFuncs is a specialization of [cache.TypedResourceEventHandlerDetailedFuncs] for APIVersion.
+type APIVersionDetailedHandlerFuncs = cache.TypedResourceEventHandlerDetailedFuncs[*apishubv1alpha1.APIVersion]
+
+// APIVersionFilteringHandler is a specialization of [cache.TypedFilteringResourceEventHandler] for APIVersion.
+type APIVersionFilteringHandler = cache.TypedFilteringResourceEventHandler[*apishubv1alpha1.APIVersion]
+
+// APIVersionIndexers is a specialization of [cache.TypedIndexers] for APIVersion.
+type APIVersionIndexers = cache.TypedIndexers[*apishubv1alpha1.APIVersion]
+
+// DeletedAPIVersion is a specialization of [cache.DeletedObject] for APIVersion.
+type DeletedAPIVersion = cache.DeletedObject[*apishubv1alpha1.APIVersion]
 
 type aPIVersionInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
@@ -51,43 +80,132 @@ type aPIVersionInformer struct {
 // NewAPIVersionInformer constructs a new informer for APIVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIVersionInformer]).
 func NewAPIVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredAPIVersionInformer(client, namespace, resyncPeriod, indexers, nil)
+	return NewAPIVersionInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
+}
+
+// NewTypedAPIVersionInformer constructs a new informer for APIVersion type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIVersionIndexers) APIVersionIndexInformer {
+	return NewTypedAPIVersionInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers)})
 }
 
 // NewFilteredAPIVersionInformer constructs a new informer for APIVersion type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedFilteredAPIVersionInformer]).
 func NewFilteredAPIVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+	return NewTypedAPIVersionInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewTypedFilteredAPIVersionInformer constructs a new informer for APIVersion type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedFilteredAPIVersionInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers APIVersionIndexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) APIVersionIndexInformer {
+	return NewTypedAPIVersionInformerWithOptions(client, namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.TypedIndexersToIndexers(indexers), TweakListOptions: tweakListOptions})
+}
+
+// NewAPIVersionInformerWithOptions constructs a new informer for APIVersion type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+// If you really need an independent one, prefer using the type-safe variant (see [NewTypedAPIVersionInformerWithOptions]).
+func NewAPIVersionInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	return NewTypedAPIVersionInformerWithOptions(client, namespace, options)
+}
+
+// NewTypedAPIVersionInformerWithOptions constructs a new informer for APIVersion type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewTypedAPIVersionInformerWithOptions(client versioned.Interface, namespace string, options internalinterfaces.InformerOptions) APIVersionIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "hub.traefik.io", Version: "v1alpha1", Resource: "apiversions"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIVersion](cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIVersions(namespace).List(context.TODO(), options)
+				return client.HubV1alpha1().APIVersions(namespace).List(context.Background(), opts)
 			},
-			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.HubV1alpha1().APIVersions(namespace).Watch(context.TODO(), options)
+				return client.HubV1alpha1().APIVersions(namespace).Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIVersions(namespace).List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.HubV1alpha1().APIVersions(namespace).Watch(ctx, opts)
+			},
+		}, client),
+		&apishubv1alpha1.APIVersion{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&hubv1alpha1.APIVersion{},
-		resyncPeriod,
-		indexers,
-	)
+	))
 }
 
 func (f *aPIVersionInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredAPIVersionInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewTypedAPIVersionInformerWithOptions(client, f.namespace, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *aPIVersionInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&hubv1alpha1.APIVersion{}, f.defaultInformer)
+	return f.TypedInformer()
 }
 
-func (f *aPIVersionInformer) Lister() v1alpha1.APIVersionLister {
-	return v1alpha1.NewAPIVersionLister(f.Informer().GetIndexer())
+func (f *aPIVersionInformer) TypedInformer() APIVersionIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIVersion](f.factory.InformerFor(&apishubv1alpha1.APIVersion{}, f.defaultInformer))
+}
+
+func (f *aPIVersionInformer) Lister() hubv1alpha1.APIVersionLister {
+	return hubv1alpha1.NewAPIVersionLister(f.Informer().GetIndexer())
+}
+
+// ToTypedAPIVersionInformer converts an untyped informer into a TypedAPIVersionInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIVersion. If that is not the case, calling type-safe methods of the returned
+// TypedAPIVersionInformer leads to runtime panics. A safer alternative is to pass
+// around a TypedAPIVersionInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToTypedAPIVersionInformer(informer APIVersionInformer) TypedAPIVersionInformer {
+	if informer, ok := informer.(TypedAPIVersionInformer); ok {
+		return informer
+	}
+	return &aPIVersionTypedInformerAdapter{informer}
+}
+
+type aPIVersionTypedInformerAdapter struct {
+	APIVersionInformer
+}
+
+func (a *aPIVersionTypedInformerAdapter) TypedInformer() APIVersionIndexInformer {
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIVersion](a.Informer())
+}
+
+// ToAPIVersionIndexInformer converts an untyped informer into a APIVersionIndexInformer.
+//
+// WARNING: this conversion is only safe if the informer handles objects of type
+// *APIVersion. If that is not the case, calling type-safe methods of the returned
+// APIVersionIndexInformer leads to runtime panics. A safer alternative is to pass
+// around a APIVersionIndexInformer instances that was obtained from a
+// SharedInformerFactory.
+func ToAPIVersionIndexInformer(informer cache.SharedIndexInformer) APIVersionIndexInformer {
+	if informer, ok := informer.(APIVersionIndexInformer); ok {
+		return informer
+	}
+	return cache.NewTypedSharedIndexInformer[*apishubv1alpha1.APIVersion](informer)
 }
