@@ -35,8 +35,9 @@ jobs:
         env:
           GONOSUMDB: github.com/traefik/hub-crds
           GOPROXY: https://proxy.golang.org,https://athens.traefiklabs.tech,direct
+          CRDS_VERSION: ${{ inputs.CRDS_VERSION }}
         run: |
-          sed -i -e "s|github.com/traefik/hub-crds .*|github.com/traefik/hub-crds ${{ inputs.CRDS_VERSION }}|g" go.mod
+          sed -i -e "s|github.com/traefik/hub-crds .*|github.com/traefik/hub-crds $CRDS_VERSION|g" go.mod
           go mod tidy
       - name: create PR
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
