@@ -62,7 +62,63 @@ type APIPortalSpec struct {
 	// Auth references the APIPortalAuth resource for authentication configuration.
 	// +optional
 	Auth *APIPortalAuthReference `json:"auth,omitempty"`
+
+	// AllowedAPICatalogItems limits the APICatalogItems that can attach to this APIPortal.
+	// If not set, only the APICatalogItems of the namespace of this APIPortal can attach to it.
+	// +optional
+	AllowedAPICatalogItems AllowedAPICatalogItems `json:"allowedAPICatalogItems"`
 }
+
+// AllowedAPICatalogItems defines which APICatalogItems can attach to an APIPortal.
+type AllowedAPICatalogItems struct {
+	// Namespaces indicates the namespaces from which APICatalogItems can attach to this APIPortal.
+	Namespaces APICatalogItemNamespaces `json:"namespaces"`
+}
+
+// APICatalogItemNamespaces indicates the namespaces from which APICatalogItems can attach to an APIPortal.
+type APICatalogItemNamespaces struct {
+	// From indicates where this APIPortal selects APICatalogItems. Possible values are:
+	//
+	// * All: APICatalogItems in all namespaces can attach to this APIPortal.
+	// * Selector: APICatalogItems in the namespaces that Selector matches, or that Names lists,
+	//   can attach to this APIPortal.
+	// * Same: only APICatalogItems in the namespace of this APIPortal can attach to it.
+	//
+	// An empty From means "Same".
+	// +optional
+	// +kubebuilder:default=Same
+	// +kubebuilder:validation:Enum=All;Selector;Same
+	From FromNamespaces `json:"from,omitempty"`
+
+	// Selector matches the namespaces from which APICatalogItems can attach to this APIPortal.
+	// This field applies only when From is set to "Selector".
+	// An empty Selector matches all the namespaces.
+	// An unset Selector matches no namespace.
+	// +optional
+	Selector *metav1.LabelSelector `json:"selector,omitempty"`
+
+	// Names lists the namespaces from which APICatalogItems can attach to this APIPortal.
+	// This field applies only when From is set to "Selector".
+	// These namespaces come in addition to the namespaces that Selector matches.
+	// Each name must be unique.
+	// +optional
+	// +listType=set
+	// +kubebuilder:validation:MaxItems=100
+	// +kubebuilder:validation:items:MaxLength=63
+	Names []string `json:"names,omitempty"`
+}
+
+// FromNamespaces specifies the namespaces from which APICatalogItems can attach to an APIPortal.
+type FromNamespaces string
+
+const (
+	// NamespacesFromAll lets APICatalogItems in all namespaces attach to the APIPortal.
+	NamespacesFromAll FromNamespaces = "All"
+	// NamespacesFromSelector lets APICatalogItems in the selected namespaces attach to the APIPortal.
+	NamespacesFromSelector FromNamespaces = "Selector"
+	// NamespacesFromSame lets only APICatalogItems in the namespace of the APIPortal attach to it.
+	NamespacesFromSame FromNamespaces = "Same"
+)
 
 // UISpec configures the UI customization.
 type UISpec struct {
@@ -142,6 +198,19 @@ type APIPortalStatus struct {
 	Hash string `json:"hash,omitempty"`
 
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
+
+	// ResolvedAPICatalogItems is the list of APICatalogItems that are attached to this APIPortal.
+	// +optional
+	ResolvedAPICatalogItems []ResolvedAPICatalogItemReference `json:"resolvedApiCatalogItems,omitempty"`
+}
+
+// ResolvedAPICatalogItemReference references a resolved APICatalogItem.
+type ResolvedAPICatalogItemReference struct {
+	// Name of the APICatalogItem.
+	Name string `json:"name"`
+
+	// Namespace of the APICatalogItem.
+	Namespace string `json:"namespace"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

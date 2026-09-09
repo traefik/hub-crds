@@ -18,6 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1_test
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -25,6 +27,11 @@ import (
 
 func TestAPICatalogItem_Validation(t *testing.T) {
 	t.Parallel()
+
+	var tooManyParentRefs string
+	for i := range 101 {
+		tooManyParentRefs += fmt.Sprintf("\n    - name: my-portal-%d", i)
+	}
 
 	tests := []validationTestCase{
 		{
@@ -80,7 +87,10 @@ spec:
       key: value
   operationFilter:
     include:
-      - my-filter`),
+      - my-filter
+  parentRefs:
+    - name: my-portal
+      namespace: portal`),
 		},
 		{
 			desc: "invalid resource name",
@@ -203,6 +213,136 @@ spec:
   everyone: true
   apiPlan: {}`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.apiPlan.name", BadValue: ""}},
+		},
+		{
+			desc: "valid: parentRefs without namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - name: my-portal`),
+		},
+		{
+			desc: "valid: same parentRef name in different namespaces",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - name: my-portal
+      namespace: portal
+    - name: my-portal
+      namespace: another-portal`),
+		},
+		{
+			desc: "empty parentRefs",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs: []`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.parentRefs", BadValue: int64(0), Detail: "spec.parentRefs in body should have at least 1 items"}},
+		},
+		{
+			desc: "missing parentRef name",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - namespace: portal`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.parentRefs[0].name", BadValue: ""}},
+		},
+		{
+			desc: "parentRef name is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - name: "` + strings.Repeat("x", 254) + `"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.parentRefs[0].name", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+		},
+		{
+			desc: "parentRef namespace is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - name: my-portal
+      namespace: "` + strings.Repeat("x", 64) + `"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.parentRefs[0].namespace", BadValue: "<value omitted>", Detail: "may not be more than 63 bytes"}},
+		},
+		{
+			desc: "duplicated parentRefs without namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - name: my-portal
+    - name: my-portal`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeDuplicate, Field: "spec.parentRefs[1]", BadValue: map[string]any{"name": "my-portal"}}},
+		},
+		{
+			desc: "duplicated parentRefs with namespace",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:
+    - name: my-portal
+      namespace: portal
+    - name: my-portal
+      namespace: portal`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeDuplicate, Field: "spec.parentRefs[1]", BadValue: map[string]any{"name": "my-portal", "namespace": "portal"}}},
+		},
+		{
+			desc: "too many parentRefs",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APICatalogItem
+metadata:
+  name: my-catalog-items
+  namespace: default
+spec:
+  everyone: true
+  parentRefs:` + tooManyParentRefs),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.parentRefs", BadValue: 101, Detail: "must have at most 100 items"}},
 		},
 	}
 

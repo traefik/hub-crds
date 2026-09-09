@@ -43,6 +43,16 @@ type APICatalogItem struct {
 
 // APICatalogItemSpec configures an APICatalogItem.
 type APICatalogItemSpec struct {
+	// ParentRefs references the APIPortals that expose this APICatalogItem.
+	// If not set, all the APIPortals of the namespace of this APICatalogItem expose it.
+	// An APIPortal can refuse this APICatalogItem with its `allowedAPICatalogItems` field.
+	// Each reference must be unique.
+	// +optional
+	// +listType=set
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=100
+	ParentRefs []APIPortalReference `json:"parentRefs,omitempty"`
+
 	// Groups are the consumer groups that will see the APIs.
 	// +optional
 	Groups []string `json:"groups,omitempty"`
@@ -111,6 +121,20 @@ type APIBundleReference struct {
 	// Name of the APIBundle.
 	// +kubebuilder:validation:MaxLength=253
 	Name string `json:"name"`
+}
+
+// APIPortalReference references an APIPortal.
+// +mapType=atomic
+type APIPortalReference struct {
+	// Name of the APIPortal.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+
+	// Namespace of the APIPortal.
+	// If not set, the namespace of the APICatalogItem applies.
+	// +optional
+	// +kubebuilder:validation:MaxLength=63
+	Namespace string `json:"namespace,omitempty"`
 }
 
 // OperationFilter specifies the allowed operations on APIs and APIVersions.

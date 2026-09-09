@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package v1alpha1_test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -28,6 +29,13 @@ func TestAPIPortal_Validation(t *testing.T) {
 	t.Parallel()
 
 	tooLongAuthName := strings.Repeat("x", 254)
+	tooLongNamespaceName := strings.Repeat("x", 64)
+
+	namespaceNames := make([]string, 101)
+	for i := range namespaceNames {
+		namespaceNames[i] = fmt.Sprintf("namespace-%d", i)
+	}
+	tooManyNamespaceNames := strings.Join(namespaceNames, ", ")
 
 	tests := []validationTestCase{
 		{
@@ -55,6 +63,14 @@ spec:
   trustedUrls: ["https://example.com"]
   ui:
     logoUrl: https://example.com/logo.png
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      selector:
+        matchLabels:
+          portal-visibility: my-portal
+      names:
+        - bank
   `),
 		},
 		{
@@ -166,6 +182,190 @@ spec:
   auth:
     name: "` + tooLongAuthName + `"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.auth.name", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+		},
+		{
+			desc: "missing allowedAPICatalogItems namespaces",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.allowedAPICatalogItems.namespaces", BadValue: ""}},
+		},
+		{
+			desc: "valid: empty allowedAPICatalogItems namespaces",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces: {}`),
+		},
+		{
+			desc: "valid: allowedAPICatalogItems from Same",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Same`),
+		},
+		{
+			desc: "valid: allowedAPICatalogItems from All",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: All`),
+		},
+		{
+			desc: "valid: allowedAPICatalogItems from Selector with an empty selector",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      selector: {}`),
+		},
+		{
+			desc: "valid: allowedAPICatalogItems from Selector with names only",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      names:
+        - bank
+        - insurance`),
+		},
+		{
+			desc: "valid: allowedAPICatalogItems from Selector without criteria",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector`),
+		},
+		{
+			desc: "unsupported allowedAPICatalogItems from",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Everything`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.allowedAPICatalogItems.namespaces.from", BadValue: "Everything", Detail: `supported values: "All", "Selector", "Same"`}},
+		},
+		{
+			desc: "invalid allowedAPICatalogItems selector",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      selector:
+        matchExpressions:
+          - key: value`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.allowedAPICatalogItems.namespaces.selector.matchExpressions[0].operator", BadValue: ""}},
+		},
+		{
+			desc: "allowedAPICatalogItems namespace name is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      names:
+        - "` + tooLongNamespaceName + `"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.allowedAPICatalogItems.namespaces.names[0]", BadValue: "<value omitted>", Detail: "may not be more than 63 bytes"}},
+		},
+		{
+			desc: "duplicated allowedAPICatalogItems namespace names",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      names:
+        - bank
+        - bank`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeDuplicate, Field: "spec.allowedAPICatalogItems.namespaces.names[1]", BadValue: "bank"}},
+		},
+		{
+			desc: "too many allowedAPICatalogItems namespace names",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedAPICatalogItems:
+    namespaces:
+      from: Selector
+      names: [` + tooManyNamespaceNames + `]`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.allowedAPICatalogItems.namespaces.names", BadValue: 101, Detail: "must have at most 100 items"}},
 		},
 	}
 
