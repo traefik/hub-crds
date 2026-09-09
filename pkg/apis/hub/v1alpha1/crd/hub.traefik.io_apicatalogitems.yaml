@@ -168,7 +168,7 @@ spec:
                 description: |-
                   ParentRefs references the APIPortals that expose this APICatalogItem.
                   If not set, all the APIPortals of the namespace of this APICatalogItem expose it.
-                  An APIPortal can refuse this APICatalogItem with its allowedAPICatalogItems field.
+                  An APIPortal can refuse this APICatalogItem with its `allowedApiCatalogItems` field.
                   Each reference must be unique.
                 items:
                   description: APIPortalReference references an APIPortal.

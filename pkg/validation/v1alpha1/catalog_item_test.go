@@ -28,10 +28,11 @@ import (
 func TestAPICatalogItem_Validation(t *testing.T) {
 	t.Parallel()
 
-	var tooManyParentRefs string
-	for i := range 101 {
-		tooManyParentRefs += fmt.Sprintf("\n    - name: my-portal-%d", i)
+	parentRefs := make([]string, 101)
+	for i := range parentRefs {
+		parentRefs[i] = fmt.Sprintf("    - name: my-portal-%d", i)
 	}
+	tooManyParentRefs := "\n" + strings.Join(parentRefs, "\n")
 
 	tests := []validationTestCase{
 		{

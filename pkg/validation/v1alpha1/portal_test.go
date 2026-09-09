@@ -63,7 +63,7 @@ spec:
   trustedUrls: ["https://example.com"]
   ui:
     logoUrl: https://example.com/logo.png
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       selector:
@@ -184,7 +184,7 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.auth.name", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
 		},
 		{
-			desc: "missing allowedAPICatalogItems namespaces",
+			desc: "missing allowedApiCatalogItems namespaces",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -193,11 +193,11 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems: {}`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.allowedAPICatalogItems.namespaces", BadValue: ""}},
+  allowedApiCatalogItems: {}`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.allowedApiCatalogItems.namespaces", BadValue: ""}},
 		},
 		{
-			desc: "valid: empty allowedAPICatalogItems namespaces",
+			desc: "valid: empty allowedApiCatalogItems namespaces",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -206,11 +206,11 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces: {}`),
 		},
 		{
-			desc: "valid: allowedAPICatalogItems from Same",
+			desc: "valid: allowedApiCatalogItems from Same",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -219,12 +219,12 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Same`),
 		},
 		{
-			desc: "valid: allowedAPICatalogItems from All",
+			desc: "valid: allowedApiCatalogItems from All",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -233,12 +233,12 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: All`),
 		},
 		{
-			desc: "valid: allowedAPICatalogItems from Selector with an empty selector",
+			desc: "valid: allowedApiCatalogItems from Selector with an empty selector",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -247,13 +247,13 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       selector: {}`),
 		},
 		{
-			desc: "valid: allowedAPICatalogItems from Selector with names only",
+			desc: "valid: allowedApiCatalogItems from Selector with names only",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -262,7 +262,7 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       names:
@@ -270,7 +270,7 @@ spec:
         - insurance`),
 		},
 		{
-			desc: "valid: allowedAPICatalogItems from Selector without criteria",
+			desc: "valid: allowedApiCatalogItems from Selector without criteria",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -279,12 +279,12 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector`),
 		},
 		{
-			desc: "unsupported allowedAPICatalogItems from",
+			desc: "unsupported allowedApiCatalogItems from",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -293,13 +293,13 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Everything`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.allowedAPICatalogItems.namespaces.from", BadValue: "Everything", Detail: `supported values: "All", "Selector", "Same"`}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeNotSupported, Field: "spec.allowedApiCatalogItems.namespaces.from", BadValue: "Everything", Detail: `supported values: "All", "Selector", "Same"`}},
 		},
 		{
-			desc: "invalid allowedAPICatalogItems selector",
+			desc: "invalid allowedApiCatalogItems selector",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -308,16 +308,16 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       selector:
         matchExpressions:
           - key: value`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.allowedAPICatalogItems.namespaces.selector.matchExpressions[0].operator", BadValue: ""}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeRequired, Field: "spec.allowedApiCatalogItems.namespaces.selector.matchExpressions[0].operator", BadValue: ""}},
 		},
 		{
-			desc: "allowedAPICatalogItems namespace name is too long",
+			desc: "allowedApiCatalogItems namespace name is too long",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -326,15 +326,15 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       names:
         - "` + tooLongNamespaceName + `"`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.allowedAPICatalogItems.namespaces.names[0]", BadValue: "<value omitted>", Detail: "may not be more than 63 bytes"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.allowedApiCatalogItems.namespaces.names[0]", BadValue: "<value omitted>", Detail: "may not be more than 63 bytes"}},
 		},
 		{
-			desc: "duplicated allowedAPICatalogItems namespace names",
+			desc: "duplicated allowedApiCatalogItems namespace names",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -343,16 +343,16 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       names:
         - bank
         - bank`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeDuplicate, Field: "spec.allowedAPICatalogItems.namespaces.names[1]", BadValue: "bank"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeDuplicate, Field: "spec.allowedApiCatalogItems.namespaces.names[1]", BadValue: "bank"}},
 		},
 		{
-			desc: "too many allowedAPICatalogItems namespace names",
+			desc: "too many allowedApiCatalogItems namespace names",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -361,11 +361,11 @@ metadata:
   namespace: default
 spec:
   trustedUrls: ["https://example.com"]
-  allowedAPICatalogItems:
+  allowedApiCatalogItems:
     namespaces:
       from: Selector
       names: [` + tooManyNamespaceNames + `]`),
-			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.allowedAPICatalogItems.namespaces.names", BadValue: 101, Detail: "must have at most 100 items"}},
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooMany, Field: "spec.allowedApiCatalogItems.namespaces.names", BadValue: 101, Detail: "must have at most 100 items"}},
 		},
 	}
 

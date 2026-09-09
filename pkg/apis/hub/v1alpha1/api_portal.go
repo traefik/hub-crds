@@ -66,7 +66,7 @@ type APIPortalSpec struct {
 	// AllowedAPICatalogItems limits the APICatalogItems that can attach to this APIPortal.
 	// If not set, only the APICatalogItems of the namespace of this APIPortal can attach to it.
 	// +optional
-	AllowedAPICatalogItems AllowedAPICatalogItems `json:"allowedAPICatalogItems"`
+	AllowedAPICatalogItems AllowedAPICatalogItems `json:"allowedApiCatalogItems"`
 }
 
 // AllowedAPICatalogItems defines which APICatalogItems can attach to an APIPortal.

@@ -45,7 +45,7 @@ type APICatalogItem struct {
 type APICatalogItemSpec struct {
 	// ParentRefs references the APIPortals that expose this APICatalogItem.
 	// If not set, all the APIPortals of the namespace of this APICatalogItem expose it.
-	// An APIPortal can refuse this APICatalogItem with its `allowedAPICatalogItems` field.
+	// An APIPortal can refuse this APICatalogItem with its `allowedApiCatalogItems` field.
 	// Each reference must be unique.
 	// +optional
 	// +listType=set
@@ -123,8 +123,9 @@ type APIBundleReference struct {
 	Name string `json:"name"`
 }
 
-// APIPortalReference references an APIPortal.
 // +mapType=atomic
+
+// APIPortalReference references an APIPortal.
 type APIPortalReference struct {
 	// Name of the APIPortal.
 	// +kubebuilder:validation:MaxLength=253
