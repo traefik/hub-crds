@@ -183,6 +183,44 @@ spec:
         insecureSkipVerify: false`),
 		},
 		{
+			desc: "valid: OIDC with clientConfig CA secret reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+    clientConfig:
+      tls:
+        caSecretName: idp-ca`),
+		},
+		{
+			desc: "invalid: OIDC with clientConfig CA and CA secret reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+    clientConfig:
+      tls:
+        ca: "ca-bundle"
+        caSecretName: idp-ca`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.clientConfig.tls", BadValue: field.OmitValueType{}, Detail: "ca and caSecretName are mutually exclusive"}},
+		},
+		{
 			desc: "invalid resource name",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
