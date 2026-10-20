@@ -27,6 +27,8 @@ import (
 func TestManagedApplication_Validation(t *testing.T) {
 	t.Parallel()
 
+	tooLongAppID := strings.Repeat("x", 254)
+	tooLongNotes := strings.Repeat("x", 4097)
 	tooLongAPIKey := strings.Repeat("x", 4097)
 
 	tests := []validationTestCase{
@@ -110,9 +112,95 @@ metadata:
   name: my-application
   namespace: default
 spec:
-  appId: Way Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long AppId
+  appId: ` + tooLongAppID + `
   owner: "456"`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.appId", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+		},
+		{
+			desc: "valid: appId with allowed special characters",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "ValidAppId._-:@/+="
+  owner: "456"`),
+		},
+		{
+			desc: "valid: appId as ASCII username",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "john_doe-2024"
+  owner: "456"`),
+		},
+		{
+			desc: "valid: appId as email address",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "user.name@example.com"
+  owner: "456"`),
+		},
+		{
+			desc: "valid: appId as UUID",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "550e8400-e29b-41d4-a716-446655440000"
+  owner: "456"`),
+		},
+		{
+			desc: "valid: appId as JWT token",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+  owner: "456"`),
+		},
+		{
+			desc: "invalid: empty appId",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: ""
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
+		},
+		{
+			desc: "invalid: appId with disallowed characters",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "invalid!app id&with(disallowed),chars"
+  owner: "456"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.appId", BadValue: "invalid!app id&with(disallowed),chars", Detail: "spec.appId in body should match '^[A-Za-z0-9][A-Za-z0-9._\\-:@/+=]*$'"}},
 		},
 		{
 			desc: "owner is too long",
@@ -126,6 +214,20 @@ spec:
   appId: "123"
   owner: Way Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo Long Owner`),
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.owner", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+		},
+		{
+			desc: "notes is too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  notes: ` + tooLongNotes),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.notes", BadValue: "<value omitted>", Detail: "may not be more than 4096 bytes"}},
 		},
 		{
 			desc: "apiKey secretName is too long",
