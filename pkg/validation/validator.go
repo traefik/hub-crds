@@ -24,6 +24,7 @@ import (
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
 	"k8s.io/apiextensions-apiserver/pkg/apiserver/schema"
 	"k8s.io/apiextensions-apiserver/pkg/apiserver/schema/cel"
+	"k8s.io/apiextensions-apiserver/pkg/apiserver/schema/listtype"
 	apiservervalidation "k8s.io/apiextensions-apiserver/pkg/apiserver/validation"
 	"k8s.io/apimachinery/pkg/api/meta"
 	apivalidation "k8s.io/apimachinery/pkg/api/validation"
@@ -117,6 +118,9 @@ func (v *Validator) Validate(obj *unstructured.Unstructured) field.ErrorList {
 	if validator, ok := v.schemaValidators[key]; ok {
 		fieldErrs = append(fieldErrs, apiservervalidation.ValidateCustomResource(nil, unstructuredContent, validator)...)
 	}
+
+	// Validate the uniqueness of the items of the lists that declare x-kubernetes-list-type.
+	fieldErrs = append(fieldErrs, listtype.ValidateListSetsAndMaps(nil, structuralSchema, unstructuredContent)...)
 
 	// Validate CEL rules.
 	if validator, ok := v.celValidators[key]; ok {
