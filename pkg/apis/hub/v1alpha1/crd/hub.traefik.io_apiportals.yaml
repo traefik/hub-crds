@@ -128,6 +128,13 @@ spec:
                         type: object
                         x-kubernetes-map-type: atomic
                     type: object
+                    x-kubernetes-validations:
+                    - message: selector or names is required when from is Selector
+                      rule: '!(has(self.from) && self.from == ''Selector'') || has(self.selector)
+                        || (has(self.names) && size(self.names) > 0)'
+                    - message: selector and names can only be set when from is Selector
+                      rule: (has(self.from) && self.from == 'Selector') || (!has(self.selector)
+                        && !(has(self.names) && size(self.names) > 0))
                 required:
                 - namespaces
                 type: object

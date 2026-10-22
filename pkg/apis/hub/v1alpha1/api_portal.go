@@ -76,6 +76,8 @@ type AllowedAPICatalogItems struct {
 }
 
 // APICatalogItemNamespaces indicates the namespaces from which APICatalogItems can attach to an APIPortal.
+// +kubebuilder:validation:XValidation:message="selector or names is required when from is Selector",rule="!(has(self.from) && self.from == 'Selector') || has(self.selector) || (has(self.names) && size(self.names) > 0)"
+// +kubebuilder:validation:XValidation:message="selector and names can only be set when from is Selector",rule="(has(self.from) && self.from == 'Selector') || (!has(self.selector) && !(has(self.names) && size(self.names) > 0))"
 type APICatalogItemNamespaces struct {
 	// From indicates where this APIPortal selects APICatalogItems. Possible values are:
 	//

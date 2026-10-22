@@ -270,7 +270,7 @@ spec:
         - insurance`),
 		},
 		{
-			desc: "valid: allowedApiCatalogItems from Selector without criteria",
+			desc: "allowedApiCatalogItems from Selector without criteria",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
 kind: APIPortal
@@ -282,6 +282,42 @@ spec:
   allowedApiCatalogItems:
     namespaces:
       from: Selector`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.allowedApiCatalogItems.namespaces", BadValue: field.OmitValueType{}, Detail: "selector or names is required when from is Selector"}},
+		},
+		{
+			desc: "allowedApiCatalogItems from All with names set",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedApiCatalogItems:
+    namespaces:
+      from: All
+      names:
+        - bank`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.allowedApiCatalogItems.namespaces", BadValue: field.OmitValueType{}, Detail: "selector and names can only be set when from is Selector"}},
+		},
+		{
+			desc: "allowedApiCatalogItems from Same with selector set",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedApiCatalogItems:
+    namespaces:
+      from: Same
+      selector:
+        matchLabels:
+          portal-visibility: my-portal`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.allowedApiCatalogItems.namespaces", BadValue: field.OmitValueType{}, Detail: "selector and names can only be set when from is Selector"}},
 		},
 		{
 			desc: "unsupported allowedApiCatalogItems from",
