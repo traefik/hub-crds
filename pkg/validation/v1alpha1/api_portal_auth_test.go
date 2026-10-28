@@ -85,6 +85,7 @@ spec:
   oidc:
     issuerUrl: "https://auth.example.com"
     secretName: "oidc-secret"
+    matches: "OneOf('role', 'admin', 'editor')"
     scopes:
       - "openid"
       - "profile"
@@ -151,6 +152,23 @@ spec:
     claims:
       groups: "groups"
       organizationName: "org_name"`),
+		},
+		{
+			desc: "valid: OIDC with matches claim",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    matches: "Contains('groups', 'admin') && Equals('org_id', 'acme')"
+    claims:
+      groups: "groups"
+      `),
 		},
 		{
 			desc: "valid: OIDC with clientConfig",

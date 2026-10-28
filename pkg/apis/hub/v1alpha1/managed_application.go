@@ -45,6 +45,11 @@ type ManagedApplicationSpec struct {
 	// +kubebuilder:validation:MaxLength=253
 	AppID string `json:"appId"`
 
+	// OrganizationID represents the organization of the ManagedApplication.
+	// It should be the organization ID in the JWT claims.
+	// +optional
+	OrganizationID string `json:"organizationId,omitempty"`
+
 	// Owner represents the owner of the ManagedApplication.
 	// It should be:
 	// - `sub` when using OIDC
