@@ -61,6 +61,12 @@ type OIDCConfig struct {
 	// +kubebuilder:validation:MaxLength=253
 	SecretName string `json:"secretName"`
 
+	// Matches is a matcher expression evaluated against the JWT claims to restrict access to the portal.
+	// Only users whose claims match the expression are granted access.
+	// Example: OneOf(`https://clients.hub.traefik.io/role`, `admin`, `editor`)
+	// +optional
+	Matches string `json:"matches,omitempty"`
+
 	// Scopes is a list of OAuth2 scopes.
 	// +optional
 	Scopes *[]string `json:"scopes,omitempty"`
