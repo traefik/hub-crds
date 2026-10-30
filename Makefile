@@ -13,4 +13,4 @@ clean:
 
 .PHONY: build
 build: clean
-	@$(CURDIR)/script/code-gen-docker.sh
+	@$(CURDIR)/script/code-gen.sh
