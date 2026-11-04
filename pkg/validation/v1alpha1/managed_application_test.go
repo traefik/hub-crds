@@ -65,11 +65,26 @@ metadata:
 spec:
   appId: "123"
   owner: "456"
+  organizationId: org-123
   notes: blablabla
   apiKeys:
     - secretName: secret
       title: My APIKey
       suspended: true`),
+		},
+		{
+			desc: "valid: with organization",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: ManagedApplication
+metadata:
+  name: my-application
+  namespace: default
+spec:
+  appId: "123"
+  owner: "456"
+  organizationId: org-123
+  `),
 		},
 		{
 			desc: "invalid resource name",

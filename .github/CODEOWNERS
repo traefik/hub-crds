@@ -1,0 +1,6 @@
+* @traefik/hub-reviewers
+
+/.github/ @traefik/ent-infra
+
+# Keep this rule after /.github/. The Hub team owns this file.
+/.github/CODEOWNERS @traefik/hub-reviewers

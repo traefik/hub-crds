@@ -51,25 +51,3 @@ jobs:
             This PR was automatically created by ${{ github.workflow }} workflow on run [#${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 
             This was triggered by commit [${{ github.ref }}](https://github.com/${{ github.repository }}/commits/${{ github.sha }}) on [${{ github.repository }}](https://github.com/${{ github.repository }}).
-
-  update-traefik-hub:
-    uses: ./.github/workflows/template-update-crds-go-project.yaml
-    with:
-      TARGET_REPO: traefik/traefik-hub
-      TARGET_BRANCH: main
-      CRDS_VERSION: ${{ inputs.tag || github.ref_name }}
-    secrets: inherit
-  update-hub-api-management:
-    uses: ./.github/workflows/template-update-crds-go-project.yaml
-    with:
-      TARGET_REPO: traefik/hub-api-management
-      TARGET_BRANCH: master
-      CRDS_VERSION: ${{ inputs.tag || github.ref_name }}
-    secrets: inherit
-  update-hub-static-analyzer:
-    uses: ./.github/workflows/template-update-crds-go-project.yaml
-    with:
-      TARGET_REPO: traefik/hub-static-analyzer
-      TARGET_BRANCH: main
-      CRDS_VERSION: ${{ inputs.tag || github.ref_name }}
-    secrets: inherit

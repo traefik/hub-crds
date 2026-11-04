@@ -85,6 +85,7 @@ spec:
   oidc:
     issuerUrl: "https://auth.example.com"
     secretName: "oidc-secret"
+    matches: "OneOf('role', 'admin', 'editor')"
     scopes:
       - "openid"
       - "profile"
@@ -153,6 +154,23 @@ spec:
       organizationName: "org_name"`),
 		},
 		{
+			desc: "valid: OIDC with matches claim",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    matches: "Contains('groups', 'admin') && Equals('org_id', 'acme')"
+    claims:
+      groups: "groups"
+      `),
+		},
+		{
 			desc: "valid: OIDC with clientConfig",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
@@ -181,6 +199,44 @@ spec:
           IQDB3g0Lhx4QbM3Kw6bk0gvvVVLkb/TXe2Nvl4dH8gOCEw==
           -----END CERTIFICATE-----
         insecureSkipVerify: false`),
+		},
+		{
+			desc: "valid: OIDC with clientConfig CA secret reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+    clientConfig:
+      tls:
+        caSecretName: idp-ca`),
+		},
+		{
+			desc: "invalid: OIDC with clientConfig CA and CA secret reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortalAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  oidc:
+    issuerUrl: "https://auth.example.com"
+    secretName: "oidc-secret"
+    claims:
+      groups: "groups"
+    clientConfig:
+      tls:
+        ca: "ca-bundle"
+        caSecretName: idp-ca`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.oidc.clientConfig.tls", BadValue: field.OmitValueType{}, Detail: "ca and caSecretName are mutually exclusive"}},
 		},
 		{
 			desc: "invalid resource name",

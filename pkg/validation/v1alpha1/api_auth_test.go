@@ -278,6 +278,60 @@ spec:
       maxRetries: 2`),
 		},
 		{
+			desc: "valid: JWT with clientConfig CA secret reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    jwksUrl: "https://example.com/.well-known/jwks.json"
+    clientConfig:
+      tls:
+        caSecretName: jwks-ca`),
+		},
+		{
+			desc: "invalid: JWT with clientConfig CA and CA secret reference",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    jwksUrl: "https://example.com/.well-known/jwks.json"
+    clientConfig:
+      tls:
+        ca: "ca-bundle"
+        caSecretName: jwks-ca`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.jwt.clientConfig.tls", BadValue: field.OmitValueType{}, Detail: "ca and caSecretName are mutually exclusive"}},
+		},
+		{
+			desc: "invalid: JWT with clientConfig CA secret name too long",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIAuth
+metadata:
+  name: my-auth
+  namespace: default
+spec:
+  isDefault: true
+  jwt:
+    appIdClaim: "client_id"
+    jwksUrl: "https://example.com/.well-known/jwks.json"
+    clientConfig:
+      tls:
+        caSecretName: "` + tooLongSecretName + `"`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeTooLong, Field: "spec.jwt.clientConfig.tls.caSecretName", BadValue: "<value omitted>", Detail: "may not be more than 253 bytes"}},
+		},
+		{
 			desc: "valid: JWT with trusted issuers fallback only (no issuer specified)",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
