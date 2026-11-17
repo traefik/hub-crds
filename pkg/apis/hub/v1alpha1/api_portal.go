@@ -76,8 +76,8 @@ type AllowedAPICatalogItems struct {
 }
 
 // APICatalogItemNamespaces indicates the namespaces from which APICatalogItems can attach to an APIPortal.
-// +kubebuilder:validation:XValidation:message="selector or names is required when from is Selector",rule="!(has(self.from) && self.from == 'Selector') || has(self.selector) || (has(self.names) && size(self.names) > 0)"
-// +kubebuilder:validation:XValidation:message="selector and names can only be set when from is Selector",rule="(has(self.from) && self.from == 'Selector') || (!has(self.selector) && !(has(self.names) && size(self.names) > 0))"
+// +kubebuilder:validation:XValidation:message="selector or names is required when from is Selector",rule="!(has(self.from) && self.from == 'Selector') || has(self.selector) || has(self.names)"
+// +kubebuilder:validation:XValidation:message="selector and names can only be set when from is Selector",rule="(has(self.from) && self.from == 'Selector') || (!has(self.selector) && !has(self.names))"
 type APICatalogItemNamespaces struct {
 	// From indicates where this APIPortal selects APICatalogItems. Possible values are:
 	//
@@ -93,18 +93,19 @@ type APICatalogItemNamespaces struct {
 	From FromNamespaces `json:"from,omitempty"`
 
 	// Selector matches the namespaces from which APICatalogItems can attach to this APIPortal.
-	// This field applies only when From is set to "Selector".
+	// Setting this field requires From to be "Selector".
 	// An empty Selector matches all the namespaces.
-	// An unset Selector matches no namespace.
+	// An unset Selector matches no namespace, so Names must then list at least one.
 	// +optional
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
 
 	// Names lists the namespaces from which APICatalogItems can attach to this APIPortal.
-	// This field applies only when From is set to "Selector".
+	// Setting this field requires From to be "Selector".
 	// These namespaces come in addition to the namespaces that Selector matches.
 	// Each name must be unique.
 	// +optional
 	// +listType=set
+	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:MaxItems=100
 	// +kubebuilder:validation:items:MaxLength=63
 	Names []string `json:"names,omitempty"`

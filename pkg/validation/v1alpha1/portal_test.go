@@ -320,6 +320,38 @@ spec:
 			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.allowedApiCatalogItems.namespaces", BadValue: field.OmitValueType{}, Detail: "selector and names can only be set when from is Selector"}},
 		},
 		{
+			desc: "allowedApiCatalogItems names set without from",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedApiCatalogItems:
+    namespaces:
+      names:
+        - bank`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.allowedApiCatalogItems.namespaces", BadValue: field.OmitValueType{}, Detail: "selector and names can only be set when from is Selector"}},
+		},
+		{
+			desc: "empty allowedApiCatalogItems namespace names",
+			manifest: []byte(`
+apiVersion: hub.traefik.io/v1alpha1
+kind: APIPortal
+metadata:
+  name: my-portal
+  namespace: default
+spec:
+  trustedUrls: ["https://example.com"]
+  allowedApiCatalogItems:
+    namespaces:
+      from: Selector
+      names: []`),
+			wantErrs: field.ErrorList{{Type: field.ErrorTypeInvalid, Field: "spec.allowedApiCatalogItems.namespaces.names", BadValue: int64(0), Detail: "spec.allowedApiCatalogItems.namespaces.names in body should have at least 1 items"}},
+		},
+		{
 			desc: "unsupported allowedApiCatalogItems from",
 			manifest: []byte(`
 apiVersion: hub.traefik.io/v1alpha1
