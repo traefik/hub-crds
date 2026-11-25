@@ -43,6 +43,16 @@ type APICatalogItem struct {
 
 // APICatalogItemSpec configures an APICatalogItem.
 type APICatalogItemSpec struct {
+	// ParentRefs references the APIPortals that expose this APICatalogItem.
+	// If not set, all the APIPortals of the namespace of this APICatalogItem expose it.
+	// An APIPortal can refuse this APICatalogItem with its `allowedApiCatalogItems` field.
+	// Each reference must be unique.
+	// +optional
+	// +listType=set
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=100
+	ParentRefs []APIPortalReference `json:"parentRefs,omitempty"`
+
 	// Groups are the consumer groups that will see the APIs.
 	// +optional
 	Groups []string `json:"groups,omitempty"`
@@ -113,6 +123,21 @@ type APIBundleReference struct {
 	Name string `json:"name"`
 }
 
+// +mapType=atomic
+
+// APIPortalReference references an APIPortal.
+type APIPortalReference struct {
+	// Name of the APIPortal.
+	// +kubebuilder:validation:MaxLength=253
+	Name string `json:"name"`
+
+	// Namespace of the APIPortal.
+	// If not set, the namespace of the APICatalogItem applies.
+	// +optional
+	// +kubebuilder:validation:MaxLength=63
+	Namespace string `json:"namespace,omitempty"`
+}
+
 // OperationFilter specifies the allowed operations on APIs and APIVersions.
 type OperationFilter struct {
 	// Include defines the names of OperationSets that will be accessible.
@@ -140,6 +165,23 @@ type APICatalogItemStatus struct {
 	// UnresolvedAPIs is the list of APIs that could not be resolved.
 	// +optional
 	UnresolvedAPIs []ResolvedAPIReference `json:"unresolvedApis,omitempty"`
+
+	// ResolvedParentRefs is the list of APIPortals that expose this APICatalogItem.
+	// +optional
+	ResolvedParentRefs []ResolvedAPIPortalReference `json:"resolvedParentRefs,omitempty"`
+
+	// UnresolvedParentRefs is the list of APIPortals that do not exist or that do not allow this APICatalogItem.
+	// +optional
+	UnresolvedParentRefs []ResolvedAPIPortalReference `json:"unresolvedParentRefs,omitempty"`
+}
+
+// ResolvedAPIPortalReference references a resolved APIPortal.
+type ResolvedAPIPortalReference struct {
+	// Name of the APIPortal.
+	Name string `json:"name"`
+
+	// Namespace of the APIPortal.
+	Namespace string `json:"namespace"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
