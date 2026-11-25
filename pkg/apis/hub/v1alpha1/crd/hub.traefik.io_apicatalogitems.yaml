@@ -275,6 +275,23 @@ spec:
                   - name
                   type: object
                 type: array
+              resolvedParentRefs:
+                description: ResolvedParentRefs is the list of APIPortals that expose
+                  this APICatalogItem.
+                items:
+                  description: ResolvedAPIPortalReference references a resolved APIPortal.
+                  properties:
+                    name:
+                      description: Name of the APIPortal.
+                      type: string
+                    namespace:
+                      description: Namespace of the APIPortal.
+                      type: string
+                  required:
+                  - name
+                  - namespace
+                  type: object
+                type: array
               syncedAt:
                 format: date-time
                 type: string
@@ -289,6 +306,23 @@ spec:
                       type: string
                   required:
                   - name
+                  type: object
+                type: array
+              unresolvedParentRefs:
+                description: UnresolvedParentRefs is the list of APIPortals that do
+                  not exist or that do not allow this APICatalogItem.
+                items:
+                  description: ResolvedAPIPortalReference references a resolved APIPortal.
+                  properties:
+                    name:
+                      description: Name of the APIPortal.
+                      type: string
+                    namespace:
+                      description: Namespace of the APIPortal.
+                      type: string
+                  required:
+                  - name
+                  - namespace
                   type: object
                 type: array
               version:

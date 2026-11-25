@@ -165,6 +165,23 @@ type APICatalogItemStatus struct {
 	// UnresolvedAPIs is the list of APIs that could not be resolved.
 	// +optional
 	UnresolvedAPIs []ResolvedAPIReference `json:"unresolvedApis,omitempty"`
+
+	// ResolvedParentRefs is the list of APIPortals that expose this APICatalogItem.
+	// +optional
+	ResolvedParentRefs []ResolvedAPIPortalReference `json:"resolvedParentRefs,omitempty"`
+
+	// UnresolvedParentRefs is the list of APIPortals that do not exist or that do not allow this APICatalogItem.
+	// +optional
+	UnresolvedParentRefs []ResolvedAPIPortalReference `json:"unresolvedParentRefs,omitempty"`
+}
+
+// ResolvedAPIPortalReference references a resolved APIPortal.
+type ResolvedAPIPortalReference struct {
+	// Name of the APIPortal.
+	Name string `json:"name"`
+
+	// Namespace of the APIPortal.
+	Namespace string `json:"namespace"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
