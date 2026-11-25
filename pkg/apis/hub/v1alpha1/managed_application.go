@@ -43,6 +43,7 @@ type ManagedApplicationSpec struct {
 	// AppID is the identifier of the ManagedApplication.
 	// It should be unique.
 	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:Pattern=`^[A-Za-z0-9][A-Za-z0-9._\-:@/+=]*$`
 	AppID string `json:"appId"`
 
 	// OrganizationID represents the organization of the ManagedApplication.
@@ -58,6 +59,7 @@ type ManagedApplicationSpec struct {
 	Owner string `json:"owner"`
 
 	// Notes contains notes about application.
+	// +kubebuilder:validation:MaxLength=4096
 	// +optional
 	Notes string `json:"notes,omitempty"`
 
